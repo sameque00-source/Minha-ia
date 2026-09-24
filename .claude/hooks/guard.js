@@ -18,7 +18,7 @@ const path = require('path');
 const ROOT = path.resolve(__dirname, '..', '..');
 
 const MASTER_NAME = /claude-mestre|mestre-final|lotes-completo/i;
-const SECRETS_REF = /\.secrets\b|(^|[\s'"=\/:])\.env(\.[\w-]+)?(?=$|[\s'";|&)\/])|ai-orchestrator\/config\b/;
+const SECRETS_REF = /\.secrets\b|(^|[\s'"=/:])\.env(\.[\w-]+)?(?=$|[\s'";|&)/])|ai-orchestrator\/config\b/;
 const PROTECTED_REF = /\.claude\/(settings(\.local)?\.json|hooks\b)|src\/security\b|src\/config\.js/;
 const AMBIGUOUS = /\$\(|`|\$\{?\w|[*?]/;
 // Para arquivos de autoproteção basta barrar operações que alteram conteúdo (git add/commit passam).
@@ -31,6 +31,7 @@ const READ_ONLY_CMDS = new Set([
 ]);
 const GIT_READ_ONLY = new Set(['status', 'log', 'diff', 'show', 'rev-parse', 'ls-files', 'ls-tree', 'blame', 'cat-file', 'describe', 'shortlog', 'grep']);
 
+/** @type {Array<[RegExp, string]>} */
 const DESTRUCTIVE = [
   [/\bgit\s+push\b[^;&|]*(\s--force\b|\s-f\b|\s--force-with-lease\b|\s\+\S)/i, 'git push forçado'],
   [/\bgit\s+reset\s+--hard\b/i, 'git reset --hard'],
@@ -43,7 +44,7 @@ const DESTRUCTIVE = [
   [/\bchmod\s+-R\s+777\s+\//, 'chmod -R 777 na raiz'],
   [/(^|[\s;&|(])(ssh|scp|sftp|rsync)\b/, 'acesso remoto (produção fora de escopo)'],
 ];
-const RM_UNSAFE_TARGET = /^[\/~]|\$|[*?]|^\.\.?\/?$|^\.\.\/|(^|\/)(\.secrets|\.git|data|\.claude)\/?$/;
+const RM_UNSAFE_TARGET = /^[/~]|\$|[*?]|^\.\.?\/?$|^\.\.\/|(^|\/)(\.secrets|\.git|data|\.claude)\/?$/;
 
 function block(msg) {
   process.stderr.write(`[minhaia guard] BLOQUEADO: ${msg}\n`);
@@ -118,7 +119,7 @@ function makeChecker({ config, containsSecret, env }) {
     checkRm(command);
     // aspas vazias/escapes ('.secr''ets') e globs ('.sec*') não escondem a referência
     const flat = command.replace(/['"\\]/g, '');
-    if (SECRETS_REF.test(flat) || /(^|[\s\/=])\.(s|e)[\w.-]*[*?[]/.test(flat)) block('comando que acessa .secrets/.env — as chaves são gravadas pelo humano, fora do Claude');
+    if (SECRETS_REF.test(flat) || /(^|[\s/=])\.(s|e)[\w.-]*[*?[]/.test(flat)) block('comando que acessa .secrets/.env — as chaves são gravadas pelo humano, fora do Claude');
 
     const cwdReal = cwd ? realish(cwd) : null;
     const inMaster = masterDir && cwdReal && isInside(cwdReal, masterDir);

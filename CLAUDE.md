@@ -22,13 +22,14 @@ evidência; VETO de `reviewer`/`security` bloqueia.
 ## Comandos
 
 ```
+node bin/minhaia.js serve             # Web UI + API de missões em http://127.0.0.1:4317
 node bin/minhaia.js doctor            # ambiente + MASTER intacto + 25/140 + chaves
 node bin/minhaia.js verify            # prova de somente leitura (git status do MASTER + hashes)
 node bin/minhaia.js select "<tarefa>" # agentes, Skills, regras, governança, modelo
 node bin/minhaia.js run "<objetivo>"  # missão real (precisa de chave em .secrets/.env)
 node bin/minhaia.js gateway           # gateway Anthropic-compatível em 127.0.0.1:20130
 node bin/minhaia.js test-master       # suítes originais do MASTER com estado isolado
-npm test                              # testes da MinhaIA
+npm run check                         # typecheck + lint + testes (inclui API, integração, sandbox, UI)
 ```
 
 ## Fluxo de trabalho

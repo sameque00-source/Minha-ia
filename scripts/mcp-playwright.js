@@ -22,4 +22,4 @@ if (executable) args.push('--browser', 'chromium', '--executable-path', executab
 
 const child = spawn(process.platform === 'win32' ? 'npx.cmd' : 'npx', args, { stdio: 'inherit' });
 child.on('exit', (code) => process.exit(code ?? 0));
-for (const sig of ['SIGINT', 'SIGTERM']) process.on(sig, () => child.kill(sig));
+for (const sig of ['SIGINT', 'SIGTERM']) process.on(sig, () => child.kill(/** @type {NodeJS.Signals} */ (sig)));

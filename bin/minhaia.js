@@ -22,6 +22,35 @@ const MASTER_SUITES = [
   'teste-fase9-10-multimidia-projetos',
 ];
 
+/** Cria/retoma uma missão pelo MissionManager e acompanha os eventos no terminal até o fim. */
+async function followMission(startFn) {
+  const { MissionManager } = require('../src/missions/manager');
+  const manager = new MissionManager();
+  let id = null;
+  const done = new Promise((resolve) => {
+    manager.subscribe((jobId, e) => {
+      if (id && jobId !== id) return;
+      if (!asJson) {
+        const detail = e.type === 'llm.end' ? `${e.model || '-'} (${e.provider || '-'}) ${e.ok ? 'ok' : e.error}`
+          : e.type === 'tool' ? `${e.tool} ${(e.arg && (e.arg.comando || e.arg.caminho)) || ''} ${e.ok ? 'ok' : 'erro'}`
+            : e.type === 'skills' ? `${e.agente}: ${e.skills.map((s) => s.id).join(', ') || 'nenhuma'}`
+              : e.type === 'state' ? `motor ${e.mission.estado} · ${Math.round((e.mission.progresso || 0) * 100)}%`
+                : e.message || e.reason || e.phase || e.status || '';
+        console.error(`[${e.type}] ${detail}`);
+      }
+      if (e.type === 'finished') resolve(e);
+    });
+  });
+  const stop = () => { if (id) manager.cancel(id); };
+  process.once('SIGINT', stop);
+  id = startFn(manager);
+  const fin = await done;
+  process.removeListener('SIGINT', stop);
+  const job = require('../src/missions/store').get(id);
+  out(job, `${fin.status}${job.reason ? `: ${job.reason}` : ''} — ${id}${job.engineMissionId ? ` (motor ${job.engineMissionId}: ${job.engineState})` : ''}`);
+  process.exitCode = fin.status === 'CONCLUIDA' ? 0 : 1;
+}
+
 const commands = {
   sync() {
     const lock = require('../src/master/sync').sync({ log: console.log });
@@ -92,24 +121,21 @@ const commands = {
     ].join('\n'));
   },
 
+  // run/resume usam o mesmo caminho da API: processo worker + sandbox do código gerado.
   async run() {
     const objective = args.join(' ');
     if (!objective) throw new Error('uso: minhaia run "<objetivo>"');
-    const r = await require('../src/engine').runMission(objective, { log: console.error });
-    out(r, `${r.status}${r.reason ? `: ${r.reason}` : ''}${r.missionId ? ` — missão ${r.missionId} (${r.state})` : ''}`);
-    process.exitCode = r.status === 'CONCLUIDA' ? 0 : 1;
+    await followMission((m) => m.create(objective).id);
   },
 
   async resume() {
-    if (!args[0]) throw new Error('uso: minhaia resume <missao_id>');
-    const r = await require('../src/engine').resumeMission(args[0]);
-    out(r, `${r.status}${r.reason ? `: ${r.reason}` : ''}${r.state ? ` — ${r.state}` : ''}`);
-    process.exitCode = r.status === 'CONCLUIDA' ? 0 : 1;
+    if (!args[0]) throw new Error('uso: minhaia resume <mia_id>');
+    await followMission((m) => m.start(args[0], { resume: true }).id);
   },
 
   missions() {
-    const list = require('../src/engine').listMissions();
-    out(list, list.map((m) => `${m.id} ${m.estado || '?'} ${m.objetivo ? m.objetivo.slice(0, 70) : ''}`).join('\n') || '(nenhuma missão)');
+    const list = require('../src/missions/store').list();
+    out(list, list.map((m) => `${m.id} ${m.status.padEnd(14)} ${m.engineState || '-'} ${m.objective.slice(0, 70)}`).join('\n') || '(nenhuma missão)');
   },
 
   memory() {
@@ -125,6 +151,15 @@ const commands = {
     } else {
       throw new Error('uso: minhaia memory recall "<consulta>" | minhaia memory save [--type=fato] "<conteúdo>"');
     }
+  },
+
+  async serve() {
+    const port = Number(flagValue('--port', process.env.MINHAIA_PORT || '4317'));
+    const { server, port: actual, host } = await require('../src/server').start({ port });
+    console.log(`MinhaIA em http://${host}:${actual} (somente esta máquina)`);
+    const stop = () => server.close(() => process.exit(0));
+    process.on('SIGINT', stop);
+    process.on('SIGTERM', stop);
   },
 
   gateway() {
@@ -187,8 +222,9 @@ const commands = {
   agents | skills [filtro] | rules
   select "<tarefa>"         agentes, Skills, regras, governança e modelo para a tarefa
   run "<objetivo>"          missão real (planejar → executar → testar → revisar)
-  missions | resume <id>
+  missions | resume <mia_id>
   memory recall "<q>" | memory save [--type=fato] "<conteúdo>"
+  serve [--port=4317]       Web UI + API de missões (loopback)
   gateway [--port=20130]    gateway Anthropic-compatível (loopback)
   test-master [suíte...]    roda as suítes originais do MASTER com estado isolado
   --json                    saída estruturada`);

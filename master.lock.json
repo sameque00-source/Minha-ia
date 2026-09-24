@@ -45,6 +45,13 @@
       }
     },
     {
+      "id": "skills-context",
+      "total": 1,
+      "files": {
+        "vendor/master/ia-avancado/executor/core/handlers-tarefa.js": 1
+      }
+    },
+    {
       "id": "extra-specialists",
       "total": 1,
       "files": {
@@ -2088,8 +2095,8 @@
       "source": "ia-avancado",
       "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/executor/core/handlers-tarefa.js",
       "sha256Source": "9155846aae98016589993703403b2c1ba2c13b69152b85cca8c85c692343f283",
-      "sha256Dest": "9155846aae98016589993703403b2c1ba2c13b69152b85cca8c85c692343f283",
-      "patched": false
+      "sha256Dest": "21a6832370eedde884741155b6edbd3ed9970eed56f883baad1a88701e508ac8",
+      "patched": true
     },
     "vendor/master/ia-avancado/executor/core/locks.js": {
       "source": "ia-avancado",

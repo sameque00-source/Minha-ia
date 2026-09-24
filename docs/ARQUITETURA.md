@@ -74,10 +74,18 @@ tarefa
 
 ## 6. Fluxo de Skills
 
-`.claude/skills` (140) → descobertas pelo Claude Code [CONFIRMADO nesta sessão]. O seletor
-ranqueia por sobreposição de termos (ponte PT→EN, "Skip when" penaliza) e devolve o motivo do
-match. Só o `SKILL.md` das Skills selecionadas deve ser lido. 77 Skills dependem do
-claude-flow (CLI/MCP), 21 do AgentDB, 19 do Flow Nexus — o registro expõe isso em `requires`.
+`.claude/skills` (140) → descobertas pelo Claude Code [CONFIRMADO]. O seletor ranqueia por
+sobreposição de termos (ponte PT→EN, radical em inglês, "Skip when" penaliza) e devolve o motivo.
+
+**No motor autônomo** (patch declarado `skills-context` em `executor/core/handlers-tarefa.js`):
+ao montar o contrato de **cada tarefa**, `src/skills/context.js` escolhe no máximo 2 Skills
+para *descrição da tarefa + tipo + agente*, injeta um trecho (≤ 1800 caracteres cada) junto à
+persona e grava em `tarefa._skills` e no evento `skills`: Skill, motivo (termos em comum), agente,
+tools (declaradas no frontmatter ou herdadas do agente), dependências mencionadas, linhas
+removidas e, depois, o resultado da tarefa. Skills **sobre** serviço indisponível no executor
+(claude-flow, AgentDB, Flow Nexus, GitHub, MCP) são descartadas com motivo; quando só
+mencionam o serviço, as linhas com esses comandos são removidas do trecho. O Planejador não
+recebe Skills de agente. [CONFIRMADO: teste verifica `### Skill:` nos prompts dos agentes]
 
 ## 7. Fluxo de modelos, routing e fallback
 
@@ -151,45 +159,84 @@ Sessão Claude Code: ferramentas nativas + MCP.
   rebinding), log com redação — 3 patches; `minhaia gateway` recusa host não-loopback sem chave.
 - Segredos só em `.secrets/.env` (gitignored); `providerStatus` expõe só nomes, nunca valores, e
   lê no mesmo formato do gateway (`CHAVE=valor`, valor não vazio).
+- **Sandbox do código gerado pelo LLM** (o motor do MASTER executa esse código): o worker
+  intercepta `executarComando`/`testarServidor`. Só `node` roda, sempre com o modelo de
+  permissões do Node (`--permission`, leitura e escrita **apenas no workspace da missão**, sem
+  criar processos, logo sem ler `.secrets` nem escrever no MASTER). Outros executáveis (python,
+  sh…) não herdariam o confinamento e são recusados com mensagem ao motor; liberar exige
+  `MINHAIA_ALLOW_UNSANDBOXED_COMMANDS=1` (a UI marca "SEM sandbox"). Limite: o modelo de
+  permissões do Node 22 não restringe rede. [CONFIRMADO: 3 cenários adversariais nos testes]
 
 ## 13. Observabilidade
 
+O worker de cada missão instrumenta o motor (sem alterá-lo) e emite eventos: `analysis`,
+`phase`, `plan`, `state` (snapshot do grafo a cada persistência), `skills`, `llm.start/end`,
+`llm.attempt` (modelo, provider, latência, fallback), `sandbox`, `tool` (comando, exit code,
+stdout/stderr), `repair.evaluate/fix/end`, `blocked`, `result`, `finished`. Todos redigidos e
+gravados em `data/jobs/<id>/events.jsonl`, transmitidos por SSE.
+
 | Sinal | Onde |
 |---|---|
-| Cada tentativa de provedor (latência, erro classificado) | `data/logs/gateway/gateway.jsonl` |
-| Saúde/cooldown por modelo | `data/logs/gateway/health-state.json` |
-| Uso de agentes | `data/logs/agentes/agentes.jsonl` |
-| Estado e eventos da missão | `data/missions/<id>/MISSION_STATE.json` |
-| Integridade do MASTER/cópias | `minhaia verify`, hook SessionStart |
-
-Painel/agregação: **não implementado** (seção 20).
+| Eventos da missão (tempo real) | `GET /api/missions/:id/events` (SSE, com replay por `Last-Event-ID`) |
+| Painel agregado | `GET /api/observability` + `GET /api/stream` (SSE global) → painel lateral da UI |
+| Tentativas por provedor / cooldown | `data/logs/gateway/health-state.json` + eventos `llm.attempt` |
+| Estado persistido do motor | `data/missions/<id>/MISSION_STATE.json` |
+| Integridade do MASTER/cópias | `minhaia verify`, `GET /api/system`, hook SessionStart |
 
 ## 14. Testes e quality gates
 
-- `npm test` — 78 testes da MinhaIA (`pretest` roda `sync`): sync/lock/verify (incl. atomicidade,
-  intruso, link desviado), registros, seletor (governança de alto risco), 50 casos do guard
-  (bypasses reais da revisão de segurança), redação, memória, autocorreção, missão/resume
-  bloqueados sem chave, gateway real (loopback, fallback, anti-rebinding). Estado isolado em tmp,
-  restaurado também em SIGINT/SIGTERM.
-- `minhaia test-master` — as 8 suítes originais do MASTER contra a cópia vendorizada, estado isolado.
-- Gates antes de concluir etapa: `npm test` verde · `minhaia verify` OK · revisão `reviewer` +
-  `security` sem veto · nenhum segredo (hook + redação).
+- `npm run check` = `typecheck` (TypeScript `checkJs`) + `lint` (ESLint 10) + `npm test`.
+- `npm test` (`pretest` roda `sync`) — suítes: sync/lock/verify; registros e seletor; guard
+  (50+ casos de bypass); redação; memória e autocorreção do MASTER; gateway real; **API**
+  (rotas, SSE, Host/Origin/Content-Type/limite/ids/traversal, CSP); **integração de missão**
+  (pipeline real do motor com dublê de LLM só de teste: plano, agentes, Skills no prompt,
+  execução, arquivos, resultado, cancelamento, timeout, recusa do dublê fora de teste);
+  **sandbox** (código gerado tentando gravar/ler fora do workspace e chamar `python3`);
+  **UI no Chromium** (fluxo completo, abas, cancelamento, XSS, zero erros de console).
+- `minhaia test-master` — as 8 suítes originais do MASTER contra a cópia vendorizada.
+- Não há etapa de build: a UI é HTML/CSS/JS servido como está (sem bundler), e o backend é
+  Node sem transpilação.
+- Gates: `npm run check` verde · `verify` OK · `reviewer` + `security` sem veto.
 
 ## 15. CLI
 
-`bin/minhaia.js`: `sync`, `verify`, `doctor`, `agents`, `skills`, `rules`, `select`, `run`,
-`missions`, `resume`, `memory recall|save`, `gateway`, `test-master`; `--json` em todos.
+`bin/minhaia.js`: `serve` (UI + API), `sync`, `verify`, `doctor`, `agents`, `skills`, `rules`,
+`select`, `run`, `missions`, `resume`, `memory recall|save`, `gateway`, `test-master`; `--json`.
 
-## 16. API
+## 16. API de missões (`node bin/minhaia.js serve` → `http://127.0.0.1:4317`)
 
-- **Existente**: gateway Anthropic Messages API (`/v1/messages`, `/v1/models`, `/health`) em
-  `127.0.0.1:20130`. Uso opt-in: `ANTHROPIC_BASE_URL=http://127.0.0.1:20130` num cliente.
-- **Planejado**: API de missões da MinhaIA (criar/listar/retomar/eventos). Não implementado.
+| Método | Rota | Função |
+|---|---|---|
+| GET | `/api/health`, `/api/system` | saúde; integridade do MASTER, 25/140, provedores |
+| GET | `/api/agents`, `/api/skills?q=`, `/api/rules` | registros |
+| POST | `/api/select` | análise determinística de uma tarefa |
+| GET/POST | `/api/missions` | listar / criar (`{objective, start?}`) |
+| POST | `/api/missions/:id/start` · `/cancel` · `/resume` | iniciar, cancelar (encerra o worker e registra FALHA no motor), retomar |
+| GET | `/api/missions/:id` | job + snapshot do motor + análise + plano |
+| GET | `/api/missions/:id/tasks` · `/agents` · `/skills` · `/execution` · `/logs` · `/result` · `/files[?path=]` | visões |
+| GET | `/api/missions/:id/events` | SSE com replay |
+| GET | `/api/observability`, `/api/stream` | painel agregado + SSE global |
+
+Cada missão roda num **processo worker** (`src/missions/worker.js`) — cancelamento real,
+timeout (padrão 30 min, `MINHAIA_MISSION_TIMEOUT_MS`), no máximo 2 simultâneas
+(`MINHAIA_MAX_CONCURRENT`), fila. Estados: CRIADA, NA_FILA, EXECUTANDO, CANCELANDO, CONCLUIDA,
+FALHA, BLOQUEADA, CANCELADA, TEMPO_ESGOTADO, INTERROMPIDA (servidor reiniciou). O estado das
+tarefas é o da máquina de estados do motor; a API não tem motor próprio.
+Segurança: só loopback; `Host` de loopback (anti DNS rebinding); escrita exige
+`Content-Type: application/json` e `Origin` igual; corpo ≤ 16 KB; ids validados; arquivos do
+workspace com resolução de caminho real (sem traversal/symlink), ≤ 256 KB; CSP estrita.
+O gateway Anthropic-compatível (:20130) continua disponível à parte.
 
 ## 17. Web UI
 
-Não implementada nesta fase. Plano: painel sobre `data/` (missões, eventos, saúde de
-provedores) consumindo a API de missões.
+`ui/` (HTML/CSS/JS sem framework, servido pela API). Composer de missão; lista de missões;
+cabeçalho com status do job e do motor, nível, rótulo TEST-STUB quando for o caso, progresso,
+Cancelar/Retomar habilitados só quando a ação existe; abas **Conversa** (narrativa dos eventos),
+**Plano**, **Task Graph** (SVG por camadas de dependência), **Agentes & Skills**, **Execução**
+(modelo/provider/latência/fallback, sandbox, terminal, Auto-Repair), **Arquivos** (workspace),
+**Testes & Revisão**, **Logs**; painel lateral de **observabilidade ao vivo** (SSE; atualização
+por evento, refresh de 15 s só para a contagem de cooldown). Todo dado do motor/LLM entra como
+texto (sem `innerHTML`).
 
 ## 18. Checkpoints e recuperação
 
@@ -203,13 +250,16 @@ Re-sync nunca apaga `data/`. Backups de estado fora do Git: `data/` e `.secrets/
 Minha-ia/
 ├── CLAUDE.md · package.json · master.manifest.json · master.lock.json · .mcp.json
 ├── bin/minhaia.js
-├── src/{config.js, master/, registry/, selection/, engine/, security/, agents/}
+├── src/{config.js, master/, registry/, selection/, engine/, security/, agents/,
+│        skills/, runtime/, missions/{store,manager,worker,instrument,views}.js, server/}
+├── ui/{index.html, styles.css, app.js, icon.svg}
 ├── scripts/mcp-playwright.js
 ├── .claude/{settings.json, hooks/, rules/}   (+ agents/, skills/ gerados)
-├── test/*.test.js
+├── test/*.test.js · test/fixtures/stub-adapters.js (dublê de LLM, só teste)
+├── tsconfig.json · eslint.config.js
 ├── docs/{ARQUITETURA.md, DECISOES.md}
 ├── vendor/master/{ai-orchestrator, ia-avancado}   (gerado, gitignored)
-├── data/   (runtime, gitignored)   · .secrets/ (gitignored)
+├── data/{jobs,missions,memoria,logs,…}   (runtime, gitignored)   · .secrets/ (gitignored)
 ```
 
 ## 20. Contratos/interfaces
@@ -222,9 +272,15 @@ Minha-ia/
 - Contrato de tarefa do motor (`agentes/core/contrato.js`): INPUT/CONTEXT/OBJECTIVE/TOOLS/
   CONSTRAINTS/EXPECTED_OUTPUT/SUCCESS_CRITERIA.
 - Hooks: stdin JSON do Claude Code; `exit 2` + stderr = bloqueio.
+- Evento de missão: `{seq, ts, type, jobId, ...}` (tipos na seção 13); SSE `event: mission`, `id: seq`.
+- Registro de Skill por tarefa: `{tarefaId, missaoId, agente, skills:[{id, score, motivo, tools,
+  requires, linhasRemovidas, origem, chars}], descartadas:[{id, motivo}]}`.
 
 ## 21. Pendências (próximas fases)
 
-API de missões · Web UI · comando de observabilidade agregada · uso das Skills dentro do motor
-autônomo (hoje: seleção + Claude Code; o motor injeta só a persona do agente) · missão real com
-LLM **NÃO VALIDADA** neste ambiente (sem chave; Groq/OpenRouter bloqueados pela rede).
+- Missão real com LLM: **NÃO VALIDADA — PROVIDER INDISPONÍVEL** neste ambiente (sem chave;
+  Groq/OpenRouter bloqueados pela rede do container). Pipeline validado com dublê de teste.
+- Perguntas ao usuário: o Planejador do MASTER roda em modo AUTO e só *marca*
+  `decisaoUsuario`; a UI mostra, mas não há fluxo de resposta que pause a missão.
+- Sandbox não cobre rede nem interpretadores não-Node; proteção forte continua sendo o SO.
+- Painel de observabilidade lê as 15 missões mais recentes (sem banco de métricas).

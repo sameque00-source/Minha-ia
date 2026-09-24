@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MinhaIA</title>
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="logo" aria-hidden="true">◆</span> MinhaIA</div>
+    <div class="system" id="system" aria-live="polite">carregando estado do sistema…</div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <form id="new-mission" class="card composer">
+        <label for="objective" class="label">Nova missão</label>
+        <textarea id="objective" name="objective" rows="5" maxlength="4000" required
+          placeholder="Descreva o que você quer. Ex.: Crie um aplicativo 3D premium."></textarea>
+        <div class="composer-actions">
+          <span class="hint">O Orquestrador escolhe agentes, Skills e modelo.</span>
+          <button type="submit" id="send">Enviar missão</button>
+        </div>
+        <p class="form-error" id="form-error" hidden></p>
+      </form>
+      <div class="card">
+        <div class="label">Missões</div>
+        <ul id="missions" class="missions"><li class="muted">nenhuma missão ainda</li></ul>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section id="empty" class="card empty">
+        <h1>Envie uma missão</h1>
+        <p>Escreva o objetivo em linguagem natural. A MinhaIA analisa, planeja em um grafo de tarefas,
+          escolhe agentes e Skills da infraestrutura MASTER, executa, testa, revisa e corrige.</p>
+      </section>
+
+      <section id="mission" class="card" hidden>
+        <div class="mission-head">
+          <div>
+            <div class="objective" id="m-objective"></div>
+            <div class="meta" id="m-meta"></div>
+          </div>
+          <div class="actions">
+            <button id="btn-cancel" class="danger" disabled title="Disponível enquanto a missão está em execução">Cancelar</button>
+            <button id="btn-resume" class="secondary" disabled title="Disponível para missões interrompidas que já têm estado no motor">Retomar</button>
+          </div>
+        </div>
+        <div class="progress" aria-label="progresso"><div id="m-progress"></div></div>
+        <div class="banner" id="m-banner" hidden></div>
+
+        <nav class="tabs" role="tablist">
+          <button role="tab" data-tab="conversa" aria-selected="true">Conversa</button>
+          <button role="tab" data-tab="plano">Plano</button>
+          <button role="tab" data-tab="grafo">Task Graph</button>
+          <button role="tab" data-tab="agentes">Agentes &amp; Skills</button>
+          <button role="tab" data-tab="execucao">Execução</button>
+          <button role="tab" data-tab="arquivos">Arquivos</button>
+          <button role="tab" data-tab="testes">Testes &amp; Revisão</button>
+          <button role="tab" data-tab="logs">Logs</button>
+        </nav>
+
+        <div class="tab" id="tab-conversa"></div>
+        <div class="tab" id="tab-plano" hidden></div>
+        <div class="tab" id="tab-grafo" hidden></div>
+        <div class="tab" id="tab-agentes" hidden></div>
+        <div class="tab" id="tab-execucao" hidden></div>
+        <div class="tab" id="tab-arquivos" hidden>
+          <div class="files">
+            <ul id="file-list" class="file-list"></ul>
+            <pre id="file-view" class="code">selecione um arquivo</pre>
+          </div>
+        </div>
+        <div class="tab" id="tab-testes" hidden></div>
+        <div class="tab" id="tab-logs" hidden>
+          <div class="log-filter">
+            <label for="log-type">Tipo</label>
+            <select id="log-type"><option value="">todos</option></select>
+          </div>
+          <div id="log-list" class="log-list"></div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="observability card" aria-label="Observabilidade">
+      <div class="label">Observabilidade <span class="live" id="live">● ao vivo</span></div>
+      <div id="obs"></div>
+    </aside>
+  </div>
+</body>
+</html>

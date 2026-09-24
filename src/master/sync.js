@@ -15,9 +15,9 @@ function toPosix(p) {
 function globToRegex(glob) {
   const esc = glob
     .replace(/[.+^${}()|[\]\\]/g, '\\$&')
-    .replace(/\*\*\//g, '\u0000')
+    .replace(/\*\*\//g, '§DS§')
     .replace(/\*/g, '[^/]*')
-    .replace(/\u0000/g, '(?:.*/)?');
+    .replace(/§DS§/g, '(?:.*/)?');
   return new RegExp(`^${esc}$`);
 }
 
@@ -191,7 +191,7 @@ function requireCleanMaster(masterDir) {
   try {
     out = execFileSync('git', ['-C', masterDir, 'status', '--porcelain'], { encoding: 'utf8' });
   } catch (e) {
-    throw new Error(`não foi possível verificar o MASTER com git (${e.message}) — sync recusado`);
+    throw new Error(`não foi possível verificar o MASTER com git (${e.message}) — sync recusado`, { cause: e });
   }
   if (out.trim()) throw new Error(`MASTER tem alterações locais — o lock não corresponderia ao HEAD; sync recusado:\n${out}`);
 }
@@ -227,7 +227,8 @@ function swapIn(topDirs, stageRoot, masterDir) {
  * diretórios são trocados — uma falha (ex.: patch com contagem inesperada) deixa a instalação
  * anterior intacta. Em seguida cria os links de runtime e grava master.lock.json.
  */
-function sync({ log = () => {} } = {}) {
+/** @param {{log?: (msg: string) => void}} [opts] */
+function sync({ log = (_msg) => {} } = {}) {
   const masterDir = requireMasterDir();
   requireCleanMaster(masterDir);
   const manifest = loadManifest();

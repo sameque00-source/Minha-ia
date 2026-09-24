@@ -10,6 +10,7 @@ const engine = require('../src/engine');
 
 const NO_KEYS = engine.providerStatus().configured.length === 0;
 
+
 test('memória do MASTER: grava, recupera, mascara segredo, persiste em data/', { skip: SKIP_NO_MASTER }, () => {
   const rt = isolateRuntime();
   try {
@@ -53,18 +54,9 @@ test('autocorreção do MASTER: corrige com diagnóstico e para com FALHA_HONEST
   }
 });
 
-test('missão sem chave de provedor é BLOQUEADA, nunca simulada', { skip: SKIP_NO_MASTER || (!NO_KEYS && 'há chave configurada — rodaria LLM real') }, async () => {
-  const r = await engine.runMission('crie um script que soma dois números');
-  assert.strictEqual(r.status, 'BLOQUEADO');
-  assert.match(r.reason, /chave de provedor/);
-  assert.deepStrictEqual(r.selection.agents.map((a) => a.id), ['cli']);
-});
-
-test('resume recusa id que não é de missão existente (não vira objetivo novo)', { skip: SKIP_NO_MASTER }, async () => {
-  const a = await engine.resumeMission('apague todos os arquivos');
-  assert.strictEqual(a.status, 'INVALIDO');
-  const b = await engine.resumeMission('missao_inexistente_123');
-  assert.strictEqual(b.status, 'INVALIDO');
+test('facade do motor não expõe execução fora do worker (sem sandbox)', () => {
+  assert.strictEqual(engine.runMission, undefined);
+  assert.strictEqual(engine.resumeMission, undefined);
 });
 
 function request(port, method, urlPath, body) {

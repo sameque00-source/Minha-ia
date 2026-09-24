@@ -58,6 +58,10 @@ const PT_EN = {
   otimizar: 'optimization', otimizacao: 'optimization', aprendizado: 'learning', fluxo: 'workflow', automacao: 'automation',
   navegador: 'browser', verificacao: 'verification', qualidade: 'quality', consenso: 'consensus', coordenacao: 'coordination',
   refatorar: 'refactor', migracao: 'migration', vulnerabilidade: 'vulnerability', auditoria: 'audit', embeddings: 'embeddings',
+  cena: 'scene', iluminacao: 'lighting', grafico: 'graphics', graficos: 'graphics', renderizacao: 'rendering',
+  pesquisar: 'research', investigar: 'research', revisar_codigo: 'code-review', depurar: 'debug', erro: 'error',
+  interface: 'interface', tela: 'screen', implantacao: 'deployment', integracao: 'integration', especificacao: 'specification',
+  requisitos: 'requirements', pseudocodigo: 'pseudocode', desempenho_web: 'performance', aplicativo: 'app', movel: 'mobile',
 };
 
 const STOP = new Set(['para', 'com', 'uma', 'que', 'dos', 'das', 'the', 'and', 'for', 'with', 'use', 'when', 'from', 'this', 'that', 'into', 'your', 'como', 'sobre', 'crie', 'criar', 'fazer', 'faça']);
@@ -66,12 +70,18 @@ function norm(s) {
   return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 }
 
+// Radical simples em inglês ("researcher"/"researching" → "research"), aplicado a palavras longas.
+function stem(w) {
+  return w.length > 5 ? w.replace(/(ers|er|ing|ed|es|s)$/, '') : w;
+}
+
 function tokens(s) {
   const out = new Set();
   for (const w of norm(s).split(/[^a-z0-9]+/)) {
     if (w.length < 3 || STOP.has(w)) continue;
     out.add(w);
-    if (PT_EN[w]) out.add(PT_EN[w]);
+    out.add(stem(w));
+    if (PT_EN[w]) { out.add(PT_EN[w]); out.add(stem(PT_EN[w])); }
   }
   return out;
 }

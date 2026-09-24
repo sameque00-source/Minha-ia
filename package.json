@@ -17,6 +17,17 @@
     "doctor": "node bin/minhaia.js doctor",
     "test": "node --test --test-concurrency=1 \"test/**/*.test.js\"",
     "test:master": "node bin/minhaia.js test-master",
-    "pretest": "node bin/minhaia.js sync"
+    "pretest": "node bin/minhaia.js sync",
+    "typecheck": "tsc -p tsconfig.json",
+    "lint": "eslint .",
+    "check": "npm run typecheck && npm run lint && npm test"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^22.20.4",
+    "eslint": "^10.11.0",
+    "globals": "^17.12.0",
+    "playwright-core": "^1.63.0",
+    "typescript": "^5.9.3"
   }
 }

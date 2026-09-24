@@ -11,6 +11,7 @@ const FALLBACK = [
 ];
 
 // Formatos que a memória do MASTER não cobre.
+/** @type {Array<[RegExp, string]>} */
 const EXTRA = [
   [/AIza[0-9A-Za-z_-]{20,}/g, '[REDACTED]'],
   [/([?&](?:key|api_key|apikey|token)=)[^&\s"']{8,}/gi, '$1[REDACTED]'],

@@ -99,6 +99,15 @@
       "reason": "Segurança: logs gravam corpo de erro de provedor sem redação. Passa por redact() (padrões de segredo da memória do MASTER + chave Google/query string)."
     },
     {
+      "id": "skills-context",
+      "source": "ia-avancado",
+      "file": "executor/core/handlers-tarefa.js",
+      "find": "  const contrato = montarContrato({\n    persona: personaTexto,",
+      "replaceWith": "  const skillsCtx = require(require('path').join(__dirname, '{{REL:src/skills/context.js}}')).contextoDeSkills(tarefa, missao, especialista);\n  const contrato = montarContrato({\n    persona: [personaTexto, skillsCtx.texto].filter(Boolean).join('\\n\\n'),",
+      "expectCount": 1,
+      "reason": "O motor injetava só a persona do agente. Passa a injetar também trechos das Skills selecionadas para a tarefa + agente (src/skills/context.js), registrando a escolha em tarefa._skills."
+    },
+    {
       "id": "extra-specialists",
       "source": "ia-avancado",
       "file": "agentes/core/registro-especialistas.js",

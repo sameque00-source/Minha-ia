@@ -21,6 +21,10 @@
 | MCP claude-flow + Playwright | Sim — `.mcp.json` (só no backup) | Adaptar: versões fixadas, wrapper de browser | `.mcp.json`, `scripts/` |
 | Permissões `settings.json` | Sim | Adaptar a lista `deny` | `.claude/settings.json` |
 | Hooks | **Não** (`"hooks": {}`) | Implementar | `.claude/hooks` |
+| API de missões / Web UI / painel | **Não** | Implementar sobre o motor (sem segundo motor) | `src/server`, `src/missions`, `ui/` |
+| Injeção de Skills no contexto do agente | **Não** (motor só injetava a persona) | Patch declarado `skills-context` + `src/skills/context.js` | vendor + `src/skills` |
+| Eventos de execução em tempo real | Parcial (motor persiste estado) | Instrumentar funções exportadas, sem alterar o motor | `src/missions/instrument.js` |
+| Sandbox do código gerado | **Não** (motor executa código do LLM sem confinamento) | Implementar política no wrapper de ferramentas | `src/missions/instrument.js` |
 | Registro de Skills / seleção por tarefa | **Não** (motor só usa persona do agente) | Implementar | `src/registry`, `src/selection` |
 | Consumo somente leitura + lock | **Não** | Implementar | `src/master` |
 | Redação de segredos em log | Parcial (padrões da memória) | Compor | `src/security/redact.js` |
@@ -67,6 +71,7 @@ Re-sync não apaga memória; `test-master` e os testes redirecionam para diretó
 | `gateway-noauth-host-check` | sem chave, qualquer página/processo local podia usar a cota; passa a exigir `Host` de loopback |
 | `gateway-log-redaction` | log gravava corpo de erro de provedor sem redação |
 | `extra-specialists` | registro do motor tinha 19 de 25 agentes |
+| `skills-context` | motor injetava só a persona; passa a injetar Skills selecionadas por tarefa + agente |
 
 ## ADR-05 — Seleção determinística
 
@@ -95,6 +100,40 @@ provedor→chave com nomes errados; gateway sem auth aceitando qualquer `Host`.
 O hook reduz acidentes do agente, mas não é sandbox. A proteção forte do MASTER é o sistema
 operacional (clone somente leitura). Não foi aplicada aqui porque alterar permissões do MASTER é
 decisão do dono.
+
+## ADR-09 — Uma missão por processo worker
+
+Cada missão roda em `fork()` de `src/missions/worker.js`, que instancia o `Executor` do motor.
+Motivos: cancelamento real (encerrar o processo, após registrar FALHA no motor), timeout,
+falha contida, concorrência limitada. O estado das tarefas continua sendo o da máquina de
+estados do motor; a API só observa e comanda — não há segundo motor.
+
+## ADR-10 — Instrumentação em vez de fork do motor
+
+Eventos (LLM, tentativas/fallback, ferramentas, autocorreção, snapshots, plano) vêm de wrappers
+aplicados às funções exportadas **antes** de o Executor ser carregado (quem desestrutura recebe
+o wrapper). Nenhuma linha do motor muda por causa da observabilidade.
+
+## ADR-11 — Sandbox do código gerado
+
+O motor do MASTER executa com `execFile` o código que o LLM gera. Testado: o modelo de
+permissões do Node confina processos `node`, mas um filho com permissão de criar processos
+escapa via outro executável (ex.: `python3`). Decisão: só `node` roda, com `--permission`
+restrito ao workspace e **sem** permissão de criar processos; outros executáveis são recusados
+(opt-in explícito `MINHAIA_ALLOW_UNSANDBOXED_COMMANDS=1`). Custo: soluções em Python ficam
+bloqueadas por padrão.
+
+## ADR-12 — UI sem framework e sem build
+
+HTML/CSS/JS servido pela própria API, compatível com CSP `script-src 'self'` (nada inline).
+Evita toolchain de build para uma UI de painel; tipagem via `checkJs` e testes no Chromium.
+
+## ADR-13 — Dublê de LLM só em teste
+
+`test/fixtures/stub-adapters.js` substitui os adapters de provedor **apenas** com
+`NODE_ENV=test` + `MINHAIA_TEST_ADAPTERS` (o worker recusa fora disso — testado). Todo evento
+sai rotulado `TEST-STUB(...)` e a UI mostra um aviso. Serve para validar o pipeline real do
+motor (plano → grafo → ferramentas → revisão) sem provedor; nunca como resultado de produto.
 
 ## Conflitos encontrados no MASTER (registrados, não alterados)
 

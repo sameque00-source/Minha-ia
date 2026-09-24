@@ -112,4 +112,4 @@ function readSkillBody(id) {
   return fs.existsSync(f) ? parseFrontmatter(fs.readFileSync(f, 'utf8')).body : null;
 }
 
-module.exports = { loadAgents, loadSkills, loadRules, readAgentBody, readSkillBody, splitUseSkip };
+module.exports = { loadAgents, loadSkills, loadRules, readAgentBody, readSkillBody, splitUseSkip, DEPENDENCY_SIGNALS };
