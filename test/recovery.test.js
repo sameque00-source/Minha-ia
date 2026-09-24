@@ -50,6 +50,15 @@ test('recuperação: dono vivo (mesmo processo) → missão intocada', { skip: S
   assert.strictEqual(store.get(job.id).status, 'EXECUTANDO');
 });
 
+test('recuperação: outro gerenciador vivo no MESMO processo → missão intocada', { skip: SKIP_NO_MASTER || (!LINUX && 'usa /proc') }, (t) => {
+  const store = withJobsDir(t);
+  const { MissionManager, procStart } = require('../src/missions/manager');
+  const job = store.create('x');
+  store.update(job.id, { status: 'EXECUTANDO', owner: { pid: process.pid, id: 'irmao', start: procStart(process.pid) } });
+  new MissionManager();
+  assert.strictEqual(store.get(job.id).status, 'EXECUTANDO');
+});
+
 test('recuperação: PID do dono reaproveitado (início diferente) → INTERROMPIDA', { skip: SKIP_NO_MASTER || (!LINUX && 'usa /proc') }, async (t) => {
   const store = withJobsDir(t);
   const { MissionManager } = require('../src/missions/manager');
@@ -76,6 +85,19 @@ test('recuperação: grupo órfão de worker morto é encerrado', { skip: SKIP_N
   new MissionManager();
   await wait(200);
   assert.ok(!alive(childPid), 'filho órfão do worker morto precisa ser encerrado');
+});
+
+test('recuperação: dono morto e worker vivo (mesmo início) → grupo inteiro encerrado', { skip: SKIP_NO_MASTER || (!LINUX && 'grupos POSIX') }, async (t) => {
+  const store = withJobsDir(t);
+  const { MissionManager, procStart } = require('../src/missions/manager');
+  const { leader, childPid } = await spawnGroup();
+  t.after(() => { try { process.kill(-leader.pid, 'SIGKILL'); } catch { /* já morto */ } });
+  const job = store.create('x');
+  store.update(job.id, { status: 'EXECUTANDO', owner: { pid: 999999, id: 'morto' }, pid: leader.pid, workerStart: procStart(leader.pid) });
+  new MissionManager();
+  await wait(300);
+  assert.strictEqual(store.get(job.id).status, 'INTERROMPIDA');
+  assert.ok(!alive(leader.pid) && !alive(childPid), 'worker e filhos do dono morto precisam ser encerrados');
 });
 
 test('recuperação: nunca mata grupo de PID reaproveitado (vivo, início diferente)', { skip: SKIP_NO_MASTER || (!LINUX && 'grupos POSIX') }, async (t) => {

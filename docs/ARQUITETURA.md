@@ -177,13 +177,33 @@ Sessão Claude Code: ferramentas nativas + MCP.
 - **Rede do código gerado bloqueada**: o modelo de permissões do Node 22 não cobre rede, então
   todo `node` da sandbox carrega `src/missions/sandbox-preload.js` (`--require`, antes do código
   do LLM), que trava de forma não reconfigurável `net.Socket#connect`, `net.connect`,
-  `tls.connect`, UDP (`dgram`) e `fetch`/`WebSocket`. Escutar numa porta continua permitido
+  `tls.connect`, UDP (`dgram`), `fetch`/`WebSocket` e **DNS** (`dns.lookup`, `resolve*`,
+  `Resolver`, `dns/promises` — consultas feitas no C++, que serviriam de canal de exfiltração por
+  rótulo de subdomínio; `lookup` só aceita IP literal/`localhost`, resolvidos sem consulta).
+  Escutar numa porta continua permitido
   (servidores gerados são testados pelo motor a partir do worker). Isso impede o código gerado
   de chamar a própria API local, o gateway ou a internet. Opt-out consciente:
   `MINHAIA_SANDBOX_ALLOW_NETWORK=1`. Antes de executar, o workspace é varrido e link simbólico
   ou hardlink são recusados (o código confinado os seguiria).
 - Fila limitada (`MINHAIA_MAX_PENDING`, padrão 20 → 429).
-[CONFIRMADO: cenários adversariais nos testes — escrita/leitura fora, python3, flags de fuga]
+[CONFIRMADO: cenários adversariais nos testes — escrita/leitura fora, python3, flags de fuga,
+conexão TCP, consulta DNS]
+
+### Plataformas: garantias de processo valem só no Linux
+
+| Garantia | Linux | macOS | Windows |
+|---|---|---|---|
+| Grupo de processos próprio (cancelar/timeout/fim mata tudo que o motor criou) | sim (testado) | sim (POSIX) | **não**: o worker não é `detached`; só o worker é encerrado, processos que ele criou podem ficar órfãos |
+| Worker se mata com o grupo quando o dono (servidor/CLI) morre | sim (testado) | sim | **não** (sem grupo) |
+| Identidade do processo dono = PID + instante de início (`/proc/<pid>/stat`) | sim (testado) | **não**: sem `/proc`, só o PID; qualquer processo vivo com aquele PID é tomado pelo dono | só o PID |
+| Zumbi conta como morto | sim | não se aplica | não se aplica |
+| Sandbox do código gerado (permissões do Node + preload de rede) | sim (testado) | [INFERIDO] sim, é do Node | [INFERIDO] sim, é do Node |
+
+Consequência fora do Linux [INFERIDO por leitura do código, sem teste nessas plataformas]: se o
+servidor/CLI morrer e o PID for reaproveitado por outro processo, a missão fica em `EXECUTANDO`
+até esse processo terminar (cancelar responde 409). Contorno manual: encerrar o processo e
+reiniciar o servidor. Uso suportado: **Linux**. Um gerenciador de missões por processo é o uso
+previsto; se houver mais de um, cada um ignora as missões do outro (identidade `owner.id`).
 
 ## 13. Observabilidade
 
@@ -310,5 +330,7 @@ Minha-ia/
   Groq/OpenRouter bloqueados pela rede do container). Pipeline validado com dublê de teste.
 - Perguntas ao usuário: o Planejador do MASTER roda em modo AUTO e só *marca*
   `decisaoUsuario`; a UI mostra, mas não há fluxo de resposta que pause a missão.
-- Sandbox não cobre rede nem interpretadores não-Node; proteção forte continua sendo o SO.
+- Sandbox cobre só `node` (outros interpretadores são recusados); o bloqueio de rede é na camada
+  JS do Node, não do SO — proteção forte continua sendo o SO (namespace de rede/container).
+- Windows/macOS: sem garantia de grupo de processos/identidade (ver §12, Plataformas).
 - Painel de observabilidade lê as 15 missões mais recentes (sem banco de métricas).

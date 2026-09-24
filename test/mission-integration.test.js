@@ -2,6 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert');
 const fs = require('fs');
 const { SKIP_NO_MASTER, startApi, req, waitFinished, waitEvent, STUB } = require('./helpers');
+const store = require('../src/missions/store');
 
 // Pipeline REAL do motor (planejador → grafo → executor → ferramentas → autocorreção → revisão)
 // com o dublê de LLM de teste no lugar do provedor. Tudo sai rotulado TEST-STUB.
@@ -92,6 +93,21 @@ test('timeout encerra a missão como TEMPO_ESGOTADO', { skip: SKIP_NO_MASTER }, 
   assert.strictEqual(fin.status, 'TEMPO_ESGOTADO');
 });
 
+test('killAll encerra o grupo, marca INTERROMPIDA e registra um único finished', { skip: SKIP_NO_MASTER }, async (t) => {
+  const api = await startApi({ stub: true, env: { MINHAIA_TEST_STUB_DELAY_MS: '8000' } });
+  t.after(() => api.close());
+  const id = (await req(api.base, 'POST', '/api/missions', { body: { objective: 'Crie um script que soma dois números' } })).json.id;
+  await waitEvent(api.manager, id, 'llm.start', 30000);
+  const pid = store.get(id).pid;
+  api.manager.killAll();
+  await new Promise((r) => setTimeout(r, 800)); // deixa o exit do worker chegar
+  assert.strictEqual(store.get(id).status, 'INTERROMPIDA');
+  const fins = store.readEvents(id).filter((e) => e.type === 'finished');
+  assert.strictEqual(fins.length, 1);
+  assert.strictEqual(fins[0].status, 'INTERROMPIDA');
+  assert.throws(() => process.kill(pid, 0), 'worker precisa estar morto');
+});
+
 test('dublê de teste é recusado fora de NODE_ENV=test', { skip: SKIP_NO_MASTER }, async (t) => {
   const api = await startApi({ env: { NODE_ENV: 'production', MINHAIA_TEST_ADAPTERS: STUB } });
   t.after(() => api.close());
@@ -121,6 +137,11 @@ for (const [scenario, check] of [
     assert.match(`${run.stderr} ${run.error}`, /ERR_MINHAIA_NETWORK_DENIED/);
     assert.strictEqual(hits.count, 0, 'nenhuma conexão pode chegar ao alvo');
     assert.ok(exec.some((e) => e.type === 'sandbox' && e.network === 'bloqueada'));
+  }],
+  ['dns', (exec) => {
+    const run = exec.find((e) => e.type === 'tool' && e.tool === 'executarComando');
+    assert.ok(run && !run.ok, 'consulta DNS a partir do código gerado precisa falhar');
+    assert.match(`${run.stderr} ${run.error}`, /ERR_MINHAIA_NETWORK_DENIED/);
   }],
   ['python', (exec) => {
     const sb = exec.find((e) => e.type === 'sandbox');

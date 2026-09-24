@@ -98,12 +98,13 @@ class MissionManager {
 
   // Jobs ativos de um gerenciador que não existe mais viram INTERROMPIDA e o grupo de processos
   // que sobrou é encerrado. Identidade = PID + instante de início (PID reaproveitado não conta).
-  // Jobs de outro gerenciador vivo (ex.: CLI e servidor juntos) são deixados em paz.
+  // Jobs de outro gerenciador vivo (ex.: CLI e servidor juntos, ou outro gerenciador neste mesmo
+  // processo) são deixados em paz: o dono vivo é o mesmo processo (PID + início) de quando gravou.
   recoverInterrupted() {
     for (const job of store.list()) {
       if (!ACTIVE.has(job.status)) continue;
       const o = job.owner;
-      if (o && o.pid !== process.pid && sameProcess(o.pid, o.start)) continue;
+      if (o && o.id !== this.ownerId && sameProcess(o.pid, o.start)) continue;
       this.killStaleGroup(job);
       store.update(job.id, { status: 'INTERROMPIDA', finishedAt: new Date().toISOString(), reason: 'o processo que executava a missão terminou (servidor reiniciado ou CLI encerrada)', pid: null });
       this.safeRecord(job.id, 'finished', { status: 'INTERROMPIDA', reason: 'processo dono terminou' });
@@ -124,8 +125,13 @@ class MissionManager {
   /** Encerramento imediato (2º Ctrl+C / morte da CLI): SIGKILL em todos os grupos. */
   killAll() {
     for (const [id, entry] of this.running) {
+      entry.killed = true; // o exit que chegar depois não reescreve o status nem duplica 'finished'
+      clearTimeout(entry.timer);
+      clearTimeout(entry.killTimer);
       killGroup(entry.child, 'SIGKILL');
+      this.running.delete(id);
       store.update(id, { status: 'INTERROMPIDA', finishedAt: new Date().toISOString(), reason: 'encerrado à força', pid: null });
+      this.safeRecord(id, 'finished', { status: 'INTERROMPIDA', reason: 'encerrado à força' });
     }
   }
 
@@ -207,11 +213,11 @@ class MissionManager {
     const job = store.get(id);
     // processo em grupo próprio: cancelar/timeout encerra também os filhos criados pelo motor
     const child = fork(WORKER, [], { stdio: ['ignore', 'pipe', 'pipe', 'ipc'], env: workerEnv(), detached: process.platform !== 'win32' });
-    const entry = { child, timer: null, killTimer: null, finalStatus: null, reason: null, done: false };
+    const entry = { child, timer: null, killTimer: null, finalStatus: null, reason: null, done: false, killed: false };
     this.running.set(id, entry);
     let finished = false;
     const finish = (status, patch = {}, fromDone = false) => {
-      if (finished) return;
+      if (finished || entry.killed) return;
       finished = true;
       clearTimeout(entry.timer);
       clearTimeout(entry.killTimer);

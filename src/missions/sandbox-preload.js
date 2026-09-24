@@ -14,9 +14,29 @@ if (process.env.MINHAIA_SANDBOX_ALLOW_NETWORK !== '1') {
   };
   const lock = (obj, key, value) => {
     if (!obj) return;
-    Object.defineProperty(obj, key, { value, writable: false, configurable: false, enumerable: false });
+    // enumerabilidade original preservada: os imports ESM nomeados (node:dns etc.) dependem dela
+    const d = Object.getOwnPropertyDescriptor(obj, key);
+    Object.defineProperty(obj, key, { value, writable: false, configurable: false, enumerable: d ? d.enumerable : false });
   };
   const net = require('net');
+  // lookup só resolve IP literal (e localhost) localmente, sem consulta: mantém
+  // server.listen(porta, '127.0.0.1') funcionando; qualquer nome real é negado.
+  const literal = (host) => {
+    const h = host === 'localhost' ? '127.0.0.1' : String(host);
+    const family = net.isIP(h);
+    return family ? { address: h, family } : null;
+  };
+  const lookupLiteral = function lookup(host, opts, cb) {
+    if (typeof opts === 'function') { cb = opts; opts = {}; }
+    const r = literal(host);
+    if (!r || typeof cb !== 'function') deny();
+    process.nextTick(() => (opts && opts.all ? cb(null, [r]) : cb(null, r.address, r.family)));
+  };
+  const lookupLiteralAsync = async function lookup(host, opts) {
+    const r = literal(host);
+    if (!r) return denyAsync();
+    return opts && opts.all ? [r] : r;
+  };
   lock(net.Socket.prototype, 'connect', deny);
   lock(net, 'connect', deny);
   lock(net, 'createConnection', deny);
@@ -25,6 +45,28 @@ if (process.env.MINHAIA_SANDBOX_ALLOW_NETWORK !== '1') {
   const dgram = require('dgram');
   lock(dgram.Socket.prototype, 'send', deny);
   lock(dgram.Socket.prototype, 'connect', deny);
+  // DNS: getaddrinfo (lookup) e c-ares (resolve*/Resolver) consultam a rede no C++, abaixo de
+  // net/dgram — sem este bloqueio, rótulos de subdomínio viram canal de exfiltração.
+  const dns = require('dns');
+  const ALLOWED_DNS = new Set(['getDefaultResultOrder', 'setDefaultResultOrder', 'getServers']);
+  const seen = new Set(); // ResolverBase é compartilhado por dns e dns/promises
+  /** @type {Array<[any, Function]>} */
+  const targets = [[dns, deny], [dns.promises, denyAsync]];
+  for (const [mod, d] of targets) {
+    for (const C of [mod.Resolver, mod.Resolver && Object.getPrototypeOf(mod.Resolver)]) {
+      const proto = C && C.prototype;
+      if (!proto || proto === Object.prototype || seen.has(proto)) continue;
+      seen.add(proto);
+      for (const k of Object.getOwnPropertyNames(proto)) {
+        if (k !== 'constructor' && typeof proto[k] === 'function') lock(proto, k, d);
+      }
+    }
+    for (const k of Object.keys(mod)) {
+      if (typeof mod[k] !== 'function' || ALLOWED_DNS.has(k)) continue;
+      if (k === 'lookup') lock(mod, k, mod === dns ? lookupLiteral : lookupLiteralAsync);
+      else lock(mod, k, k === 'Resolver' ? deny : d);
+    }
+  }
   lock(globalThis, 'fetch', denyAsync);
   for (const k of ['WebSocket', 'EventSource']) if (k in globalThis) lock(globalThis, k, deny);
 }
