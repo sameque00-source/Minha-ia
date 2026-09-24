@@ -124,6 +124,7 @@ class MissionManager {
 
   /** Encerramento imediato (2º Ctrl+C / morte da CLI): SIGKILL em todos os grupos. */
   killAll() {
+    this.drainQueue();
     for (const [id, entry] of this.running) {
       entry.killed = true; // o exit que chegar depois não reescreve o status nem duplica 'finished'
       clearTimeout(entry.timer);
@@ -253,7 +254,7 @@ class MissionManager {
     });
     const pipeLog = (stream, level) => stream.on('data', (d) => {
       const text = String(d).trim();
-      if (text && !finished) this.safeRecord(id, 'log', { level, text: text.slice(0, 4000) });
+      if (text && !finished && !entry.killed) this.safeRecord(id, 'log', { level, text: text.slice(0, 4000) });
     });
     pipeLog(child.stdout, 'stdout');
     pipeLog(child.stderr, 'stderr');
@@ -301,11 +302,16 @@ class MissionManager {
     return store.get(id);
   }
 
-  shutdown() {
+  /** Missões na fila viram INTERROMPIDA (nunca chegaram a rodar; podem ser iniciadas de novo). */
+  drainQueue() {
     for (const q of this.queue.splice(0)) {
       store.update(q.id, { status: 'INTERROMPIDA', finishedAt: new Date().toISOString(), reason: 'servidor encerrado com a missão na fila' });
       this.safeRecord(q.id, 'finished', { status: 'INTERROMPIDA', reason: 'servidor encerrado com a missão na fila' });
     }
+  }
+
+  shutdown() {
+    this.drainQueue();
     for (const id of [...this.running.keys()]) this.terminate(id, 'INTERROMPIDA', 'servidor encerrado durante a execução');
   }
 }

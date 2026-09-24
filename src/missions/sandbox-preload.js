@@ -21,19 +21,20 @@ if (process.env.MINHAIA_SANDBOX_ALLOW_NETWORK !== '1') {
   const net = require('net');
   // lookup só resolve IP literal (e localhost) localmente, sem consulta: mantém
   // server.listen(porta, '127.0.0.1') funcionando; qualquer nome real é negado.
-  const literal = (host) => {
-    const h = host === 'localhost' ? '127.0.0.1' : String(host);
+  const literal = (host, opts) => {
+    const family6 = opts === 6 || (opts && typeof opts === 'object' && opts.family === 6);
+    const h = host === 'localhost' ? (family6 ? '::1' : '127.0.0.1') : String(host);
     const family = net.isIP(h);
     return family ? { address: h, family } : null;
   };
   const lookupLiteral = function lookup(host, opts, cb) {
     if (typeof opts === 'function') { cb = opts; opts = {}; }
-    const r = literal(host);
+    const r = literal(host, opts);
     if (!r || typeof cb !== 'function') deny();
     process.nextTick(() => (opts && opts.all ? cb(null, [r]) : cb(null, r.address, r.family)));
   };
   const lookupLiteralAsync = async function lookup(host, opts) {
-    const r = literal(host);
+    const r = literal(host, opts);
     if (!r) return denyAsync();
     return opts && opts.all ? [r] : r;
   };

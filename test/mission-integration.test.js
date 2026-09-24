@@ -142,6 +142,7 @@ for (const [scenario, check] of [
     const run = exec.find((e) => e.type === 'tool' && e.tool === 'executarComando');
     assert.ok(run && !run.ok, 'consulta DNS a partir do código gerado precisa falhar');
     assert.match(`${run.stderr} ${run.error}`, /ERR_MINHAIA_NETWORK_DENIED/);
+    assert.match(String(run.stdout), /DNS_NEGADOS=2/, 'resolveTxt e lookup precisam ser negados');
   }],
   ['python', (exec) => {
     const sb = exec.find((e) => e.type === 'sandbox');
