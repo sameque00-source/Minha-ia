@@ -2,6 +2,8 @@
 /vendor/
 /.claude/agents/
 /.claude/skills/
+/.sync-staging/
+*.sync-old/
 
 # Estado de runtime (memória, missões, logs, telemetria)
 /data/

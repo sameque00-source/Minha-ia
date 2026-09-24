@@ -46,10 +46,36 @@ const paths = {
   SECRETS_ENV: path.join(ROOT, '.secrets', '.env'),
 };
 
-/** true se `target` está dentro de `dir` (ou é o próprio), comparando caminhos reais. */
+/** true se `target` está dentro de `dir` (ou é o próprio). Compara os caminhos como escritos. */
 function isInside(target, dir) {
   const rel = path.relative(dir, target);
   return rel === '' || (!rel.startsWith('..') && !path.isAbsolute(rel));
 }
 
-module.exports = { paths, resolveMasterDir, requireMasterDir, isInside };
+/** Resolve symlinks do ancestral existente mais profundo (o restante do caminho ainda não existe). */
+function realish(p) {
+  let cur = path.resolve(p);
+  const tail = [];
+  while (!fs.existsSync(cur) && path.dirname(cur) !== cur) { tail.unshift(path.basename(cur)); cur = path.dirname(cur); }
+  try { cur = fs.realpathSync(cur); } catch { /* mantém */ }
+  return path.join(cur, ...tail);
+}
+
+const PROVIDER_KEYS = ['GROQ_API_KEY', 'GOOGLE_API_KEY', 'OPENROUTER_API_KEY', 'NINEROUTER_API_KEY'];
+
+/**
+ * Nomes de variáveis com valor não vazio em .secrets/.env (nunca os valores). Usa o mesmo
+ * formato que o gateway do MASTER lê (`gateway/providers.js`: `CHAVE=valor`, sem `export`),
+ * para não declarar "configurada" uma chave que o gateway não carregaria.
+ */
+function secretNames() {
+  if (!fs.existsSync(paths.SECRETS_ENV)) return new Set();
+  const names = new Set();
+  for (const line of fs.readFileSync(paths.SECRETS_ENV, 'utf8').split(/\r?\n/)) {
+    const m = line.match(/^([^#=]+)=(.*)$/);
+    if (m && /^[A-Z0-9_]+$/.test(m[1].trim()) && m[2].trim()) names.add(m[1].trim());
+  }
+  return names;
+}
+
+module.exports = { paths, resolveMasterDir, requireMasterDir, isInside, realish, secretNames, PROVIDER_KEYS };

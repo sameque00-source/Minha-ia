@@ -16,6 +16,7 @@
     "verify": "node bin/minhaia.js verify",
     "doctor": "node bin/minhaia.js doctor",
     "test": "node --test --test-concurrency=1 \"test/**/*.test.js\"",
-    "test:master": "node bin/minhaia.js test-master"
+    "test:master": "node bin/minhaia.js test-master",
+    "pretest": "node bin/minhaia.js sync"
   }
 }

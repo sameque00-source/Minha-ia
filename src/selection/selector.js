@@ -1,9 +1,13 @@
 const fs = require('fs');
 const path = require('path');
-const { paths } = require('../config');
+const { paths, secretNames } = require('../config');
 const registry = require('../registry');
 
-const PROVIDER_KEY = { groq: 'GROQ_API_KEY', google: 'GOOGLE_API_KEY', openrouter: 'OPENROUTER_API_KEY', '9router': 'NINEROUTER_API_KEY' };
+// Nomes de provedor exatamente como em catalog/models.json → variável lida por gateway/providers.js.
+const PROVIDER_KEY = { Groq: 'GROQ_API_KEY', 'Google AI Studio': 'GOOGLE_API_KEY', OpenRouter: 'OPENROUTER_API_KEY', '9Router': 'NINEROUTER_API_KEY' };
+
+// Papéis que só revisam/vetam — nunca são "o executor" da tarefa.
+const REVIEW_ONLY = new Set(['reviewer', 'security', 'security-auditor', 'queen-coordinator', 'coordinator']);
 
 // Complementa `sugerirComposicaoPorObjetivo` (motor, router/core/composicao-agentes.js).
 // O motor cobre 6 papéis, mas usa radicais com \b final (ex.: /\b(arquitetur)\b/), que nunca
@@ -32,17 +36,18 @@ const EXTRA_AGENT_PATTERNS = {
   integration: /\b(integra\w+|contrato entre|frontend e backend)\b/,
   mcp: /\b(mcp|model context protocol)\b/,
   swarm: /\b(swarm|enxame|hive.?mind|ruflo|claude-flow)\b/,
-  'security-auditor': /\b(auditoria|varredura de seguran[cç]a|pentest)\b/,
+  'security-auditor': /\b(auditori\w*|audit\w*|varredura\w*|pentest\w*)/,
 };
 
 // Nível 1 usa um único executor: o agente mais específico que casou vence o genérico.
 const EXECUTOR_PRIORITY = [
   'swarm', 'mcp', 'hooks', '3d', 'cli', 'integration', 'backend', 'frontend', 'devops', 'debugger',
   'performance', 'optimizer', 'seo', 'uiux', 'docs', 'memory', 'research', 'architecture', 'coding',
-  'testing', 'security-auditor',
+  'testing',
 ];
 
-const SENSITIVE =/\b(autentica\w*|senha|token|credencia\w*|permiss\w+|pagamento\w*|dinheiro|dado pessoal|lgpd|segredo|secret|jwt|oauth)\b/;
+// Aplicado ao texto sem acentos. Conservador de propósito: falso positivo só acrescenta revisão.
+const SENSITIVE = /\b(autentic\w*|autoriza\w*|login\w*|senha\w*|token\w*|credencia\w*|permiss\w*|pagamento\w*|pagar|dinheiro|financ\w*|dados? pessoa\w*|lgpd|gdpr|segredo\w*|secret\w*|jwt|oauth\w*|api[ _-]?keys?|chaves?|cartao\w*|criptograf\w*|sessao|sessoes|cookie\w*)/;
 
 // Ponte PT→EN: as descrições das Skills do MASTER são majoritariamente em inglês.
 const PT_EN = {
@@ -75,13 +80,6 @@ function loadVendor(rel) {
   const f = path.join(paths.VENDOR_DIR, rel);
   if (!fs.existsSync(f)) throw new Error(`módulo do MASTER não sincronizado: ${rel} — rode \`minhaia sync\``);
   return require(f);
-}
-
-function configuredProviderKeys() {
-  if (!fs.existsSync(paths.SECRETS_ENV)) return new Set();
-  const names = fs.readFileSync(paths.SECRETS_ENV, 'utf8').split(/\r?\n/)
-    .map((l) => l.match(/^([A-Z0-9_]+)=(.+)$/)).filter(Boolean).map((m) => m[1]);
-  return new Set(names);
 }
 
 /** Ranqueia Skills por sobreposição de termos com nome/descrição; "Skip when" penaliza. */
@@ -133,17 +131,19 @@ function select(task, { maxSkills = 5 } = {}) {
   }
   let agents = Object.keys(reasons);
   if (cls.level === 1 && agents.length > 1) {
-    // nível 1 = sem equipe (regra 10): 1 executor + security se tocar dado sensível
-    const executor = EXECUTOR_PRIORITY.find((a) => agents.includes(a)) || agents[0];
-    agents = [...new Set([executor, ...(sensitive ? ['security'] : [])])];
+    // nível 1 = sem equipe (regra 10): um único executor — mas a redução nunca remove quem
+    // tem veto (governança da regra 10 §3/§4 vale em qualquer nível).
+    const executor = EXECUTOR_PRIORITY.find((a) => agents.includes(a)) || null;
+    const vetoHolders = agents.filter((id) => agentsAll.find((a) => a.id === id).veto);
+    agents = [...new Set([executor, ...vetoHolders].filter(Boolean))];
   }
 
   const skills = cls.level === 0 ? [] : rankSkills(task, registry.loadSkills(), cls.level === 1 ? Math.min(3, maxSkills) : maxSkills);
 
-  const primary = agentsAll.find((a) => a.id === agents.find((x) => !['queen-coordinator', 'coordinator', 'reviewer', 'security'].includes(x)));
+  const primary = agentsAll.find((a) => a.id === agents.find((x) => !REVIEW_ONLY.has(x)));
   const tipoTarefa = primary && primary.scoringType ? primary.scoringType : (cls.level >= 3 ? 'raciocinio' : 'texto');
   const decisao = router.decidirModelo({ tipoTarefa, complexidade: cls.level, precisaVisao: (cls.modality || []).includes('vision') });
-  const keys = configuredProviderKeys();
+  const keys = secretNames();
   const model = {
     tipoTarefa,
     motivo: decisao.motivo,

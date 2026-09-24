@@ -64,6 +64,7 @@ Re-sync não apaga memória; `test-master` e os testes redirecionam para diretó
 | `windows-aiorch-path` (9×) | `require('C:/Users/Administrator/...')` impedia o motor de rodar fora daquela máquina |
 | `windows-audio-env-path` | mesma causa em `multimidia/core/audio.js` |
 | `gateway-bind-loopback` | original escutava em todas as interfaces, com auth desligada sem `GATEWAY_API_KEY` |
+| `gateway-noauth-host-check` | sem chave, qualquer página/processo local podia usar a cota; passa a exigir `Host` de loopback |
 | `gateway-log-redaction` | log gravava corpo de erro de provedor sem redação |
 | `extra-specialists` | registro do motor tinha 19 de 25 agentes |
 
@@ -77,6 +78,23 @@ definitiva continua sendo do Planejador (LLM) durante a missão.
 
 Sem chave de provedor, `run` retorna `BLOQUEADO` com o motivo; não há provedor/agente simulado
 fora de `test/`.
+
+## ADR-07 — Revisão com veto antes de concluir a etapa
+
+`reviewer` e `security` (personas do MASTER) revisaram a fundação de forma independente e
+**ambos vetaram** a 1ª versão. Achados corrigidos: guard baseado em lista de bloqueio contornável
+(cwd, glob, variáveis, interpretadores) → lista de permissão + fail-closed; `Bash(cat:*)`
+contornava a negação de leitura de segredos; guard sem autoproteção; lacunas em padrões
+destrutivos; sync não atômico e sem checagem de symlink; `verify` aprovando sem `git`, com HEAD
+diferente ou com arquivos/links estranhos; seletor removendo `reviewer`/`security` no nível 1 e
+vocabulário sensível estreito; `resume` aceitando texto livre como objetivo; mapa
+provedor→chave com nomes errados; gateway sem auth aceitando qualquer `Host`.
+
+## ADR-08 — Hook é defesa em profundidade
+
+O hook reduz acidentes do agente, mas não é sandbox. A proteção forte do MASTER é o sistema
+operacional (clone somente leitura). Não foi aplicada aqui porque alterar permissões do MASTER é
+decisão do dono.
 
 ## Conflitos encontrados no MASTER (registrados, não alterados)
 

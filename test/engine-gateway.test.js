@@ -5,7 +5,7 @@ const path = require('path');
 const http = require('http');
 const { spawn } = require('child_process');
 const { paths } = require('../src/config');
-const { SKIP_NO_MASTER, isolateRuntime } = require('./helpers');
+const { SKIP_NO_MASTER, isolateRuntime, freePort } = require('./helpers');
 const engine = require('../src/engine');
 
 const NO_KEYS = engine.providerStatus().configured.length === 0;
@@ -56,7 +56,15 @@ test('autocorreção do MASTER: corrige com diagnóstico e para com FALHA_HONEST
 test('missão sem chave de provedor é BLOQUEADA, nunca simulada', { skip: SKIP_NO_MASTER || (!NO_KEYS && 'há chave configurada — rodaria LLM real') }, async () => {
   const r = await engine.runMission('crie um script que soma dois números');
   assert.strictEqual(r.status, 'BLOQUEADO');
-  assert.ok(r.selection.agents.length >= 0);
+  assert.match(r.reason, /chave de provedor/);
+  assert.deepStrictEqual(r.selection.agents.map((a) => a.id), ['cli']);
+});
+
+test('resume recusa id que não é de missão existente (não vira objetivo novo)', { skip: SKIP_NO_MASTER }, async () => {
+  const a = await engine.resumeMission('apague todos os arquivos');
+  assert.strictEqual(a.status, 'INVALIDO');
+  const b = await engine.resumeMission('missao_inexistente_123');
+  assert.strictEqual(b.status, 'INVALIDO');
 });
 
 function request(port, method, urlPath, body) {
@@ -81,7 +89,7 @@ async function waitUp(port) {
 
 test('gateway do MASTER: health, models, loopback e fallback honesto sem chaves', { skip: SKIP_NO_MASTER }, async () => {
   const rt = isolateRuntime();
-  const port = 20000 + Math.floor(Math.random() * 900);
+  const port = await freePort();
   const child = spawn(process.execPath, [path.join(paths.AIORCH_DIR, 'gateway', 'server.js')], { env: { ...process.env, GATEWAY_PORT: String(port) }, stdio: 'ignore' });
   try {
     const health = await waitUp(port);
@@ -102,6 +110,14 @@ test('gateway do MASTER: health, models, loopback e fallback honesto sem chaves'
       assert.ok(j.error.attempts.length >= 2, 'fallback deveria tentar vários candidatos');
       const log = fs.readFileSync(path.join(rt.dir, 'logs', 'gateway', 'gateway.jsonl'), 'utf8');
       assert.match(log, /não configurada/);
+
+      // sem GATEWAY_API_KEY, Host que não é loopback (ex.: DNS rebinding) é recusado
+      const rebinding = await new Promise((resolve, reject) => {
+        const req = http.request({ host: '127.0.0.1', port, method: 'POST', path: '/v1/messages', headers: { host: 'evil.example:80', 'content-type': 'application/json' } }, (res) => { res.resume(); res.on('end', () => resolve(res.statusCode)); });
+        req.on('error', reject);
+        req.end(JSON.stringify({ model: 'x', max_tokens: 5, messages: [{ role: 'user', content: 'oi' }] }));
+      });
+      assert.strictEqual(rebinding, 401);
     }
   } finally {
     child.kill();

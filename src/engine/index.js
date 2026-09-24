@@ -1,9 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const { paths } = require('../config');
+const { paths, secretNames, PROVIDER_KEYS } = require('../config');
 const { select } = require('../selection/selector');
-
-const PROVIDER_KEYS = ['GROQ_API_KEY', 'GOOGLE_API_KEY', 'OPENROUTER_API_KEY', 'NINEROUTER_API_KEY'];
 
 function engine(rel) {
   const f = path.join(paths.ENGINE_DIR, rel);
@@ -13,14 +11,15 @@ function engine(rel) {
 
 /** Nomes das chaves de provedor configuradas em .secrets/.env (nunca os valores). */
 function providerStatus() {
-  const configured = new Set();
-  if (fs.existsSync(paths.SECRETS_ENV)) {
-    for (const line of fs.readFileSync(paths.SECRETS_ENV, 'utf8').split(/\r?\n/)) {
-      const m = line.match(/^([A-Z0-9_]+)=(.+)$/);
-      if (m && PROVIDER_KEYS.includes(m[1])) configured.add(m[1]);
-    }
-  }
-  return { secretsFile: fs.existsSync(paths.SECRETS_ENV), configured: [...configured], missing: PROVIDER_KEYS.filter((k) => !configured.has(k)) };
+  const names = secretNames();
+  const configured = PROVIDER_KEYS.filter((k) => names.has(k));
+  return { secretsFile: fs.existsSync(paths.SECRETS_ENV), configured, missing: PROVIDER_KEYS.filter((k) => !names.has(k)), gatewayKey: names.has('GATEWAY_API_KEY') };
+}
+
+function blockedWithoutProvider() {
+  const providers = providerStatus();
+  if (providers.configured.length > 0) return null;
+  return `nenhuma chave de provedor em ${path.relative(paths.ROOT, paths.SECRETS_ENV)} (${PROVIDER_KEYS.join(', ')}) — o Planejador precisa de LLM real`;
 }
 
 /**
@@ -31,14 +30,8 @@ function providerStatus() {
  */
 async function runMission(objective, { log = () => {} } = {}) {
   const selection = select(objective);
-  const providers = providerStatus();
-  if (providers.configured.length === 0) {
-    return {
-      status: 'BLOQUEADO',
-      reason: `nenhuma chave de provedor em ${path.relative(paths.ROOT, paths.SECRETS_ENV)} (${PROVIDER_KEYS.join(', ')}) — o Planejador precisa de LLM real`,
-      selection,
-    };
-  }
+  const blocked = blockedWithoutProvider();
+  if (blocked) return { status: 'BLOQUEADO', reason: blocked, selection };
   const { Executor } = engine('executor/executor.js');
   log(`[engine] nível ${selection.classification.level}; agentes sugeridos: ${selection.agents.map((a) => a.id).join(', ') || '(nenhum)'}`);
   const r = await new Executor().executarMissaoCompleta(objective);
@@ -51,9 +44,15 @@ async function runMission(objective, { log = () => {} } = {}) {
   };
 }
 
+/** Só retoma missão existente: o Executor trataria um texto qualquer como objetivo novo. */
 async function resumeMission(missionId) {
+  if (!/^missao_[A-Za-z0-9_-]+$/.test(String(missionId))) return { status: 'INVALIDO', reason: `id de missão inválido: "${missionId}" (esperado missao_...)` };
+  if (!listMissions().some((m) => m.id === missionId)) return { status: 'INVALIDO', reason: `missão ${missionId} não encontrada em data/missions` };
+  const blocked = blockedWithoutProvider();
+  if (blocked) return { status: 'BLOQUEADO', reason: blocked, missionId };
   const { Executor } = engine('executor/executor.js');
-  return new Executor().executarMissaoCompleta(missionId);
+  const r = await new Executor().executarMissaoCompleta(missionId);
+  return { status: r.ok ? 'CONCLUIDA' : 'FALHA', missionId, state: r.missao ? r.missao.estado : null, events: r.eventos };
 }
 
 function listMissions() {

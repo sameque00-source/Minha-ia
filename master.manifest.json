@@ -81,6 +81,15 @@
       "reason": "Segurança: o original escuta em todas as interfaces e desliga a auth quando GATEWAY_API_KEY não existe. Passa a escutar só em loopback por padrão."
     },
     {
+      "id": "gateway-noauth-host-check",
+      "source": "ai-orchestrator",
+      "file": "gateway/server.js",
+      "find": "if (!GATEWAY_KEY) return true;",
+      "replaceWith": "if (!GATEWAY_KEY) return /^(127\\.0\\.0\\.1|localhost|\\[::1\\])(:\\d+)?$/.test(String(req.headers.host || ''));",
+      "expectCount": 1,
+      "reason": "Segurança: sem GATEWAY_API_KEY o original aceita qualquer requisição. Passa a exigir Host de loopback (mitiga DNS rebinding); com chave, a auth original vale."
+    },
+    {
       "id": "gateway-log-redaction",
       "source": "ai-orchestrator",
       "file": "gateway/server.js",

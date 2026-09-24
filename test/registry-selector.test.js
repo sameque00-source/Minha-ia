@@ -36,11 +36,21 @@ test('nível 0 não aciona agentes nem Skills', { skip: SKIP_NO_MASTER }, () => 
   assert.deepStrictEqual(r.skills, []);
 });
 
-test('tarefa sensível exige security; nível 1 usa um executor específico', { skip: SKIP_NO_MASTER }, () => {
+test('tarefa sensível exige security e reviewer; nível 1 usa um executor específico e mantém vetos', { skip: SKIP_NO_MASTER }, () => {
   const r = select('crie uma API REST com autenticação JWT e testes');
-  assert.deepStrictEqual(r.agents.map((a) => a.id), ['backend', 'security']);
+  assert.deepStrictEqual(r.agents.map((a) => a.id), ['backend', 'testing', 'security', 'reviewer']);
   assert.strictEqual(r.governance.securityRequired, true);
+  assert.strictEqual(r.governance.reviewerRequired, true);
 });
+
+for (const task of ['corrija o bug no endpoint de pagamento', 'revise a segurança do login com senhas', 'troque os tokens de api da integração', 'guarde as chaves em um cofre']) {
+  test(`alto risco sempre com reviewer + security: "${task}"`, { skip: SKIP_NO_MASTER }, () => {
+    const r = select(task);
+    assert.ok(r.classification.level >= 1);
+    assert.strictEqual(r.governance.reviewerRequired, true);
+    assert.strictEqual(r.governance.securityRequired, true);
+  });
+}
 
 test('nível ≥3 traz planejamento, revisão com veto e consolidação', { skip: SKIP_NO_MASTER }, () => {
   const r = select('refatore a arquitetura do sistema inteiro de pagamentos com migração de banco e revisão de segurança');

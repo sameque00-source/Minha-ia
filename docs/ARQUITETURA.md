@@ -120,13 +120,32 @@ Sessão Claude Code: ferramentas nativas + MCP.
 
 ## 12. Segurança
 
-- MASTER: nunca executado no lugar; `sync` só lê; destino fora do MinhaIA ou dentro do MASTER é
-  recusado; symlinks do MASTER não são seguidos; cópias são arquivos (nunca symlink para o MASTER).
-- Hook `guard`: bloqueia escrita no MASTER (arquivo e Bash), edição de cópias geradas,
-  gravação de conteúdo com segredo e comandos destrutivos. `settings.json` nega leitura de
-  `.env`/`.secrets`/chaves SSH e acesso remoto.
-- Gateway: bind em 127.0.0.1 (patch) e log com redação (patch).
-- Segredos só em `.secrets/.env` (gitignored); `providerStatus` expõe só nomes, nunca valores.
+- MASTER: nunca executado no lugar; `sync` só lê, recusa MASTER com alterações locais, recusa
+  destino fora do MinhaIA, dentro do MASTER (também após resolver symlinks) ou que atravesse
+  symlink; é atômico (monta em staging e troca — falha deixa a instalação anterior intacta);
+  symlinks do MASTER não são seguidos; cópias são arquivos, nunca symlink para o MASTER.
+- `verify`: falha se `git status` do MASTER não puder rodar ou não estiver limpo, se o HEAD mudou,
+  se houver cópia alterada/ausente, arquivo extra nos destinos gerados ou link de runtime desviado.
+- Hook `guard` (PreToolUse, fail-closed) — **defesa em profundidade, não sandbox**:
+  - Bash que referencia o MASTER (texto, caminho, `cwd`, glob/variável/substituição ambígua) só
+    passa se todos os segmentos forem comandos de leitura de uma lista de permissão
+    (`ls`, `cat`, `grep`, `git status|log|diff|show`…); interpretadores (`node -e`, `python -c`),
+    `find -delete`, `npm --prefix`, redirecionamentos e `ln` são bloqueados.
+  - Qualquer Bash que toque `.secrets`/`.env`/`ai-orchestrator/config` é bloqueado; escrita com
+    padrão de segredo é bloqueada; `.secrets/` é gravado só pelo humano.
+  - Autoproteção: `settings*.json`, `.claude/hooks/`, `src/security/`, `src/config.js` só com
+    `MINHAIA_ALLOW_PROTECTED_EDIT=1` no ambiente em que o humano iniciou o Claude Code.
+  - Destrutivos: `rm -r` em alvo raiz/home/pai/glob/variável/dados, push forçado (inclui `+ref`),
+    `reset --hard`, `clean -f`, `find -delete`, acesso remoto.
+  - Limite conhecido: um symlink para o MASTER criado **fora** do Claude e usado depois em Bash não
+    é resolvido pelo hook. Proteção forte recomendada (decisão do dono do MASTER, não aplicada
+    aqui): tornar o clone do MASTER somente leitura no SO (`chmod -R a-w` ou montagem read-only).
+- `settings.json`: nega leitura de `.env`/`.secrets`/chaves SSH, escrita em `.secrets`, acesso
+  remoto; `cat` não é pré-aprovado (evita contornar os bloqueios de leitura).
+- Gateway: bind em 127.0.0.1, sem `GATEWAY_API_KEY` só aceita `Host` de loopback (anti DNS
+  rebinding), log com redação — 3 patches; `minhaia gateway` recusa host não-loopback sem chave.
+- Segredos só em `.secrets/.env` (gitignored); `providerStatus` expõe só nomes, nunca valores, e
+  lê no mesmo formato do gateway (`CHAVE=valor`, valor não vazio).
 
 ## 13. Observabilidade
 
@@ -142,8 +161,11 @@ Painel/agregação: **não implementado** (seção 20).
 
 ## 14. Testes e quality gates
 
-- `npm test` — 35 testes da MinhaIA (sync/lock/verify, registros, seletor, hooks, redação,
-  memória, autocorreção, missão bloqueada sem chave, gateway real). Estado isolado em tmp.
+- `npm test` — 78 testes da MinhaIA (`pretest` roda `sync`): sync/lock/verify (incl. atomicidade,
+  intruso, link desviado), registros, seletor (governança de alto risco), 50 casos do guard
+  (bypasses reais da revisão de segurança), redação, memória, autocorreção, missão/resume
+  bloqueados sem chave, gateway real (loopback, fallback, anti-rebinding). Estado isolado em tmp,
+  restaurado também em SIGINT/SIGTERM.
 - `minhaia test-master` — as 8 suítes originais do MASTER contra a cópia vendorizada, estado isolado.
 - Gates antes de concluir etapa: `npm test` verde · `minhaia verify` OK · revisão `reviewer` +
   `security` sem veto · nenhum segredo (hook + redação).

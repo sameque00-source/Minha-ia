@@ -46,6 +46,47 @@ test('verify detecta cópia adulterada fora do sync', { skip: SKIP_NO_MASTER }, 
   }
 });
 
+test('verify detecta arquivo intruso nos destinos gerados', { skip: SKIP_NO_MASTER }, () => {
+  const intruder = path.join(paths.CLAUDE_AGENTS_DIR, 'intruso-teste.md');
+  try {
+    fs.writeFileSync(intruder, 'x');
+    const r = require('../src/master/verify').verify();
+    assert.ok(r.unexpectedLocal.includes('.claude/agents/intruso-teste.md'));
+    assert.strictEqual(r.ok, false);
+  } finally {
+    fs.rmSync(intruder, { force: true });
+  }
+});
+
+test('verify detecta link de runtime desviado', { skip: SKIP_NO_MASTER }, () => {
+  const { isolateRuntime } = require('./helpers');
+  const rt = isolateRuntime();
+  try {
+    const r = require('../src/master/verify').verify();
+    assert.ok(r.badLinks.length > 0);
+    assert.strictEqual(r.ok, false);
+  } finally {
+    rt.restore();
+  }
+  assert.strictEqual(require('../src/master/verify').verify().ok, true);
+});
+
+test('sync com patch inconsistente aborta sem tocar a instalação atual', { skip: SKIP_NO_MASTER }, () => {
+  const original = fs.readFileSync(paths.MANIFEST_PATH, 'utf8');
+  const lockBefore = fs.readFileSync(paths.LOCK_PATH, 'utf8');
+  try {
+    const m = JSON.parse(original);
+    m.patches[0].expectCount = 999;
+    fs.writeFileSync(paths.MANIFEST_PATH, JSON.stringify(m));
+    assert.throws(() => require('../src/master/sync').sync(), /esperado 999/);
+  } finally {
+    fs.writeFileSync(paths.MANIFEST_PATH, original);
+  }
+  assert.strictEqual(fs.readFileSync(paths.LOCK_PATH, 'utf8'), lockBefore);
+  assert.strictEqual(require('../src/master/verify').verify().ok, true);
+  assert.ok(!fs.existsSync(path.join(paths.ROOT, '.sync-staging')));
+});
+
 test('estado de runtime é link para data/, nunca diretório dentro de vendor/', { skip: SKIP_NO_MASTER }, () => {
   const memDir = path.join(paths.ENGINE_DIR, 'memoria', 'dados');
   assert.ok(fs.lstatSync(memDir).isSymbolicLink());

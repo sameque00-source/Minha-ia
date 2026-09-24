@@ -103,7 +103,8 @@ const commands = {
   async resume() {
     if (!args[0]) throw new Error('uso: minhaia resume <missao_id>');
     const r = await require('../src/engine').resumeMission(args[0]);
-    out(r, `${r.ok ? 'CONCLUIDA' : 'FALHA'} — ${r.missao ? r.missao.estado : 'missão não encontrada'}`);
+    out(r, `${r.status}${r.reason ? `: ${r.reason}` : ''}${r.state ? ` — ${r.state}` : ''}`);
+    process.exitCode = r.status === 'CONCLUIDA' ? 0 : 1;
   },
 
   missions() {
@@ -130,6 +131,11 @@ const commands = {
     const server = path.join(paths.AIORCH_DIR, 'gateway', 'server.js');
     if (!fs.existsSync(server)) throw new Error('gateway não sincronizado — rode `minhaia sync`');
     const port = flagValue('--port', process.env.GATEWAY_PORT || '20130');
+    const host = process.env.GATEWAY_HOST || '127.0.0.1';
+    const loopback = ['127.0.0.1', 'localhost', '::1'].includes(host);
+    if (!loopback && !require('../src/engine').providerStatus().gatewayKey) {
+      throw new Error(`GATEWAY_HOST=${host} expõe o gateway fora da máquina; defina GATEWAY_API_KEY em .secrets/.env antes`);
+    }
     const child = spawn(process.execPath, [server], { stdio: 'inherit', env: { ...process.env, GATEWAY_PORT: port } });
     child.on('exit', (code) => { process.exitCode = code || 0; });
   },
@@ -139,6 +145,9 @@ const commands = {
     const { createRuntimeLinks } = require('../src/master/sync');
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'minhaia-test-master-'));
     const results = [];
+    const restore = () => { createRuntimeLinks(); fs.rmSync(tmp, { recursive: true, force: true }); };
+    const onSignal = (sig) => { restore(); process.kill(process.pid, sig); };
+    for (const sig of ['SIGINT', 'SIGTERM', 'SIGHUP']) process.once(sig, onSignal);
     createRuntimeLinks(undefined, { dataRoot: tmp });
     try {
       for (const s of suites) {
@@ -150,11 +159,12 @@ const commands = {
         results.push({ suite: s, passed: m ? Number(m[1]) : 0, total: m ? Number(m[2]) : null, exit: r.status, failed, crash: m ? null : text.split('\n').find((l) => /Error/.test(l)) || 'sem resumo' });
       }
     } finally {
-      createRuntimeLinks();
-      fs.rmSync(tmp, { recursive: true, force: true });
+      for (const sig of ['SIGINT', 'SIGTERM', 'SIGHUP']) process.removeListener(sig, onSignal);
+      restore();
     }
     const passed = results.reduce((n, r) => n + r.passed, 0);
     const total = results.reduce((n, r) => n + (r.total || 0), 0);
+    process.exitCode = results.every((r) => r.total !== null && r.passed === r.total) ? 0 : 1;
     out({ passed, total, results }, results.map((r) => `${r.suite}: ${r.total === null ? `ERRO (${r.crash})` : `${r.passed}/${r.total}`}${r.failed.length ? `\n    ${r.failed.join('\n    ')}` : ''}`).join('\n') + `\nTOTAL ${passed}/${total} (estado isolado em diretório temporário, já removido)`);
   },
 
@@ -175,8 +185,9 @@ const commands = {
 };
 
 (async () => {
-  const fn = commands[cmd || 'help'];
-  if (!fn) { commands.help(); process.exitCode = 2; return; }
+  const name = cmd || 'help';
+  if (!Object.hasOwn(commands, name)) { commands.help(); process.exitCode = 2; return; }
+  const fn = commands[name];
   try {
     await fn();
   } catch (e) {
