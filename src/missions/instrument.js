@@ -177,14 +177,45 @@ function sanitizeNodeArgs(args, ws) {
   return { args: [real, ...a.slice(1)] };
 }
 
+const NETWORK_PRELOAD = path.join(__dirname, 'sandbox-preload.js');
+
+/**
+ * Link simbólico ou hardlink dentro do workspace seria seguido pelo código confinado (limitação
+ * do modelo de permissões): o workspace precisa conter só arquivos e diretórios comuns.
+ */
+function findWorkspaceLink(ws, limit = 5000) {
+  let seen = 0;
+  const stack = [ws];
+  while (stack.length) {
+    const dir = stack.pop();
+    for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (++seen > limit) return `workspace com mais de ${limit} entradas`;
+      const abs = path.join(dir, ent.name);
+      const st = fs.lstatSync(abs);
+      if (st.isSymbolicLink()) return `link simbólico ${path.relative(ws, abs)}`;
+      if (st.isDirectory()) stack.push(abs);
+      else if (st.isFile() && st.nlink > 1) return `hardlink ${path.relative(ws, abs)}`;
+    }
+  }
+  return null;
+}
+
 function sandboxCommand(missaoId, comando, args) {
   const base = path.basename(String(comando || '')).replace(/\.exe$/i, '');
   if (base === 'node' || comando === process.execPath) {
     const { garantirWorkspace } = engineModule('executor/core/workspace.js');
     const ws = fs.realpathSync(garantirWorkspace(missaoId));
+    const link = findWorkspaceLink(ws);
+    if (link) return { denied: `sandbox recusou executar: ${link} no workspace (poderia apontar para fora dele)` };
     const s = sanitizeNodeArgs(args, ws);
     if (s.denied) return { denied: s.denied };
-    return { comando: process.execPath, args: [PERMISSION_FLAG, `--allow-fs-read=${ws}`, `--allow-fs-write=${ws}`, ...s.args], sandboxed: true, workspace: ws };
+    return {
+      comando: process.execPath,
+      args: [PERMISSION_FLAG, `--allow-fs-read=${ws}`, `--allow-fs-read=${NETWORK_PRELOAD}`, `--allow-fs-write=${ws}`, '--require', NETWORK_PRELOAD, ...s.args],
+      sandboxed: true,
+      workspace: ws,
+      network: process.env.MINHAIA_SANDBOX_ALLOW_NETWORK === '1' ? 'liberada (opt-in)' : 'bloqueada',
+    };
   }
   if (process.env.MINHAIA_ALLOW_UNSANDBOXED_COMMANDS === '1') return { comando, args, sandboxed: false };
   return { denied: `executável "${base}" bloqueado pela política de sandbox da MinhaIA: só código Node.js roda, confinado ao workspace da missão. Gere a solução em Node.js puro (built-ins).` };
@@ -203,7 +234,7 @@ function applySandboxPolicy(ferramentas) {
           : { ok: false, erro: d.denied };
         return Promise.resolve(r);
       }
-      bus.emit('sandbox', { tool: name, comando: String(comando), allowed: true, sandboxed: d.sandboxed, workspace: d.workspace || null, unsafe: !d.sandboxed });
+      bus.emit('sandbox', { tool: name, comando: String(comando), allowed: true, sandboxed: d.sandboxed, workspace: d.workspace || null, network: d.network || null, unsafe: !d.sandboxed });
       return orig.call(this, missaoId, d.comando, d.args, opcoes);
     };
   }
@@ -220,4 +251,4 @@ function summarizeArgs(name, args) {
   }
 }
 
-module.exports = { instrument, snapshot, sanitizeNodeArgs };
+module.exports = { instrument, snapshot, sanitizeNodeArgs, sandboxCommand, findWorkspaceLink };

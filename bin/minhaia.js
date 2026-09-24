@@ -41,11 +41,18 @@ async function followMission(startFn) {
       if (e.type === 'finished') resolve(e);
     });
   });
-  const stop = () => { if (id) manager.cancel(id); };
-  process.once('SIGINT', stop);
+  // 1º Ctrl+C cancela (limpo); 2º Ctrl+C, SIGTERM ou SIGHUP matam o grupo e saem já
+  let signals = 0;
+  const stop = (sig) => {
+    signals += 1;
+    if (sig === 'SIGINT' && signals === 1 && id) { try { manager.cancel(id); } catch { /* já terminou */ } return; }
+    manager.killAll();
+    process.exit(130);
+  };
+  for (const sig of ['SIGINT', 'SIGTERM', 'SIGHUP']) process.on(sig, stop);
   id = startFn(manager);
   const fin = await done;
-  process.removeListener('SIGINT', stop);
+  for (const sig of ['SIGINT', 'SIGTERM', 'SIGHUP']) process.removeListener(sig, stop);
   const job = require('../src/missions/store').get(id);
   out(job, `${fin.status}${job.reason ? `: ${job.reason}` : ''} — ${id}${job.engineMissionId ? ` (motor ${job.engineMissionId}: ${job.engineState})` : ''}`);
   process.exitCode = fin.status === 'CONCLUIDA' ? 0 : 1;
@@ -155,11 +162,11 @@ const commands = {
 
   async serve() {
     const port = Number(flagValue('--port', process.env.MINHAIA_PORT || '4317'));
-    const { shutdown, port: actual, host } = await require('../src/server').start({ port });
+    const { shutdown, manager, port: actual, host } = await require('../src/server').start({ port });
     console.log(`MinhaIA em http://${host}:${actual} (somente esta máquina)`);
     let stopping = false;
     const stop = async () => {
-      if (stopping) process.exit(130); // segundo Ctrl+C: sai já
+      if (stopping) { manager.killAll(); process.exit(130); } // segundo Ctrl+C: mata os grupos e sai já
       stopping = true;
       console.log('encerrando: interrompendo missões e fechando conexões…');
       await shutdown();

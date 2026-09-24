@@ -9,7 +9,9 @@ const FALLBACK = [
   /\b(sk-[A-Za-z0-9_-]{10,}|gsk_[A-Za-z0-9]{10,}|AQ\.[A-Za-z0-9_-]{10,}|AKIA[0-9A-Z]{12,}|nr_[A-Za-z0-9_-]{10,})/g,
   // CHAVE=valor / chave: valor, inclusive com prefixo (NINEROUTER_API_KEY=, x-goog-api-key:)
   /[A-Za-z0-9_-]*(password|senha|passwd|token|api[_-]?key|secret)\s*[:=]\s*['"]?[^\s'"]{6,}/gi,
-  /\bBearer\s+[A-Za-z0-9._~+/-]{8,}=*/g,
+  /\bBearer\s+[A-Za-z0-9._~+/-]{6,}=*/g,
+  /\b(gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|xox[abprs]-[A-Za-z0-9-]{10,}|glpat-[A-Za-z0-9_-]{20,})/g,
+  /\beyJ[A-Za-z0-9_-]{8,}\.eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}/g, // JWT
 ];
 
 // Formatos que a memória do MASTER não cobre.

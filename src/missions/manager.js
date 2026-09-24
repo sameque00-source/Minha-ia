@@ -23,13 +23,37 @@ const ENV_ALLOW = new Set([
 function workerEnv() {
   /** @type {NodeJS.ProcessEnv} */
   const env = {};
-  for (const [k, v] of Object.entries(process.env)) if (ENV_ALLOW.has(k) || k.startsWith('MINHAIA_')) env[k] = v;
+  for (const [k, v] of Object.entries(process.env)) {
+    if (!(ENV_ALLOW.has(k) || k.startsWith('MINHAIA_'))) continue;
+    // proxy com usuário:senha na URL não chega ao worker (nem ao código gerado)
+    env[k] = /proxy$/i.test(k) && v ? v.replace(/^([a-z][a-z0-9+.-]*:\/\/)[^@/]*@/i, '$1') : v;
+  }
   return env;
 }
 
+/** Vivo = existe e não é zumbi (zumbi já morreu, só não foi recolhido pelo pai). */
 function alive(pid) {
   if (!pid) return false;
-  try { process.kill(pid, 0); return true; } catch { return false; }
+  try { process.kill(pid, 0); } catch { return false; }
+  try {
+    const stat = fs.readFileSync(`/proc/${pid}/stat`, 'utf8');
+    return stat.slice(stat.lastIndexOf(')') + 2, stat.lastIndexOf(')') + 3) !== 'Z';
+  } catch { return true; } // sem /proc (não-Linux): só o sinal 0 disponível
+}
+
+/** Instante de início do processo (campo 22 de /proc/<pid>/stat) — distingue PID reaproveitado. */
+function procStart(pid) {
+  try {
+    const stat = fs.readFileSync(`/proc/${pid}/stat`, 'utf8');
+    return stat.slice(stat.lastIndexOf(')') + 2).split(' ')[19] || null;
+  } catch { return null; }
+}
+
+/** Mesmo processo de antes? Sem /proc (não-Linux) só o PID pode ser comparado. */
+function sameProcess(pid, start) {
+  if (!alive(pid)) return false;
+  if (!start) return true;
+  return procStart(pid) === start;
 }
 
 /** Mata o grupo de processos do worker (worker + tudo que o motor criou: node do LLM, servidores). */
@@ -69,19 +93,39 @@ class MissionManager {
   }
 
   owner() {
-    return { pid: process.pid, id: this.ownerId };
+    return { pid: process.pid, id: this.ownerId, start: procStart(process.pid) };
   }
 
-  // Jobs ativos de um gerenciador que não existe mais viram INTERROMPIDA (e o grupo de processos
-  // órfão, se sobrou, é encerrado). Jobs de outro gerenciador vivo (ex.: CLI e servidor juntos)
-  // são deixados em paz.
+  // Jobs ativos de um gerenciador que não existe mais viram INTERROMPIDA e o grupo de processos
+  // que sobrou é encerrado. Identidade = PID + instante de início (PID reaproveitado não conta).
+  // Jobs de outro gerenciador vivo (ex.: CLI e servidor juntos) são deixados em paz.
   recoverInterrupted() {
     for (const job of store.list()) {
       if (!ACTIVE.has(job.status)) continue;
       const o = job.owner;
-      if (o && o.pid !== process.pid && alive(o.pid)) continue;
-      if (job.pid && alive(job.pid)) { try { process.kill(process.platform === 'win32' ? job.pid : -job.pid, 'SIGKILL'); } catch { /* ignore */ } }
+      if (o && o.pid !== process.pid && sameProcess(o.pid, o.start)) continue;
+      this.killStaleGroup(job);
       store.update(job.id, { status: 'INTERROMPIDA', finishedAt: new Date().toISOString(), reason: 'o processo que executava a missão terminou (servidor reiniciado ou CLI encerrada)', pid: null });
+      this.safeRecord(job.id, 'finished', { status: 'INTERROMPIDA', reason: 'processo dono terminou' });
+    }
+  }
+
+  /**
+   * Encerra o grupo que sobrou de um worker antigo. Se o líder (worker) morreu, nenhum processo
+   * novo pode ter PGID igual ao PID dele enquanto restarem membros do grupo; se o PID está vivo,
+   * só mata se for o MESMO processo (instante de início igual) — nunca um PID reaproveitado.
+   */
+  killStaleGroup(job) {
+    if (!job.pid || process.platform === 'win32') return;
+    if (alive(job.pid) && !(job.workerStart && procStart(job.pid) === job.workerStart)) return;
+    try { process.kill(-job.pid, 'SIGKILL'); } catch { /* grupo já não existe */ }
+  }
+
+  /** Encerramento imediato (2º Ctrl+C / morte da CLI): SIGKILL em todos os grupos. */
+  killAll() {
+    for (const [id, entry] of this.running) {
+      killGroup(entry.child, 'SIGKILL');
+      store.update(id, { status: 'INTERROMPIDA', finishedAt: new Date().toISOString(), reason: 'encerrado à força', pid: null });
     }
   }
 
@@ -138,10 +182,10 @@ class MissionManager {
     if (ACTIVE.has(job.status)) throw err(409, `missão ${job.status} em outro processo (pid ${job.owner ? job.owner.pid : '?'})`);
     if (resume) {
       if (!RESUMABLE.has(job.status)) throw err(409, `não é possível retomar missão em ${job.status}`);
-      if (!job.engineMissionId) throw err(409, 'missão parou antes de ter estado no motor (antes do plano): crie de novo');
+      if (!job.engineMissionId) throw err(409, 'missão parou antes de ter estado no motor (antes do plano): use iniciar');
       const st = engineMissionState(job.engineMissionId);
-      if (!st || ['CONCLUIDA', 'FALHA'].includes(st)) throw err(409, `estado do motor não permite retomar (${st || 'ausente'})`);
-    } else if (job.status !== 'CRIADA') {
+      if (!st || ['CONCLUIDA', 'FALHA', 'BLOQUEADA'].includes(st)) throw err(409, `estado do motor não permite retomar (${st || 'ausente'})`);
+    } else if (!(job.status === 'CRIADA' || (RESUMABLE.has(job.status) && !job.engineMissionId))) {
       throw err(409, `missão já iniciada (${job.status}); use retomar`);
     }
     if (this.pendingCount() >= this.maxPending) throw err(429, `limite de ${this.maxPending} missões na fila/em execução atingido`);
@@ -166,20 +210,21 @@ class MissionManager {
     const entry = { child, timer: null, killTimer: null, finalStatus: null, reason: null, done: false };
     this.running.set(id, entry);
     let finished = false;
-    const finish = (status, patch = {}) => {
+    const finish = (status, patch = {}, fromDone = false) => {
       if (finished) return;
       finished = true;
       clearTimeout(entry.timer);
       clearTimeout(entry.killTimer);
       killGroup(child, 'SIGKILL'); // nada do grupo sobrevive ao fim da missão
       this.running.delete(id);
-      const finalStatus = entry.finalStatus || status;
+      // conclusão real reportada pelo worker prevalece sobre um cancelamento que chegou depois
+      const finalStatus = fromDone && status === 'CONCLUIDA' ? status : (entry.finalStatus || status);
       const reason = entry.reason || patch.reason || null;
       store.update(id, { status: finalStatus, finishedAt: new Date().toISOString(), pid: null, ...patch, reason });
       this.safeRecord(id, 'finished', { status: finalStatus, reason });
       this.pump();
     };
-    store.update(id, { status: 'EXECUTANDO', startedAt: job.startedAt || new Date().toISOString(), finishedAt: null, pid: child.pid, owner: this.owner() });
+    store.update(id, { status: 'EXECUTANDO', startedAt: job.startedAt || new Date().toISOString(), finishedAt: null, pid: child.pid, workerStart: procStart(child.pid), owner: this.owner() });
     this.record(id, 'started', { resume, pid: child.pid });
 
     child.on('message', (/** @type {any} */ msg) => {
@@ -194,7 +239,7 @@ class MissionManager {
           entry.done = true;
           const o = msg.outcome || {};
           const cur = store.get(id);
-          finish(o.status || 'FALHA', { engineMissionId: o.engineMissionId || cur.engineMissionId, engineState: o.engineState || engineMissionState(o.engineMissionId || cur.engineMissionId) || cur.engineState, reason: o.reason || null });
+          finish(o.status || 'FALHA', { engineMissionId: o.engineMissionId || cur.engineMissionId, engineState: o.engineState || engineMissionState(o.engineMissionId || cur.engineMissionId) || cur.engineState, reason: o.reason || null }, true);
         }
       } catch (e) {
         process.stderr.write(`[minhaia] mensagem do worker descartada (${id}): ${e.message}\n`);
@@ -225,7 +270,9 @@ class MissionManager {
     entry.reason = reason;
     store.update(id, { status: 'CANCELANDO', reason });
     try { entry.child.send({ kind: 'stop', reason }); } catch { /* canal fechado */ }
-    killGroup(entry.child, 'SIGTERM');
+    // primeiro só o worker: o motor para sem "ver" a morte dos comandos (estado fica retomável);
+    // o grupo inteiro morre no fim da missão (finish) ou pelo prazo abaixo
+    try { entry.child.kill('SIGTERM'); } catch { /* já saiu */ }
     entry.killTimer = setTimeout(() => killGroup(entry.child, 'SIGKILL'), 5000);
   }
 
@@ -251,9 +298,10 @@ class MissionManager {
   shutdown() {
     for (const q of this.queue.splice(0)) {
       store.update(q.id, { status: 'INTERROMPIDA', finishedAt: new Date().toISOString(), reason: 'servidor encerrado com a missão na fila' });
+      this.safeRecord(q.id, 'finished', { status: 'INTERROMPIDA', reason: 'servidor encerrado com a missão na fila' });
     }
     for (const id of [...this.running.keys()]) this.terminate(id, 'INTERROMPIDA', 'servidor encerrado durante a execução');
   }
 }
 
-module.exports = { MissionManager, TERMINAL, RESUMABLE, workerEnv };
+module.exports = { MissionManager, TERMINAL, RESUMABLE, workerEnv, procStart };

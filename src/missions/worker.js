@@ -74,13 +74,16 @@ if (require.main === module) {
   });
   // Cancelamento/timeout/desligamento: o estado do motor fica como estava (retomável); não se
   // marca FALHA no motor, só se registra o motivo.
+  // O worker é líder do próprio grupo: ao sair por cancelamento ou por perda do processo pai
+  // (servidor/CLI morto), leva junto tudo o que o motor criou — nada fica órfão.
+  const killOwnGroup = () => { try { if (process.platform !== 'win32') process.kill(-process.pid, 'SIGKILL'); } catch { /* ignore */ } };
   process.on('SIGTERM', () => {
     bus.emit('cancelled', { reason: stopReason, engineMissionId });
-    const bye = () => process.exit(130);
+    const bye = () => { killOwnGroup(); process.exit(130); };
     if (process.connected) process.send({ kind: 'done', outcome: { status: 'CANCELADA', reason: stopReason, engineMissionId } }, bye);
     else bye();
   });
-  process.on('disconnect', () => process.exit(1));
+  process.on('disconnect', () => { killOwnGroup(); process.exit(1); });
 }
 
 module.exports = { run, prepareResume };

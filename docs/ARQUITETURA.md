@@ -174,11 +174,15 @@ Sessão Claude Code: ferramentas nativas + MCP.
   `NODE_ENV`, `MINHAIA_*`): tokens exportados no shell do usuário não chegam ao código gerado.
 - O worker roda em **grupo de processos próprio**; cancelar, timeout ou fim da missão encerram o
   grupo inteiro (nenhum servidor gerado fica órfão — testado via `/proc`).
-- **Rede não isolada**: o modelo de permissões do Node 22 não restringe rede. O código gerado
-  consegue abrir conexões (inclusive para a própria API em 127.0.0.1, que não exige `Origin`
-  de clientes não-navegador). Mitigações: leitura confinada ao workspace (não lê chaves), fila
-  limitada (`MINHAIA_MAX_PENDING`, padrão 20 → 429). Isolamento real de rede exige SO
-  (namespace/contêiner) — [RECOMENDAÇÃO].
+- **Rede do código gerado bloqueada**: o modelo de permissões do Node 22 não cobre rede, então
+  todo `node` da sandbox carrega `src/missions/sandbox-preload.js` (`--require`, antes do código
+  do LLM), que trava de forma não reconfigurável `net.Socket#connect`, `net.connect`,
+  `tls.connect`, UDP (`dgram`) e `fetch`/`WebSocket`. Escutar numa porta continua permitido
+  (servidores gerados são testados pelo motor a partir do worker). Isso impede o código gerado
+  de chamar a própria API local, o gateway ou a internet. Opt-out consciente:
+  `MINHAIA_SANDBOX_ALLOW_NETWORK=1`. Antes de executar, o workspace é varrido e link simbólico
+  ou hardlink são recusados (o código confinado os seguiria).
+- Fila limitada (`MINHAIA_MAX_PENDING`, padrão 20 → 429).
 [CONFIRMADO: cenários adversariais nos testes — escrita/leitura fora, python3, flags de fuga]
 
 ## 13. Observabilidade
@@ -236,10 +240,14 @@ próprio) — cancelamento real, timeout (padrão 30 min, `MINHAIA_MISSION_TIMEO
 simultâneas (`MINHAIA_MAX_CONCURRENT`), fila limitada (`MINHAIA_MAX_PENDING`). Estados:
 CRIADA, NA_FILA, EXECUTANDO, CANCELANDO, CONCLUIDA, FALHA, BLOQUEADA, CANCELADA,
 TEMPO_ESGOTADO, INTERROMPIDA (processo dono terminou). Worker que sai sem reportar conclusão é
-sempre FALHA. Cancelar/timeout **não** marcam FALHA no motor: a missão continua retomável
+sempre FALHA; conclusão reportada prevalece sobre cancelamento que chegue depois. Cancelar/timeout **não** marcam FALHA no motor: a missão continua retomável
 (`/resume`, só para CANCELADA/TEMPO_ESGOTADO/INTERROMPIDA com estado do motor não terminal); na
 retomada, tarefas persistidas como `em_progresso` voltam a `pendente`. Cada job guarda o
-processo dono; CLI e servidor simultâneos não interrompem as missões um do outro.
+processo dono e o worker identificados por **PID + instante de início** (`/proc/<pid>/stat`;
+zumbi conta como morto): CLI e servidor simultâneos não interrompem as missões um do outro; na
+recuperação, o grupo órfão de um worker morto é encerrado, e um PID reaproveitado por outro
+processo nunca é morto. Se o processo dono morrer (até por SIGKILL), o worker percebe a perda do
+canal IPC e encerra o próprio grupo — nada do código gerado fica órfão (testado).
 `minhaia serve` encerra de verdade com Ctrl+C (fecha SSE e conexões, interrompe workers). O estado das
 tarefas é o da máquina de estados do motor; a API não tem motor próprio.
 Segurança: só loopback; `Host` de loopback (anti DNS rebinding); escrita exige

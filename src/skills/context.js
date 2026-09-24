@@ -10,6 +10,9 @@ const bus = require('../runtime/bus');
 // contrato de cada tarefa: escolhe poucas Skills relevantes para a tarefa + agente, injeta um
 // trecho delas no contexto do agente e registra a decisão.
 
+// termos amplos demais para, sozinhos, justificar injetar uma Skill
+const GENERIC_TERMS = new Set(['code', 'codigo', 'test', 'tests', 'teste', 'testes', 'data', 'dados', 'agent', 'agents', 'file', 'arquivo', 'create', 'criar', 'implementar', 'implement', 'script', 'task', 'tarefa']);
+
 const MAX_SKILLS = Number(process.env.MINHAIA_MAX_SKILLS_PER_TASK || 2);
 const MAX_CHARS = Number(process.env.MINHAIA_SKILL_CHARS || 1800);
 
@@ -60,9 +63,14 @@ function skillMeta(id) {
 function contextoDeSkills(tarefa, missao, especialista) {
   const agente = especialista ? especialista.chave || especialista.arquivo : null;
   const query = [tarefa.descricao, tarefa.tipo, agente, especialista && especialista.especialidade].filter(Boolean).join(' ');
-  // a Skill precisa casar com a DESCRIÇÃO da tarefa, não só com o nome do agente
+  // a Skill precisa casar com a DESCRIÇÃO da tarefa (não só com o nome do agente), com ao menos
+  // um termo específico ou dois termos quaisquer; o filtro vem ANTES do corte do ranking
   const descTokens = tokens(tarefa.descricao || '');
-  const ranked = rankSkills(query, skills(), MAX_SKILLS + 6).filter((r) => r.matched.some((w) => descTokens.has(w)));
+  const relevant = (r) => {
+    const hits = r.matched.filter((w) => descTokens.has(w));
+    return hits.some((w) => !GENERIC_TERMS.has(w)) || hits.length >= 2;
+  };
+  const ranked = rankSkills(query, skills(), skills().length).filter(relevant).slice(0, MAX_SKILLS + 6);
   const usadas = [];
   const descartadas = [];
   for (const r of ranked) {

@@ -115,6 +115,13 @@ for (const [scenario, check] of [
     assert.ok(run && !run.ok, 'leitura fora do workspace precisa falhar');
     assert.match(`${run.stderr} ${run.error}`, /ERR_ACCESS_DENIED|Access to this API has been restricted/);
   }],
+  ['network', (exec, _decoy, hits) => {
+    const run = exec.find((e) => e.type === 'tool' && e.tool === 'executarComando');
+    assert.ok(run && !run.ok, 'código que abre conexão de rede precisa falhar');
+    assert.match(`${run.stderr} ${run.error}`, /ERR_MINHAIA_NETWORK_DENIED/);
+    assert.strictEqual(hits.count, 0, 'nenhuma conexão pode chegar ao alvo');
+    assert.ok(exec.some((e) => e.type === 'sandbox' && e.network === 'bloqueada'));
+  }],
   ['python', (exec) => {
     const sb = exec.find((e) => e.type === 'sandbox');
     assert.ok(sb && sb.allowed === false && /python3/.test(sb.comando));
@@ -123,12 +130,15 @@ for (const [scenario, check] of [
 ]) {
   test(`sandbox do código gerado: cenário "${scenario}" é contido`, { skip: SKIP_NO_MASTER }, async (t) => {
     const decoy = fs.mkdtempSync(require('path').join(require('os').tmpdir(), 'minhaia-decoy-'));
-    const api = await startApi({ stub: true, env: { MINHAIA_TEST_STUB_SCENARIO: scenario, MINHAIA_TEST_DECOY: decoy } });
-    t.after(async () => { await api.close(); fs.rmSync(decoy, { recursive: true, force: true }); });
+    const hits = { count: 0 };
+    const target = require('net').createServer((s) => { hits.count += 1; s.destroy(); });
+    await new Promise((r) => target.listen(0, '127.0.0.1', r));
+    const api = await startApi({ stub: true, env: { MINHAIA_TEST_STUB_SCENARIO: scenario, MINHAIA_TEST_DECOY: decoy, MINHAIA_TEST_TARGET_PORT: String(target.address().port) } });
+    t.after(async () => { await api.close(); target.close(); fs.rmSync(decoy, { recursive: true, force: true }); });
     const id = (await req(api.base, 'POST', '/api/missions', { body: { objective: 'Crie um script que soma dois números' } })).json.id;
     await waitFinished(api.manager, id, 90000);
     const exec = (await req(api.base, 'GET', `/api/missions/${id}/execution`)).json;
-    check(exec, decoy);
+    check(exec, decoy, hits);
     const sandboxed = exec.filter((e) => e.type === 'sandbox' && e.allowed);
     assert.ok(sandboxed.every((e) => e.sandboxed), 'todo comando permitido roda confinado');
   });

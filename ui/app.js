@@ -174,7 +174,11 @@ function renderDetail() {
   const cancel = $('#btn-cancel');
   cancel.disabled = !RUNNING.has(job.status) || job.status === 'CANCELANDO';
   const resume = $('#btn-resume');
-  resume.disabled = !(RESUMABLE.has(job.status) && job.engineMissionId);
+  resume.disabled = !(RESUMABLE.has(job.status) && job.engineMissionId && !['CONCLUIDA', 'FALHA', 'BLOQUEADA'].includes(job.engineState));
+  const start = $('#btn-start');
+  const startable = job.status === 'CRIADA' || (RESUMABLE.has(job.status) && !job.engineMissionId);
+  start.hidden = !startable;
+  start.disabled = !startable;
 
   const banner = $('#m-banner');
   banner.hidden = true;
@@ -197,6 +201,11 @@ function renderDetail() {
 $('#btn-cancel').addEventListener('click', async () => {
   $('#btn-cancel').disabled = true;
   try { await api(`/api/missions/${encodeURIComponent(state.currentId)}/cancel`, { method: 'POST', body: '{}' }); } catch (e) { alert(e.message); }
+  refreshDetail();
+});
+$('#btn-start').addEventListener('click', async () => {
+  $('#btn-start').disabled = true;
+  try { await api(`/api/missions/${encodeURIComponent(state.currentId)}/start`, { method: 'POST', body: '{}' }); } catch (e) { alert(e.message); }
   refreshDetail();
 });
 $('#btn-resume').addEventListener('click', async () => {

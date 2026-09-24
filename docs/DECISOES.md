@@ -147,6 +147,15 @@ worker morto sem `done` virava sucesso; fila sem limite; ambiente completo herda
 gerado; releitura integral de eventos a cada atualização → cache incremental; Skill escolhida
 só pelo nome do agente.
 
+## ADR-15 — Terceira rodada: processos e rede
+
+`reviewer` vetou de novo: órfãos quando o processo dono morria abruptamente, e identidade de
+processo só por PID (risco de matar grupo alheio com PID reaproveitado). `security` aprovou com
+ressalvas: o código gerado alcançava a API local pela rede. Decisões: worker encerra o próprio
+grupo ao perder o pai; identidade por PID + instante de início; zumbi = morto; bloqueio de
+saída de rede no código gerado via preload imutável (token na API não resolveria: qualquer
+processo local obtém o que o navegador obtém); recusa de links no workspace.
+
 ## Conflitos encontrados no MASTER (registrados, não alterados)
 
 | # | Onde | Conflito | Impacto | Tratamento na MinhaIA |

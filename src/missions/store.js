@@ -81,14 +81,16 @@ function appendEvent(id, event) {
 }
 
 // Cache incremental por missão: relê só os bytes acrescentados desde a última leitura.
-const eventCache = new Map(); // id -> { size, events, partial: Buffer }
+const eventCache = new Map(); // id -> { size, events, partial: Buffer, ino, file }
+const MAX_CACHED_JOBS = 50;
 
 function allEvents(id) {
   const file = jobPath(id, 'events.jsonl');
   let st;
   try { st = fs.statSync(file); } catch { eventCache.delete(id); return []; }
   let c = eventCache.get(id);
-  if (!c || st.size < c.size) c = { size: 0, events: [], partial: Buffer.alloc(0) };
+  // arquivo recriado (outro inode/dir de jobs) ou truncado: recomeça do zero
+  if (!c || st.size < c.size || c.ino !== st.ino || c.file !== file) c = { size: 0, events: [], partial: Buffer.alloc(0), ino: st.ino, file };
   if (st.size > c.size) {
     const fd = fs.openSync(file, 'r');
     try {
@@ -107,13 +109,16 @@ function allEvents(id) {
       fs.closeSync(fd);
     }
   }
+  eventCache.delete(id); // reinsere no fim: ordem = uso mais recente (LRU)
   eventCache.set(id, c);
+  while (eventCache.size > MAX_CACHED_JOBS) eventCache.delete(eventCache.keys().next().value);
   return c.events;
 }
 
 function readEvents(id, { afterSeq = 0, types = null, limit = Infinity } = {}) {
   const out = allEvents(id).filter((e) => e.seq > afterSeq && (!types || types.includes(e.type)));
-  return Number.isFinite(limit) ? out.slice(-limit) : out;
+  const n = Number(limit);
+  return Number.isFinite(n) && n > 0 ? out.slice(-Math.floor(n)) : out;
 }
 
 module.exports = { create, get, save, update, list, appendEvent, readEvents, validId, jobsDir };

@@ -141,7 +141,7 @@ function createServer({ manager = new MissionManager() } = {}) {
     ['GET', /^\/api\/missions\/([^/]+)\/agents$/, (_, __, ___, [id]) => views.agents(id)],
     ['GET', /^\/api\/missions\/([^/]+)\/skills$/, (_, __, ___, [id]) => views.skills(id)],
     ['GET', /^\/api\/missions\/([^/]+)\/execution$/, (_, url, ___, [id]) => views.execution(id, Number(url.searchParams.get('after') || 0))],
-    ['GET', /^\/api\/missions\/([^/]+)\/logs$/, (_, url, ___, [id]) => views.logs(id, { afterSeq: Number(url.searchParams.get('after') || 0), types: url.searchParams.get('types') ? url.searchParams.get('types').split(',') : null, limit: Math.min(Number(url.searchParams.get('limit') || 5000), 20000) })],
+    ['GET', /^\/api\/missions\/([^/]+)\/logs$/, (_, url, ___, [id]) => views.logs(id, { afterSeq: Number(url.searchParams.get('after') || 0), types: url.searchParams.get('types') ? url.searchParams.get('types').split(',') : null, limit: Math.min(Math.max(Number(url.searchParams.get('limit')) || 5000, 1), 20000) })],
     ['GET', /^\/api\/missions\/([^/]+)\/result$/, (_, __, ___, [id]) => views.result(id)],
     ['GET', /^\/api\/missions\/([^/]+)\/files$/, (_, url, ___, [id]) => {
       const p = url.searchParams.get('path');

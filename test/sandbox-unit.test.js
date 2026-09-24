@@ -45,3 +45,28 @@ test('worker recebe só variáveis permitidas (nada de tokens do shell)', () => 
     for (const k of Object.keys(process.env)) if (!(k in saved)) delete process.env[k];
   }
 });
+
+test('sandbox recusa workspace com link simbólico ou hardlink', () => {
+  const { findWorkspaceLink } = require('../src/missions/instrument');
+  const w = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'minhaia-links-')));
+  try {
+    fs.writeFileSync(path.join(w, 'a.js'), 'x');
+    assert.strictEqual(findWorkspaceLink(w), null);
+    fs.mkdirSync(path.join(w, 'sub'));
+    fs.symlinkSync(path.join(outside, 'x.js'), path.join(w, 'sub', 'l.js'));
+    assert.match(findWorkspaceLink(w), /link simbólico/);
+    fs.rmSync(path.join(w, 'sub', 'l.js'));
+    fs.linkSync(path.join(outside, 'x.js'), path.join(w, 'hard.js'));
+    assert.match(findWorkspaceLink(w), /hardlink/);
+  } finally {
+    fs.rmSync(w, { recursive: true, force: true });
+  }
+});
+
+test('proxy com credencial na URL não chega ao worker', () => {
+  const saved = process.env.HTTPS_PROXY;
+  process.env.HTTPS_PROXY = 'http://usuario:senha@proxy.local:3128';
+  try { assert.strictEqual(workerEnv().HTTPS_PROXY, 'http://proxy.local:3128'); } finally {
+    if (saved === undefined) delete process.env.HTTPS_PROXY; else process.env.HTTPS_PROXY = saved;
+  }
+});
