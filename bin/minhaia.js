@@ -2,7 +2,7 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const { spawn, spawnSync } = require('child_process');
+const { spawn } = require('child_process');
 const { paths, resolveMasterDir } = require('../src/config');
 
 const [, , cmd, ...rest] = process.argv;
@@ -140,20 +140,30 @@ const commands = {
     child.on('exit', (code) => { process.exitCode = code || 0; });
   },
 
-  'test-master'() {
+  async 'test-master'() {
     const suites = args.length ? args : MASTER_SUITES;
     const { createRuntimeLinks } = require('../src/master/sync');
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'minhaia-test-master-'));
     const results = [];
     const restore = () => { createRuntimeLinks(); fs.rmSync(tmp, { recursive: true, force: true }); };
-    const onSignal = (sig) => { restore(); process.kill(process.pid, sig); };
-    for (const sig of ['SIGINT', 'SIGTERM', 'SIGHUP']) process.once(sig, onSignal);
+    let aborted = null;
+    let current = null;
+    const onSignal = (sig) => { aborted = sig; if (current) current.kill(sig); };
+    for (const sig of ['SIGINT', 'SIGTERM', 'SIGHUP']) process.on(sig, onSignal);
     createRuntimeLinks(undefined, { dataRoot: tmp });
     try {
       for (const s of suites) {
+        if (aborted) break;
         const file = path.join(paths.ENGINE_DIR, 'testes', `${s}.js`);
-        const r = spawnSync(process.execPath, [file], { cwd: path.dirname(file), encoding: 'utf8', timeout: 15 * 60 * 1000 });
-        const text = `${r.stdout || ''}${r.stderr || ''}`;
+        const r = await new Promise((resolve) => {
+          let text = '';
+          current = spawn(process.execPath, [file], { cwd: path.dirname(file) });
+          const timer = setTimeout(() => current.kill('SIGKILL'), 15 * 60 * 1000);
+          current.stdout.on('data', (d) => { text += d; });
+          current.stderr.on('data', (d) => { text += d; });
+          current.on('close', (status) => { clearTimeout(timer); current = null; resolve({ status, text }); });
+        });
+        const { text } = r;
         const m = text.match(/(\d+)\/(\d+) testes aprovados/);
         const failed = text.split('\n').filter((l) => l.startsWith('FAIL')).map((l) => l.replace(/\s+/g, ' ').slice(0, 160));
         results.push({ suite: s, passed: m ? Number(m[1]) : 0, total: m ? Number(m[2]) : null, exit: r.status, failed, crash: m ? null : text.split('\n').find((l) => /Error/.test(l)) || 'sem resumo' });
@@ -162,6 +172,7 @@ const commands = {
       for (const sig of ['SIGINT', 'SIGTERM', 'SIGHUP']) process.removeListener(sig, onSignal);
       restore();
     }
+    if (aborted) { console.error(`test-master interrompido (${aborted}); links de runtime restaurados.`); process.exitCode = 130; return; }
     const passed = results.reduce((n, r) => n + r.passed, 0);
     const total = results.reduce((n, r) => n + (r.total || 0), 0);
     process.exitCode = results.every((r) => r.total !== null && r.passed === r.total) ? 0 : 1;

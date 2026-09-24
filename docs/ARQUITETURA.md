@@ -137,9 +137,14 @@ Sessão Claude Code: ferramentas nativas + MCP.
     `MINHAIA_ALLOW_PROTECTED_EDIT=1` no ambiente em que o humano iniciou o Claude Code.
   - Destrutivos: `rm -r` em alvo raiz/home/pai/glob/variável/dados, push forçado (inclui `+ref`),
     `reset --hard`, `clean -f`, `find -delete`, acesso remoto.
-  - Limite conhecido: um symlink para o MASTER criado **fora** do Claude e usado depois em Bash não
-    é resolvido pelo hook. Proteção forte recomendada (decisão do dono do MASTER, não aplicada
-    aqui): tornar o clone do MASTER somente leitura no SO (`chmod -R a-w` ou montagem read-only).
+  - Limites conhecidos (casamento de texto não é sandbox): qualquer indireção passa — nome montado
+    por concatenação (`'claude-mes'+'tre…'` dentro de `node -e`), script gravado no MinhaIA e
+    executado depois, ou symlink criado fora do Claude. Falso positivo conservador: `|` e `>`
+    dentro de aspas (`grep 'a|b'`, `--format='%h > %s'`) são tratados como separador/
+    redirecionamento. Qualquer Bash que cite `.env` é bloqueado, inclusive `.env.example`.
+  - **Proteção forte recomendada** (decisão do dono do MASTER, não aplicada aqui): tornar o clone do
+    MASTER somente leitura no SO (`chmod -R a-w` ou montagem read-only) e `.secrets/` com
+    `chmod 600`.
 - `settings.json`: nega leitura de `.env`/`.secrets`/chaves SSH, escrita em `.secrets`, acesso
   remoto; `cat` não é pré-aprovado (evita contornar os bloqueios de leitura).
 - Gateway: bind em 127.0.0.1, sem `GATEWAY_API_KEY` só aceita `Host` de loopback (anti DNS

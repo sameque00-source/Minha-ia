@@ -35,7 +35,9 @@ ANALISAR → PLANEJAR → DIVIDIR → PARALELO → REVISAR → INTEGRAR → TEST
 ## Quando NÃO montar equipe
 
 Pergunta simples, leitura de um arquivo, comando único (nível 0/1 do classificador): responda
-direto.
+direto. No nível 1 o `select` indica um único executor, **mas mantém todo agente com veto** que
+a tarefa acionar (`testing`, `architecture`, `reviewer`, `security`): governança vale em qualquer
+nível.
 
 ## Fases com barreira
 
