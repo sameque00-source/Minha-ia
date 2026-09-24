@@ -36,6 +36,9 @@ test('API de missões: rotas, bloqueio honesto sem provedor e segurança', { ski
     const fin = await waitFinished(api.manager, id, 30000);
     assert.strictEqual(fin.status, 'BLOQUEADA');
     const d = (await req(base, 'GET', `/api/missions/${id}`)).json;
+    assert.match(String(d.job.reason), /chave de provedor/, 'o motivo do bloqueio chega ao job');
+    const finEv = (await req(base, 'GET', `/api/missions/${id}/logs`)).json.find((e) => e.type === 'finished');
+    assert.match(String(finEv.reason), /chave de provedor/, 'o motivo do bloqueio chega ao evento finished');
     assert.match(d.blocked, /chave de provedor/);
     assert.ok(d.analysis && d.analysis.agents.length >= 1);
     const types = (await req(base, 'GET', `/api/missions/${id}/logs`)).json.map((e) => e.type);

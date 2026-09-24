@@ -34,8 +34,9 @@ async function run({ objective, resumeEngineMissionId }) {
   const testAdapters = testAdaptersFromEnv();
   if (!resumeEngineMissionId) bus.emit('analysis', { selection: select(objective) });
   if (!testAdapters && providerStatus().configured.length === 0) {
-    bus.emit('blocked', { reason: 'nenhuma chave de provedor em .secrets/.env (GROQ_API_KEY, GOOGLE_API_KEY, OPENROUTER_API_KEY, NINEROUTER_API_KEY) — o Planejador precisa de LLM real' });
-    return { status: 'BLOQUEADA' };
+    const reason = 'nenhuma chave de provedor em .secrets/.env (GROQ_API_KEY, GOOGLE_API_KEY, OPENROUTER_API_KEY, NINEROUTER_API_KEY) — o Planejador precisa de LLM real';
+    bus.emit('blocked', { reason });
+    return { status: 'BLOQUEADA', reason };
   }
 
   bus.on((e) => {
