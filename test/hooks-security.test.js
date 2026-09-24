@@ -61,6 +61,15 @@ const BLOCK = [
   ['push +refspec', 'Bash', { command: 'git push origin +main' }],
   ['reset --hard', 'Bash', { command: 'git reset --hard HEAD~1' }],
   ['ssh', 'Bash', { command: 'ssh prod' }],
+  // 2ª rodada da revisão de segurança
+  ['glob em caminho absoluto', 'Bash', { command: 'touch /home/user/claude-m*/x' }],
+  ['redirecionamento para caminho com glob', 'Bash', { command: 'echo x > /home/user/clau*o/README.md' }],
+  ['& simples como separador', 'Bash', { command: `echo hi & touch ${M}/a` }],
+  ['settings com barra dupla', 'Bash', { command: 'echo {} > .claude//settings.json' }],
+  ['cd .claude e nome solto', 'Bash', { command: "cd .claude && echo '{}' > settings.json" }],
+  ['formatador --write em settings', 'Bash', { command: 'npx prettier --write .claude/settings.json' }],
+  ['segredo com aspas vazias', 'Bash', { command: "cat .secr''ets/.e''nv" }],
+  ['segredo por glob', 'Bash', { command: 'cat .sec*/.e*' }],
   // entrada inválida (fail-closed)
   ['file_path não string', 'Write', { file_path: 123, content: 'x' }],
 ];
@@ -74,7 +83,7 @@ for (const [name, tool, input] of BLOCK) {
 }
 
 test('guard bloqueia escrita quando o cwd está dentro do MASTER', () => {
-  for (const command of ['echo x > README.md', 'git commit -am x']) {
+  for (const command of ['echo x > README.md', 'git commit -am x', 'echo hi & touch a', 'git log --output=pwn', 'git -c diff.external=./x.sh diff', "git grep -O'touch pwn' foo", 'rg --pre ./evil.sh foo', 'tree -o pwn']) {
     assert.strictEqual(runGuard('Bash', { command }, { cwd: M }).code, 2, command);
   }
 });

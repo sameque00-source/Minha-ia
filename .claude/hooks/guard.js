@@ -22,7 +22,7 @@ const SECRETS_REF = /\.secrets\b|(^|[\s'"=\/:])\.env(\.[\w-]+)?(?=$|[\s'";|&)\/]
 const PROTECTED_REF = /\.claude\/(settings(\.local)?\.json|hooks\b)|src\/security\b|src\/config\.js/;
 const AMBIGUOUS = /\$\(|`|\$\{?\w|[*?]/;
 // Para arquivos de autoproteção basta barrar operações que alteram conteúdo (git add/commit passam).
-const PROTECTED_MUTATING = />{1,2}(?!\s*(&|\/dev\/null\b))|(^|[\s;&|(])(tee|mv|cp|rm|ln|truncate|chmod|chown|dd|install|patch|sed\s+-[a-z]*i|perl\s+-[a-z]*[ie]|node\s+(-e|--eval|-p)|python3?\s+-c)\b|\bgit\s+(checkout|restore|reset|stash|apply|am|cherry-pick|revert)\b/;
+const PROTECTED_MUTATING = />{1,2}(?!\s*(&|\/dev\/null\b))|(^|[\s;&|(])(tee|mv|cp|rm|ln|truncate|chmod|chown|dd|install|patch|sed\s+-[a-z]*i|perl\s+-[a-z]*[ie]|node\s+(-e|--eval|-p)|python3?\s+-c)\b|\bgit\s+(checkout|restore|reset|stash|apply|am|cherry-pick|revert)\b|\s--(write|fix)\b/;
 
 const READ_ONLY_CMDS = new Set([
   'ls', 'cat', 'head', 'tail', 'wc', 'grep', 'egrep', 'fgrep', 'rg', 'diff', 'cmp', 'stat', 'file', 'du',
@@ -55,8 +55,17 @@ function unquote(t) {
 }
 
 function segments(command) {
-  return command.split(/\|\||&&|;|\||\n/).map((s) => s.trim()).filter(Boolean);
+  // `2>&1` e afins não são separadores; `&>arq` é redirecionamento; `&` sozinho separa (background).
+  const cleaned = command.replace(/\d*>&\d+/g, ' ').replace(/&>/g, '>');
+  return cleaned.split(/\|\||&&|;|\||&|\n/).map((s) => s.trim()).filter(Boolean);
 }
+
+// Opções que fazem um comando "de leitura" escrever arquivo ou executar programa.
+const UNSAFE_FLAGS = {
+  git: /^(-c|--output(=|$)|-O|--open-files-in-pager|--ext-diff|--textconv|--exec(=|$)|--upload-pack|--config-env)/,
+  rg: /^--pre(=|$)|^--pre-glob/,
+  tree: /^-o$|^--output/,
+};
 
 function words(segment) {
   const ws = segment.match(/"[^"]*"|'[^']*'|\S+/g) || [];
@@ -72,6 +81,7 @@ function segmentIsReadOnly(segment) {
   const cmd = ws[0];
   if (!READ_ONLY_CMDS.has(cmd)) return false;
   if (cmd === 'find' && ws.some((w) => /^-(delete|exec|execdir|ok|okdir|fprint\w*|fls)$/.test(w))) return false;
+  if (UNSAFE_FLAGS[cmd] && ws.slice(1).some((w) => UNSAFE_FLAGS[cmd].test(w))) return false;
   if (cmd === 'git') {
     let i = 1;
     while (i < ws.length && ws[i].startsWith('-')) i += ['-C', '-c', '--git-dir', '--work-tree'].includes(ws[i]) ? 2 : 1;
@@ -106,17 +116,25 @@ function makeChecker({ config, containsSecret, env }) {
   function checkBash(command, cwd, masterDir) {
     for (const [re, why] of DESTRUCTIVE) if (re.test(command)) block(`comando destrutivo (${why}): ${command.slice(0, 200)}`);
     checkRm(command);
-    if (SECRETS_REF.test(command)) block('comando que acessa .secrets/.env — as chaves são gravadas pelo humano, fora do Claude');
+    // aspas vazias/escapes ('.secr''ets') e globs ('.sec*') não escondem a referência
+    const flat = command.replace(/['"\\]/g, '');
+    if (SECRETS_REF.test(flat) || /(^|[\s\/=])\.(s|e)[\w.-]*[*?[]/.test(flat)) block('comando que acessa .secrets/.env — as chaves são gravadas pelo humano, fora do Claude');
 
     const cwdReal = cwd ? realish(cwd) : null;
     const inMaster = masterDir && cwdReal && isInside(cwdReal, masterDir);
-    const refMaster = inMaster || MASTER_NAME.test(command) || (masterDir && command.includes(masterDir))
+    const tokens = command.match(/"[^"]*"|'[^']*'|\S+/g) || [];
+    // caminho absoluto, de home, de pai ou por variável com glob/variável/substituição: não dá para saber se é o MASTER
+    const ambiguousPath = tokens.map(unquote).some((t) => /^(\/|~|\.\.|\$)/.test(t.replace(/^[<>]+/, '')) && AMBIGUOUS.test(t));
+    const refMaster = inMaster || MASTER_NAME.test(flat) || (masterDir && command.includes(masterDir))
+      || ambiguousPath
       || (/\.\./.test(command) && AMBIGUOUS.test(command))
       || /(^|[\s;&|(])cd\s+[^;&|]*[*?$`]/.test(command);
     if (refMaster && !commandIsReadOnly(command)) {
       block(`comando que referencia o MASTER (ou caminho ambíguo) e não é somente leitura: ${command.slice(0, 200)}`);
     }
-    if (!allowProtected && PROTECTED_REF.test(command) && PROTECTED_MUTATING.test(command)) {
+    const normalized = command.replace(/\/{2,}/g, '/');
+    const cdIntoProtected = /(^|[\s;&|(])cd\s+(\.\/)?(\.claude|src\/security|src)(\/|\s|$)/.test(normalized);
+    if (!allowProtected && (PROTECTED_REF.test(normalized) || cdIntoProtected) && PROTECTED_MUTATING.test(normalized)) {
       block('comando que pode alterar a proteção (settings/hooks/src/security/src/config.js) — só com MINHAIA_ALLOW_PROTECTED_EDIT=1');
     }
   }
