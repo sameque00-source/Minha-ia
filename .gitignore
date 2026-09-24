@@ -1,0 +1,18 @@
+# Gerado a partir do MASTER por `minhaia sync` (fonte única = MASTER, nunca versionar cópia)
+/vendor/
+/.claude/agents/
+/.claude/skills/
+
+# Estado de runtime (memória, missões, logs, telemetria)
+/data/
+*.log
+
+# Segredos — nunca versionar
+/.secrets/
+.env
+.env.*
+*.pem
+*.key
+
+node_modules/
+.DS_Store

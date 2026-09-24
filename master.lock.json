@@ -1,0 +1,2592 @@
+{
+  "_doc": "Gerado por `minhaia sync`. Não editar à mão. sha256Source = arquivo no MASTER; sha256Dest = cópia no MinhaIA após patches.",
+  "masterGitHead": "4fa44be60579197e914f391bc9029f2ab401738d",
+  "patches": [
+    {
+      "id": "windows-aiorch-path",
+      "total": 9,
+      "files": {
+        "vendor/master/ia-avancado/executor/core/classificador-falha.js": 1,
+        "vendor/master/ia-avancado/orquestrador/core/decisor.js": 1,
+        "vendor/master/ia-avancado/orquestrador/orquestrador.js": 1,
+        "vendor/master/ia-avancado/planejador/core/chamar-llm.js": 2,
+        "vendor/master/ia-avancado/router/core/classificador-roteamento.js": 1,
+        "vendor/master/ia-avancado/testes/suite-regressao-fase0.js": 1,
+        "vendor/master/ia-avancado/testes/teste-fase1-orquestrador.js": 1,
+        "vendor/master/ia-avancado/testes/teste-fase7-8-router-autocorrecao.js": 1
+      }
+    },
+    {
+      "id": "windows-audio-env-path",
+      "total": 1,
+      "files": {
+        "vendor/master/ia-avancado/multimidia/core/audio.js": 1
+      }
+    },
+    {
+      "id": "gateway-bind-loopback",
+      "total": 1,
+      "files": {
+        "vendor/master/ai-orchestrator/gateway/server.js": 1
+      }
+    },
+    {
+      "id": "gateway-log-redaction",
+      "total": 1,
+      "files": {
+        "vendor/master/ai-orchestrator/gateway/server.js": 1
+      }
+    },
+    {
+      "id": "extra-specialists",
+      "total": 1,
+      "files": {
+        "vendor/master/ia-avancado/agentes/core/registro-especialistas.js": 1
+      }
+    }
+  ],
+  "fileCount": 363,
+  "files": {
+    ".claude/agents/3d.md": {
+      "source": "claude-agents",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/3d.md",
+      "sha256Source": "0eea8e60bce4d02315a105fcff608d61d15720733048bbd518751b4c1cdb7b62",
+      "sha256Dest": "0eea8e60bce4d02315a105fcff608d61d15720733048bbd518751b4c1cdb7b62",
+      "patched": false
+    },
+    ".claude/agents/architecture.md": {
+      "source": "claude-agents",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/architecture.md",
+      "sha256Source": "3a43df6cb23810116549566f5dbd4ffdee1f9b04490a840462cc93e282360855",
+      "sha256Dest": "3a43df6cb23810116549566f5dbd4ffdee1f9b04490a840462cc93e282360855",
+      "patched": false
+    },
+    ".claude/agents/backend.md": {
+      "source": "claude-agents",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/backend.md",
+      "sha256Source": "8a905c8c83f3085f0074a557a9161070a64d54e9e79f69b327d3c2d158eddc0c",
+      "sha256Dest": "8a905c8c83f3085f0074a557a9161070a64d54e9e79f69b327d3c2d158eddc0c",
+      "patched": false
+    },
+    ".claude/agents/cli.md": {
+      "source": "claude-agents",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/cli.md",
+      "sha256Source": "a7fe18e19d73a546bb1a9d28975dcf6af03dbd74508233a04487570c47ba9a22",
+      "sha256Dest": "a7fe18e19d73a546bb1a9d28975dcf6af03dbd74508233a04487570c47ba9a22",
+      "patched": false
+    },
+    ".claude/agents/coding.md": {
+      "source": "claude-agents",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/coding.md",
+      "sha256Source": "b078fc05688cc7e7469ea6f8e7d27572c84edce7c2c43fdc03a2b967d0fc9b11",
+      "sha256Dest": "b078fc05688cc7e7469ea6f8e7d27572c84edce7c2c43fdc03a2b967d0fc9b11",
+      "patched": false
+    },
+    ".claude/agents/coordinator.md": {
+      "source": "claude-agents",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/coordinator.md",
+      "sha256Source": "28e68c33e6009a989ee1efb34b182d018cce3a99995e325c948873a13dcc63ba",
+      "sha256Dest": "28e68c33e6009a989ee1efb34b182d018cce3a99995e325c948873a13dcc63ba",
+      "patched": false
+    },
+    ".claude/agents/debugger.md": {
+      "source": "claude-agents",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/debugger.md",
+      "sha256Source": "1ba1b19488eb19867d022b5f23d23f6e35adebb8210cafa6647c34ebb62b59e5",
+      "sha256Dest": "1ba1b19488eb19867d022b5f23d23f6e35adebb8210cafa6647c34ebb62b59e5",
+      "patched": false
+    },
+    ".claude/agents/devops.md": {
+      "source": "claude-agents",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/devops.md",
+      "sha256Source": "3abcf5d57b06c734f2571f720eae5328a51adb269b7c81eef45d7f7e9475c5f6",
+      "sha256Dest": "3abcf5d57b06c734f2571f720eae5328a51adb269b7c81eef45d7f7e9475c5f6",
+      "patched": false
+    },
+    ".claude/agents/docs.md": {
+      "source": "claude-agents",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/docs.md",
+      "sha256Source": "b5efb3afd696a83e2a2836803413ff411ddaac76bf93711bed07b1613b7e966e",
+      "sha256Dest": "b5efb3afd696a83e2a2836803413ff411ddaac76bf93711bed07b1613b7e966e",
+      "patched": false
+    },
+    ".claude/agents/frontend.md": {
+      "source": "claude-agents",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/frontend.md",
+      "sha256Source": "6867c7b8f367031bda7aedf86c0bd479491229a919cbf1f1ad0d38c0a2cc72d4",
+      "sha256Dest": "6867c7b8f367031bda7aedf86c0bd479491229a919cbf1f1ad0d38c0a2cc72d4",
+      "patched": false
+    },
+    ".claude/agents/hooks.md": {
+      "source": "claude-agents",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/hooks.md",
+      "sha256Source": "358345908b340b5f5ec7b46c553922d33ec9793bd10a0da55f5c898b7d2ec4de",
+      "sha256Dest": "358345908b340b5f5ec7b46c553922d33ec9793bd10a0da55f5c898b7d2ec4de",
+      "patched": false
+    },
+    ".claude/agents/integration.md": {
+      "source": "claude-agents",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/integration.md",
+      "sha256Source": "87fbb36e47c8e381d8c8231a95af842a1c1972919e1ac2f59222ea43d34d8b59",
+      "sha256Dest": "87fbb36e47c8e381d8c8231a95af842a1c1972919e1ac2f59222ea43d34d8b59",
+      "patched": false
+    },
+    ".claude/agents/mcp.md": {
+      "source": "claude-agents",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/mcp.md",
+      "sha256Source": "333c2d01a3b3ae7983674326fb258a4520d399cecd4422de6f17dec73c94464d",
+      "sha256Dest": "333c2d01a3b3ae7983674326fb258a4520d399cecd4422de6f17dec73c94464d",
+      "patched": false
+    },
+    ".claude/agents/memory.md": {
+      "source": "claude-agents",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/memory.md",
+      "sha256Source": "51978dfca1ac52c0e39743e83bc4acdcac7e8dfdecd106adc1181fba1f012f9c",
+      "sha256Dest": "51978dfca1ac52c0e39743e83bc4acdcac7e8dfdecd106adc1181fba1f012f9c",
+      "patched": false
+    },
+    ".claude/agents/optimizer.md": {
+      "source": "claude-agents",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/optimizer.md",
+      "sha256Source": "2f7e31853687d91d4f2a874a3b5895c5b8ebc90d056e6185298dd069e4f523d6",
+      "sha256Dest": "2f7e31853687d91d4f2a874a3b5895c5b8ebc90d056e6185298dd069e4f523d6",
+      "patched": false
+    },
+    ".claude/agents/performance.md": {
+      "source": "claude-agents",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/performance.md",
+      "sha256Source": "d21cad220217d758dd196590521c3e03219bbf992b33c83c006f7ce699bdab57",
+      "sha256Dest": "d21cad220217d758dd196590521c3e03219bbf992b33c83c006f7ce699bdab57",
+      "patched": false
+    },
+    ".claude/agents/queen-coordinator.md": {
+      "source": "claude-agents",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/queen-coordinator.md",
+      "sha256Source": "681e81668442827251359ec9164babef74c06411b2db364f56b55216bca1e18b",
+      "sha256Dest": "681e81668442827251359ec9164babef74c06411b2db364f56b55216bca1e18b",
+      "patched": false
+    },
+    ".claude/agents/research.md": {
+      "source": "claude-agents",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/research.md",
+      "sha256Source": "f03499b813f85fb15e125c265b0525e7794d08c60306fcb2decf29310ff51254",
+      "sha256Dest": "f03499b813f85fb15e125c265b0525e7794d08c60306fcb2decf29310ff51254",
+      "patched": false
+    },
+    ".claude/agents/reviewer.md": {
+      "source": "claude-agents",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/reviewer.md",
+      "sha256Source": "8e1ca62eafc7dd790e1a823144654b1b752c0d504faa645abd25f0f5a49cefed",
+      "sha256Dest": "8e1ca62eafc7dd790e1a823144654b1b752c0d504faa645abd25f0f5a49cefed",
+      "patched": false
+    },
+    ".claude/agents/security-auditor.md": {
+      "source": "claude-agents",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/security-auditor.md",
+      "sha256Source": "a6a31234d4b53feead640da02d8b96e4cea23e5f212debe7386b469ac8128466",
+      "sha256Dest": "a6a31234d4b53feead640da02d8b96e4cea23e5f212debe7386b469ac8128466",
+      "patched": false
+    },
+    ".claude/agents/security.md": {
+      "source": "claude-agents",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/security.md",
+      "sha256Source": "0284ab100e897e1544f1c7a7fba0168f7a120f063b751fd23712663ac9cbdc7d",
+      "sha256Dest": "0284ab100e897e1544f1c7a7fba0168f7a120f063b751fd23712663ac9cbdc7d",
+      "patched": false
+    },
+    ".claude/agents/seo.md": {
+      "source": "claude-agents",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/seo.md",
+      "sha256Source": "86f360a805e2dd0f72fec7cd3ff8017e17421bb2bb832a8c3f61e79f8133b93a",
+      "sha256Dest": "86f360a805e2dd0f72fec7cd3ff8017e17421bb2bb832a8c3f61e79f8133b93a",
+      "patched": false
+    },
+    ".claude/agents/swarm.md": {
+      "source": "claude-agents",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/swarm.md",
+      "sha256Source": "2f1af9dfa6626a33d9111bde7bb4e7081cd892ce39ff81ea302df29cd89a625f",
+      "sha256Dest": "2f1af9dfa6626a33d9111bde7bb4e7081cd892ce39ff81ea302df29cd89a625f",
+      "patched": false
+    },
+    ".claude/agents/testing.md": {
+      "source": "claude-agents",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/testing.md",
+      "sha256Source": "a1d3d605c8196ba36a1d60aa3c1f02f3f91ae9ace77ed9b9289b6c78967c8893",
+      "sha256Dest": "a1d3d605c8196ba36a1d60aa3c1f02f3f91ae9ace77ed9b9289b6c78967c8893",
+      "patched": false
+    },
+    ".claude/agents/uiux.md": {
+      "source": "claude-agents",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/uiux.md",
+      "sha256Source": "f1efd617aed5a5af720ed519b886c1716deb197c00b567076c5f4a8c86170503",
+      "sha256Dest": "f1efd617aed5a5af720ed519b886c1716deb197c00b567076c5f4a8c86170503",
+      "patched": false
+    },
+    ".claude/skills/adaptive-execution/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/adaptive-execution/SKILL.md",
+      "sha256Source": "809e314328a4848fc7a4f38244ca2e414be2f35fd9342444206a2ef5015117e8",
+      "sha256Dest": "809e314328a4848fc7a4f38244ca2e414be2f35fd9342444206a2ef5015117e8",
+      "patched": false
+    },
+    ".claude/skills/agent-adaptive-coordinator/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-adaptive-coordinator/SKILL.md",
+      "sha256Source": "8fe3c7c499d127da8b3f93a7c9575084ca8b1b2a97892a39d90f645ed189b2bf",
+      "sha256Dest": "8fe3c7c499d127da8b3f93a7c9575084ca8b1b2a97892a39d90f645ed189b2bf",
+      "patched": false
+    },
+    ".claude/skills/agent-agent/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-agent/SKILL.md",
+      "sha256Source": "b5528169a4e538ece6bde40da0891f29e6499cc426b0ed5b2cae4e3086804cb8",
+      "sha256Dest": "b5528169a4e538ece6bde40da0891f29e6499cc426b0ed5b2cae4e3086804cb8",
+      "patched": false
+    },
+    ".claude/skills/agent-agentic-payments/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-agentic-payments/SKILL.md",
+      "sha256Source": "b0f0aadbcd6038c07e2b829b934102eace1e6cf3daadf6b8adb916e3cf4011cf",
+      "sha256Dest": "b0f0aadbcd6038c07e2b829b934102eace1e6cf3daadf6b8adb916e3cf4011cf",
+      "patched": false
+    },
+    ".claude/skills/agent-analyze-code-quality/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-analyze-code-quality/SKILL.md",
+      "sha256Source": "1e11553a34d0efa1173a423cad1b5342874d038e1c2faea39057a4c8a9840330",
+      "sha256Dest": "1e11553a34d0efa1173a423cad1b5342874d038e1c2faea39057a4c8a9840330",
+      "patched": false
+    },
+    ".claude/skills/agent-app-store/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-app-store/SKILL.md",
+      "sha256Source": "b2aa6bb3c20de196f8ac099edcbd1c685698de0519afbc0e7b6fdfabbae8dacd",
+      "sha256Dest": "b2aa6bb3c20de196f8ac099edcbd1c685698de0519afbc0e7b6fdfabbae8dacd",
+      "patched": false
+    },
+    ".claude/skills/agent-arch-system-design/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-arch-system-design/SKILL.md",
+      "sha256Source": "83c9361353d8419dc16f6b0bcad5ead00670312e518f557b3cd37289ed71836e",
+      "sha256Dest": "83c9361353d8419dc16f6b0bcad5ead00670312e518f557b3cd37289ed71836e",
+      "patched": false
+    },
+    ".claude/skills/agent-architecture/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-architecture/SKILL.md",
+      "sha256Source": "e36c59f2eef246e0e489499008f89c991cc070b84d7f73d1c63f42e10ae63dbe",
+      "sha256Dest": "e36c59f2eef246e0e489499008f89c991cc070b84d7f73d1c63f42e10ae63dbe",
+      "patched": false
+    },
+    ".claude/skills/agent-authentication/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-authentication/SKILL.md",
+      "sha256Source": "0178f2d55f19b1c470396750eb795ea24c137e04a20931ce83071c10d6d69ed3",
+      "sha256Dest": "0178f2d55f19b1c470396750eb795ea24c137e04a20931ce83071c10d6d69ed3",
+      "patched": false
+    },
+    ".claude/skills/agent-automation-smart-agent/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-automation-smart-agent/SKILL.md",
+      "sha256Source": "bcccba42830031f639e28e6d5fa0bae3ac1967ba3143520466e5a146a9461b3d",
+      "sha256Dest": "bcccba42830031f639e28e6d5fa0bae3ac1967ba3143520466e5a146a9461b3d",
+      "patched": false
+    },
+    ".claude/skills/agent-base-template-generator/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-base-template-generator/SKILL.md",
+      "sha256Source": "c15b0cb72d7f71091693672031ca46f9aff6af06e2e1cac57cff8911f3178dd7",
+      "sha256Dest": "c15b0cb72d7f71091693672031ca46f9aff6af06e2e1cac57cff8911f3178dd7",
+      "patched": false
+    },
+    ".claude/skills/agent-benchmark-suite/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-benchmark-suite/SKILL.md",
+      "sha256Source": "41c15d830659d6a12c170f0c2368b34510ae87fcd80aaee9295265235e211efc",
+      "sha256Dest": "41c15d830659d6a12c170f0c2368b34510ae87fcd80aaee9295265235e211efc",
+      "patched": false
+    },
+    ".claude/skills/agent-byzantine-coordinator/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-byzantine-coordinator/SKILL.md",
+      "sha256Source": "f047644e4725a62df1565470988ce39f437ddbfa20f13bc0c5f213f44747e9df",
+      "sha256Dest": "f047644e4725a62df1565470988ce39f437ddbfa20f13bc0c5f213f44747e9df",
+      "patched": false
+    },
+    ".claude/skills/agent-challenges/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-challenges/SKILL.md",
+      "sha256Source": "2fc8d705facf4ab5021012a43fdb442bf3a58a8419d6cb076f32b75805f1a12b",
+      "sha256Dest": "2fc8d705facf4ab5021012a43fdb442bf3a58a8419d6cb076f32b75805f1a12b",
+      "patched": false
+    },
+    ".claude/skills/agent-code-analyzer/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-code-analyzer/SKILL.md",
+      "sha256Source": "152b14e51ea7db53ed8760cbdbc7fc08fbb85fc66273dba02369c9001c800602",
+      "sha256Dest": "152b14e51ea7db53ed8760cbdbc7fc08fbb85fc66273dba02369c9001c800602",
+      "patched": false
+    },
+    ".claude/skills/agent-code-goal-planner/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-code-goal-planner/SKILL.md",
+      "sha256Source": "8efd56f2f171f6eae3ab4f2f969b6bdb1fbe94025b407241074d68f8d89268ff",
+      "sha256Dest": "8efd56f2f171f6eae3ab4f2f969b6bdb1fbe94025b407241074d68f8d89268ff",
+      "patched": false
+    },
+    ".claude/skills/agent-code-review-swarm/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-code-review-swarm/SKILL.md",
+      "sha256Source": "1a64e852d90428aa6ef537bd23b1caf58a50fb50ec7acf21a2c6ce3ed52dc306",
+      "sha256Dest": "1a64e852d90428aa6ef537bd23b1caf58a50fb50ec7acf21a2c6ce3ed52dc306",
+      "patched": false
+    },
+    ".claude/skills/agent-coder/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-coder/SKILL.md",
+      "sha256Source": "1f24cd0b0796bf5d21792cdd0138f3cce7923efadc2c81529be5d71dc7fc8054",
+      "sha256Dest": "1f24cd0b0796bf5d21792cdd0138f3cce7923efadc2c81529be5d71dc7fc8054",
+      "patched": false
+    },
+    ".claude/skills/agent-collective-intelligence-coordinator/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-collective-intelligence-coordinator/SKILL.md",
+      "sha256Source": "b730fd9bf8fcfb4bcdc671b7428d1861e6ad6d0f120a995ea91aedcba9fbcd94",
+      "sha256Dest": "b730fd9bf8fcfb4bcdc671b7428d1861e6ad6d0f120a995ea91aedcba9fbcd94",
+      "patched": false
+    },
+    ".claude/skills/agent-consensus-coordinator/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-consensus-coordinator/SKILL.md",
+      "sha256Source": "7c8cc3c595dc2f218078b9159bea0494e0f282014df8d1c99f32d32e16cd0c88",
+      "sha256Dest": "7c8cc3c595dc2f218078b9159bea0494e0f282014df8d1c99f32d32e16cd0c88",
+      "patched": false
+    },
+    ".claude/skills/agent-coordination/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-coordination/SKILL.md",
+      "sha256Source": "6e2f36a46a20fc08c21e673eeecd5816f0a0a4a3267d9585fa5c1f1599b5288a",
+      "sha256Dest": "6e2f36a46a20fc08c21e673eeecd5816f0a0a4a3267d9585fa5c1f1599b5288a",
+      "patched": false
+    },
+    ".claude/skills/agent-coordinator-swarm-init/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-coordinator-swarm-init/SKILL.md",
+      "sha256Source": "b6a5bf89e759bf7ad092c3a3d118cbb5693ce76cff846435bb78e0344c6de89f",
+      "sha256Dest": "b6a5bf89e759bf7ad092c3a3d118cbb5693ce76cff846435bb78e0344c6de89f",
+      "patched": false
+    },
+    ".claude/skills/agent-crdt-synchronizer/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-crdt-synchronizer/SKILL.md",
+      "sha256Source": "73934d2989d15c37fcf5acb4be219d72e49fecb027dca7fd976d9201b035ab15",
+      "sha256Dest": "73934d2989d15c37fcf5acb4be219d72e49fecb027dca7fd976d9201b035ab15",
+      "patched": false
+    },
+    ".claude/skills/agent-data-ml-model/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-data-ml-model/SKILL.md",
+      "sha256Source": "dab377158f222be0b49f355a1f650aa234cd1de075a2c3cc4ba471835b7b48f7",
+      "sha256Dest": "dab377158f222be0b49f355a1f650aa234cd1de075a2c3cc4ba471835b7b48f7",
+      "patched": false
+    },
+    ".claude/skills/agent-dev-backend-api/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-dev-backend-api/SKILL.md",
+      "sha256Source": "13fbac965e68ff6a4928790c7d0d1a2147db8e008d7acea71536640c13cc9786",
+      "sha256Dest": "13fbac965e68ff6a4928790c7d0d1a2147db8e008d7acea71536640c13cc9786",
+      "patched": false
+    },
+    ".claude/skills/agent-docs-api-openapi/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-docs-api-openapi/SKILL.md",
+      "sha256Source": "7902f0883b462cdf755d43418d874b764569489d4abee244ad21a7be23a53a91",
+      "sha256Dest": "7902f0883b462cdf755d43418d874b764569489d4abee244ad21a7be23a53a91",
+      "patched": false
+    },
+    ".claude/skills/agent-github-modes/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-github-modes/SKILL.md",
+      "sha256Source": "4bd2edb99590f679d1e3b5c4a8b3b13028725d139765a5a01fd987d41e026d83",
+      "sha256Dest": "4bd2edb99590f679d1e3b5c4a8b3b13028725d139765a5a01fd987d41e026d83",
+      "patched": false
+    },
+    ".claude/skills/agent-github-pr-manager/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-github-pr-manager/SKILL.md",
+      "sha256Source": "1d36aa404d7c0bb46aef6db10a804d242ad1589425498796ac73ab519886597e",
+      "sha256Dest": "1d36aa404d7c0bb46aef6db10a804d242ad1589425498796ac73ab519886597e",
+      "patched": false
+    },
+    ".claude/skills/agent-goal-planner/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-goal-planner/SKILL.md",
+      "sha256Source": "1ff7062f8cc28bc304f6566c7acaa71ec13d807ea795ca951ec9d75688b5ae0e",
+      "sha256Dest": "1ff7062f8cc28bc304f6566c7acaa71ec13d807ea795ca951ec9d75688b5ae0e",
+      "patched": false
+    },
+    ".claude/skills/agent-gossip-coordinator/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-gossip-coordinator/SKILL.md",
+      "sha256Source": "8b61bbbebc16144c99354d7a4d204dbeccc307183839eb966bcc548716ff2515",
+      "sha256Dest": "8b61bbbebc16144c99354d7a4d204dbeccc307183839eb966bcc548716ff2515",
+      "patched": false
+    },
+    ".claude/skills/agent-hierarchical-coordinator/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-hierarchical-coordinator/SKILL.md",
+      "sha256Source": "252409a8795b7e27a34b110f27896f491ee650cf0f0640ce7a90ee33a59b8d42",
+      "sha256Dest": "252409a8795b7e27a34b110f27896f491ee650cf0f0640ce7a90ee33a59b8d42",
+      "patched": false
+    },
+    ".claude/skills/agent-implementer-sparc-coder/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-implementer-sparc-coder/SKILL.md",
+      "sha256Source": "b21e1b2e4ae813ae7f177863e6f22573d68b24a91b0d44ff496a895fb1e78398",
+      "sha256Dest": "b21e1b2e4ae813ae7f177863e6f22573d68b24a91b0d44ff496a895fb1e78398",
+      "patched": false
+    },
+    ".claude/skills/agent-issue-tracker/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-issue-tracker/SKILL.md",
+      "sha256Source": "057b4ae6d10a9c5dff843f233bea6e5056ff31478634b14bc6c13342aa6d8ae1",
+      "sha256Dest": "057b4ae6d10a9c5dff843f233bea6e5056ff31478634b14bc6c13342aa6d8ae1",
+      "patched": false
+    },
+    ".claude/skills/agent-load-balancer/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-load-balancer/SKILL.md",
+      "sha256Source": "23b2aa668ddf83c75312fb0c7aba68247d3030c694b4479fe1c2788e5e0dee3f",
+      "sha256Dest": "23b2aa668ddf83c75312fb0c7aba68247d3030c694b4479fe1c2788e5e0dee3f",
+      "patched": false
+    },
+    ".claude/skills/agent-matrix-optimizer/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-matrix-optimizer/SKILL.md",
+      "sha256Source": "aeb56984ffe0104fae5b35c24666d29f0115d22bf65603e5d01fecb3bad7f073",
+      "sha256Dest": "aeb56984ffe0104fae5b35c24666d29f0115d22bf65603e5d01fecb3bad7f073",
+      "patched": false
+    },
+    ".claude/skills/agent-memory-coordinator/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-memory-coordinator/SKILL.md",
+      "sha256Source": "6c3deb8e332f75a704e9d5fd746476817561f02f68a1c262bd466b4a385a50e1",
+      "sha256Dest": "6c3deb8e332f75a704e9d5fd746476817561f02f68a1c262bd466b4a385a50e1",
+      "patched": false
+    },
+    ".claude/skills/agent-mesh-coordinator/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-mesh-coordinator/SKILL.md",
+      "sha256Source": "45fc2718cfd790667b2fba7594ff227729542c5b42511c21711601681ed16047",
+      "sha256Dest": "45fc2718cfd790667b2fba7594ff227729542c5b42511c21711601681ed16047",
+      "patched": false
+    },
+    ".claude/skills/agent-migration-plan/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-migration-plan/SKILL.md",
+      "sha256Source": "8443b2abf46585eded1b39c0529c42bc32aca29aa6626a298cca0b352e66561b",
+      "sha256Dest": "8443b2abf46585eded1b39c0529c42bc32aca29aa6626a298cca0b352e66561b",
+      "patched": false
+    },
+    ".claude/skills/agent-multi-repo-swarm/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-multi-repo-swarm/SKILL.md",
+      "sha256Source": "10d95d46ee321cfa5ed27279e8d99a681d2f9688cc88448cf6a0c466ef05e003",
+      "sha256Dest": "10d95d46ee321cfa5ed27279e8d99a681d2f9688cc88448cf6a0c466ef05e003",
+      "patched": false
+    },
+    ".claude/skills/agent-neural-network/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-neural-network/SKILL.md",
+      "sha256Source": "f39ecc5a84a2f81828308e16ec16836c336b8115937a8c744e71e7152ecbf7f9",
+      "sha256Dest": "f39ecc5a84a2f81828308e16ec16836c336b8115937a8c744e71e7152ecbf7f9",
+      "patched": false
+    },
+    ".claude/skills/agent-ops-cicd-github/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-ops-cicd-github/SKILL.md",
+      "sha256Source": "675b080d65bf3f14c8324a39a95e9391e393e7358f1947a6d95bf5bd8a4d43c0",
+      "sha256Dest": "675b080d65bf3f14c8324a39a95e9391e393e7358f1947a6d95bf5bd8a4d43c0",
+      "patched": false
+    },
+    ".claude/skills/agent-orchestrator-task/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-orchestrator-task/SKILL.md",
+      "sha256Source": "7503e1c5ea973fd4f2f3af2081354c41c5d81d2b595239e3d56e6d2e31cf0845",
+      "sha256Dest": "7503e1c5ea973fd4f2f3af2081354c41c5d81d2b595239e3d56e6d2e31cf0845",
+      "patched": false
+    },
+    ".claude/skills/agent-pagerank-analyzer/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-pagerank-analyzer/SKILL.md",
+      "sha256Source": "ab9831837a63eb45c58613b9f65297cfd702fe375bb0cd719e3ed8a9805b49a1",
+      "sha256Dest": "ab9831837a63eb45c58613b9f65297cfd702fe375bb0cd719e3ed8a9805b49a1",
+      "patched": false
+    },
+    ".claude/skills/agent-payments/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-payments/SKILL.md",
+      "sha256Source": "f077218d3566f04bcd6ba97e1e3b50f2dd1127cfc83b7e8e784580aa72144ddc",
+      "sha256Dest": "f077218d3566f04bcd6ba97e1e3b50f2dd1127cfc83b7e8e784580aa72144ddc",
+      "patched": false
+    },
+    ".claude/skills/agent-performance-analyzer/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-performance-analyzer/SKILL.md",
+      "sha256Source": "98dc6d2191a38606472b3499de0079cb62b943090b336af65f54729dd20eb00a",
+      "sha256Dest": "98dc6d2191a38606472b3499de0079cb62b943090b336af65f54729dd20eb00a",
+      "patched": false
+    },
+    ".claude/skills/agent-performance-benchmarker/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-performance-benchmarker/SKILL.md",
+      "sha256Source": "5f4104770958f95e0a27b58d5f6ba1a544d373c0690f9b66a911d24d7cac2017",
+      "sha256Dest": "5f4104770958f95e0a27b58d5f6ba1a544d373c0690f9b66a911d24d7cac2017",
+      "patched": false
+    },
+    ".claude/skills/agent-performance-monitor/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-performance-monitor/SKILL.md",
+      "sha256Source": "048ff1c21dc089e70899aa1f23fb58b11cc5838501db97e9f4da850a5cae0085",
+      "sha256Dest": "048ff1c21dc089e70899aa1f23fb58b11cc5838501db97e9f4da850a5cae0085",
+      "patched": false
+    },
+    ".claude/skills/agent-performance-optimizer/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-performance-optimizer/SKILL.md",
+      "sha256Source": "8c3a1d79dae4df7f5ab36a4741463fd5303fb3b1813f62626bfa582ee86f137c",
+      "sha256Dest": "8c3a1d79dae4df7f5ab36a4741463fd5303fb3b1813f62626bfa582ee86f137c",
+      "patched": false
+    },
+    ".claude/skills/agent-planner/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-planner/SKILL.md",
+      "sha256Source": "f26dc1c8f244ea10c0977f2b017b21f8b7da28d28807c0f32a524dd8f9ed73af",
+      "sha256Dest": "f26dc1c8f244ea10c0977f2b017b21f8b7da28d28807c0f32a524dd8f9ed73af",
+      "patched": false
+    },
+    ".claude/skills/agent-pr-manager/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-pr-manager/SKILL.md",
+      "sha256Source": "106140dd92bb85fa482193df0097d962f0b925dbe00130e3018cc85b8cb204d0",
+      "sha256Dest": "106140dd92bb85fa482193df0097d962f0b925dbe00130e3018cc85b8cb204d0",
+      "patched": false
+    },
+    ".claude/skills/agent-production-validator/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-production-validator/SKILL.md",
+      "sha256Source": "ce83025ab317a4523b5bcd466c77d883c4cffca275f84514ac06671a24615036",
+      "sha256Dest": "ce83025ab317a4523b5bcd466c77d883c4cffca275f84514ac06671a24615036",
+      "patched": false
+    },
+    ".claude/skills/agent-project-board-sync/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-project-board-sync/SKILL.md",
+      "sha256Source": "b44043dd0489ef02ec75c5cf70456f59a0e9df6b2da40ffeb839c001d0a87550",
+      "sha256Dest": "b44043dd0489ef02ec75c5cf70456f59a0e9df6b2da40ffeb839c001d0a87550",
+      "patched": false
+    },
+    ".claude/skills/agent-pseudocode/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-pseudocode/SKILL.md",
+      "sha256Source": "2087e7cbca020b5d80e951248fc01cfba08a3b11590b24d8b3aff53a39b621dd",
+      "sha256Dest": "2087e7cbca020b5d80e951248fc01cfba08a3b11590b24d8b3aff53a39b621dd",
+      "patched": false
+    },
+    ".claude/skills/agent-queen-coordinator/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-queen-coordinator/SKILL.md",
+      "sha256Source": "ffa429cda8134609bd3fe1ad4f81eb6b31d5b80f94b7fd682a6e407fda3f45dd",
+      "sha256Dest": "ffa429cda8134609bd3fe1ad4f81eb6b31d5b80f94b7fd682a6e407fda3f45dd",
+      "patched": false
+    },
+    ".claude/skills/agent-quorum-manager/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-quorum-manager/SKILL.md",
+      "sha256Source": "526231ee11d3b9fd6433a1fb0e3e7bb93c6f82e8cad89401250ae8b70a3a81a7",
+      "sha256Dest": "526231ee11d3b9fd6433a1fb0e3e7bb93c6f82e8cad89401250ae8b70a3a81a7",
+      "patched": false
+    },
+    ".claude/skills/agent-raft-manager/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-raft-manager/SKILL.md",
+      "sha256Source": "4e2518bcb3fae85170eda215fc3561fcb7ef480b94283e4b495d3a3beb3be3cb",
+      "sha256Dest": "4e2518bcb3fae85170eda215fc3561fcb7ef480b94283e4b495d3a3beb3be3cb",
+      "patched": false
+    },
+    ".claude/skills/agent-refinement/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-refinement/SKILL.md",
+      "sha256Source": "62bf0368792f5afe5ebcedd4e7c37e29097431bbf234896b5f3c93ab308a5158",
+      "sha256Dest": "62bf0368792f5afe5ebcedd4e7c37e29097431bbf234896b5f3c93ab308a5158",
+      "patched": false
+    },
+    ".claude/skills/agent-release-manager/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-release-manager/SKILL.md",
+      "sha256Source": "70648f38beb6f26f899181774269e8239333faa3ca4232e238692a646991dd12",
+      "sha256Dest": "70648f38beb6f26f899181774269e8239333faa3ca4232e238692a646991dd12",
+      "patched": false
+    },
+    ".claude/skills/agent-release-swarm/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-release-swarm/SKILL.md",
+      "sha256Source": "ba110df45ffd4950cf2169fa7fccc881f889756740fc18c2d3864bdc2f127377",
+      "sha256Dest": "ba110df45ffd4950cf2169fa7fccc881f889756740fc18c2d3864bdc2f127377",
+      "patched": false
+    },
+    ".claude/skills/agent-repo-architect/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-repo-architect/SKILL.md",
+      "sha256Source": "b4058daa7b9598ac3fdd52629b18f318cf8134bab915eaa8d35d1901c215e01b",
+      "sha256Dest": "b4058daa7b9598ac3fdd52629b18f318cf8134bab915eaa8d35d1901c215e01b",
+      "patched": false
+    },
+    ".claude/skills/agent-researcher/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-researcher/SKILL.md",
+      "sha256Source": "f6c67f6a6ef5b1c1b275dda528e61bb767368db359b4c74fbd7d068496b5de35",
+      "sha256Dest": "f6c67f6a6ef5b1c1b275dda528e61bb767368db359b4c74fbd7d068496b5de35",
+      "patched": false
+    },
+    ".claude/skills/agent-resource-allocator/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-resource-allocator/SKILL.md",
+      "sha256Source": "d6e6e71b8f9bf7738923457f4701eb3ec0c386147bcb3d2f105455ff8efd5db7",
+      "sha256Dest": "d6e6e71b8f9bf7738923457f4701eb3ec0c386147bcb3d2f105455ff8efd5db7",
+      "patched": false
+    },
+    ".claude/skills/agent-reviewer/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-reviewer/SKILL.md",
+      "sha256Source": "9100c74cba86348c2cb48967ae6597375ef46551392d2686b9a6851a6a34791b",
+      "sha256Dest": "9100c74cba86348c2cb48967ae6597375ef46551392d2686b9a6851a6a34791b",
+      "patched": false
+    },
+    ".claude/skills/agent-safla-neural/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-safla-neural/SKILL.md",
+      "sha256Source": "8be6fd605453f22ed6cb8703d64fc271121c060954b8bf2afa6ac7f96ec8d3da",
+      "sha256Dest": "8be6fd605453f22ed6cb8703d64fc271121c060954b8bf2afa6ac7f96ec8d3da",
+      "patched": false
+    },
+    ".claude/skills/agent-sandbox/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-sandbox/SKILL.md",
+      "sha256Source": "2cc1a45489ccf3eb19dc3e3f86217be5f54aad325acf1129a6b8b412e16dd126",
+      "sha256Dest": "2cc1a45489ccf3eb19dc3e3f86217be5f54aad325acf1129a6b8b412e16dd126",
+      "patched": false
+    },
+    ".claude/skills/agent-scout-explorer/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-scout-explorer/SKILL.md",
+      "sha256Source": "be53dc6cf55efdd8974aacf67f84c9dc58078a31d643c7ec5981807420f6d6af",
+      "sha256Dest": "be53dc6cf55efdd8974aacf67f84c9dc58078a31d643c7ec5981807420f6d6af",
+      "patched": false
+    },
+    ".claude/skills/agent-security-manager/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-security-manager/SKILL.md",
+      "sha256Source": "c2eaea1767db8a485f65617303b1f27fb1c4dc15811372b9e75d91940c549ab4",
+      "sha256Dest": "c2eaea1767db8a485f65617303b1f27fb1c4dc15811372b9e75d91940c549ab4",
+      "patched": false
+    },
+    ".claude/skills/agent-sona-learning-optimizer/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-sona-learning-optimizer/SKILL.md",
+      "sha256Source": "c4d85b3e8b549ccdcdcd6ad9efc1fcc7d061aede4815dba88bda1fd63cb21435",
+      "sha256Dest": "c4d85b3e8b549ccdcdcd6ad9efc1fcc7d061aede4815dba88bda1fd63cb21435",
+      "patched": false
+    },
+    ".claude/skills/agent-sparc-coordinator/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-sparc-coordinator/SKILL.md",
+      "sha256Source": "d6abf944b1e15d7e06bf8ad9e4115fe4fe994b53bb9364cc92883cbbf8d64d9c",
+      "sha256Dest": "d6abf944b1e15d7e06bf8ad9e4115fe4fe994b53bb9364cc92883cbbf8d64d9c",
+      "patched": false
+    },
+    ".claude/skills/agent-spec-mobile-react-native/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-spec-mobile-react-native/SKILL.md",
+      "sha256Source": "7b93024c0733e045396caf9713b115fb1dc1150965e58aa368941115a8290bcc",
+      "sha256Dest": "7b93024c0733e045396caf9713b115fb1dc1150965e58aa368941115a8290bcc",
+      "patched": false
+    },
+    ".claude/skills/agent-specification/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-specification/SKILL.md",
+      "sha256Source": "348c1f1f5a33fcc309ddbfea48e5ec1e2e64c04ce88f11c14bcc5e656b2b59e4",
+      "sha256Dest": "348c1f1f5a33fcc309ddbfea48e5ec1e2e64c04ce88f11c14bcc5e656b2b59e4",
+      "patched": false
+    },
+    ".claude/skills/agent-swarm-issue/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-swarm-issue/SKILL.md",
+      "sha256Source": "d19d573989da4f0e5d69f8beeb16fc53335498b59305a1d817171782286d31fc",
+      "sha256Dest": "d19d573989da4f0e5d69f8beeb16fc53335498b59305a1d817171782286d31fc",
+      "patched": false
+    },
+    ".claude/skills/agent-swarm-memory-manager/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-swarm-memory-manager/SKILL.md",
+      "sha256Source": "9f1653e40727a9a06d7c976416aea3a316b70a3d720a02dda83429366b85b0e9",
+      "sha256Dest": "9f1653e40727a9a06d7c976416aea3a316b70a3d720a02dda83429366b85b0e9",
+      "patched": false
+    },
+    ".claude/skills/agent-swarm-pr/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-swarm-pr/SKILL.md",
+      "sha256Source": "0110ff809163bdc97c3f85464ad856bcd935e10aa06856caae6a0581a75baecf",
+      "sha256Dest": "0110ff809163bdc97c3f85464ad856bcd935e10aa06856caae6a0581a75baecf",
+      "patched": false
+    },
+    ".claude/skills/agent-swarm/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-swarm/SKILL.md",
+      "sha256Source": "b203e3f2e90f32bc935737e35a77ca48d55d305f10c7f3e8e0312938448612c2",
+      "sha256Dest": "b203e3f2e90f32bc935737e35a77ca48d55d305f10c7f3e8e0312938448612c2",
+      "patched": false
+    },
+    ".claude/skills/agent-sync-coordinator/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-sync-coordinator/SKILL.md",
+      "sha256Source": "450438bda09a88edbe24c52fd3b9b3c20b0a95a641548098e3631df0f427e763",
+      "sha256Dest": "450438bda09a88edbe24c52fd3b9b3c20b0a95a641548098e3631df0f427e763",
+      "patched": false
+    },
+    ".claude/skills/agent-tdd-london-swarm/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-tdd-london-swarm/SKILL.md",
+      "sha256Source": "192b64f171313a7b48f51f78a15de53149526eb0fd017bf13000193a27045564",
+      "sha256Dest": "192b64f171313a7b48f51f78a15de53149526eb0fd017bf13000193a27045564",
+      "patched": false
+    },
+    ".claude/skills/agent-test-long-runner/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-test-long-runner/SKILL.md",
+      "sha256Source": "4a170e6a163c69c972672e6912d5f0c9386af6ee38edea29e7e406d621873df3",
+      "sha256Dest": "4a170e6a163c69c972672e6912d5f0c9386af6ee38edea29e7e406d621873df3",
+      "patched": false
+    },
+    ".claude/skills/agent-tester/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-tester/SKILL.md",
+      "sha256Source": "c10b2fef70c3b08145eaf04197a6b3b6ddb72fe968e37a76e44ed81425694f24",
+      "sha256Dest": "c10b2fef70c3b08145eaf04197a6b3b6ddb72fe968e37a76e44ed81425694f24",
+      "patched": false
+    },
+    ".claude/skills/agent-topology-optimizer/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-topology-optimizer/SKILL.md",
+      "sha256Source": "e0606fe8a7705f5ec4ed5a4d4146a932f532a4e27aae0c3b78530e43d35220f9",
+      "sha256Dest": "e0606fe8a7705f5ec4ed5a4d4146a932f532a4e27aae0c3b78530e43d35220f9",
+      "patched": false
+    },
+    ".claude/skills/agent-trading-predictor/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-trading-predictor/SKILL.md",
+      "sha256Source": "a1accd52f7fc693715a3b0f326d40d3ca39f655359adb5830913e157fa51f97b",
+      "sha256Dest": "a1accd52f7fc693715a3b0f326d40d3ca39f655359adb5830913e157fa51f97b",
+      "patched": false
+    },
+    ".claude/skills/agent-user-tools/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-user-tools/SKILL.md",
+      "sha256Source": "d61df2332712fb0ae12d9f2c0cd86a80455cda5d205ebcf11454cc74f19be5c9",
+      "sha256Dest": "d61df2332712fb0ae12d9f2c0cd86a80455cda5d205ebcf11454cc74f19be5c9",
+      "patched": false
+    },
+    ".claude/skills/agent-v3-integration-architect/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-v3-integration-architect/SKILL.md",
+      "sha256Source": "3d26f44e226a52e2584f964c5901501a1aa47ca98714bbc2db6eebe163eb7c32",
+      "sha256Dest": "3d26f44e226a52e2584f964c5901501a1aa47ca98714bbc2db6eebe163eb7c32",
+      "patched": false
+    },
+    ".claude/skills/agent-v3-memory-specialist/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-v3-memory-specialist/SKILL.md",
+      "sha256Source": "a6ab754e61cc3099cd5e67040d6b9b98c97e5ff3e62103812c299d316dc19d6a",
+      "sha256Dest": "a6ab754e61cc3099cd5e67040d6b9b98c97e5ff3e62103812c299d316dc19d6a",
+      "patched": false
+    },
+    ".claude/skills/agent-v3-performance-engineer/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-v3-performance-engineer/SKILL.md",
+      "sha256Source": "010cf448f45e32615cd5e5bc97166fa66664255f718c287cf0348dc0cc0692c6",
+      "sha256Dest": "010cf448f45e32615cd5e5bc97166fa66664255f718c287cf0348dc0cc0692c6",
+      "patched": false
+    },
+    ".claude/skills/agent-v3-queen-coordinator/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-v3-queen-coordinator/SKILL.md",
+      "sha256Source": "c841c5d7aedadc8eddeea0bbcf7012c2fd10d10f168d94d2ea20302ec1d42c4e",
+      "sha256Dest": "c841c5d7aedadc8eddeea0bbcf7012c2fd10d10f168d94d2ea20302ec1d42c4e",
+      "patched": false
+    },
+    ".claude/skills/agent-v3-security-architect/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-v3-security-architect/SKILL.md",
+      "sha256Source": "6049ceb89e3bac25b296b53b5bddd199f71f336ee4a9860a87bfc19fa063331e",
+      "sha256Dest": "6049ceb89e3bac25b296b53b5bddd199f71f336ee4a9860a87bfc19fa063331e",
+      "patched": false
+    },
+    ".claude/skills/agent-worker-specialist/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-worker-specialist/SKILL.md",
+      "sha256Source": "6ef726edd61169d2cb8e5e15219d7ded68415a973c5fa774b5145fd972526236",
+      "sha256Dest": "6ef726edd61169d2cb8e5e15219d7ded68415a973c5fa774b5145fd972526236",
+      "patched": false
+    },
+    ".claude/skills/agent-workflow-automation/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-workflow-automation/SKILL.md",
+      "sha256Source": "f839bdca77c54559bba880fa3b8a059958a46387c43174a01844ae68e2486e22",
+      "sha256Dest": "f839bdca77c54559bba880fa3b8a059958a46387c43174a01844ae68e2486e22",
+      "patched": false
+    },
+    ".claude/skills/agent-workflow/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agent-workflow/SKILL.md",
+      "sha256Source": "a52792a1fd058b618e3916755f5b934d36c97fd46533268bc38c3fda3e3f4422",
+      "sha256Dest": "a52792a1fd058b618e3916755f5b934d36c97fd46533268bc38c3fda3e3f4422",
+      "patched": false
+    },
+    ".claude/skills/agentdb-advanced/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agentdb-advanced/SKILL.md",
+      "sha256Source": "3b337dee6eb1c5402a9d0e3b7ea9c38381f83965734dc51c066490dc300d3d3c",
+      "sha256Dest": "3b337dee6eb1c5402a9d0e3b7ea9c38381f83965734dc51c066490dc300d3d3c",
+      "patched": false
+    },
+    ".claude/skills/agentdb-learning/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agentdb-learning/SKILL.md",
+      "sha256Source": "fd9f5367192e93931f0ae08015d8615e6ad917c948307ae1d278cb8c82771858",
+      "sha256Dest": "fd9f5367192e93931f0ae08015d8615e6ad917c948307ae1d278cb8c82771858",
+      "patched": false
+    },
+    ".claude/skills/agentdb-memory-patterns/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agentdb-memory-patterns/SKILL.md",
+      "sha256Source": "371f684ca87ce841447681cbd7d1a06bf833d9f060e7e026f32e5c0f54172327",
+      "sha256Dest": "371f684ca87ce841447681cbd7d1a06bf833d9f060e7e026f32e5c0f54172327",
+      "patched": false
+    },
+    ".claude/skills/agentdb-optimization/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agentdb-optimization/SKILL.md",
+      "sha256Source": "8f3f46162e9a81a6fac45716d229723be2e4121653a340bf1d5c0f2cbbe988c1",
+      "sha256Dest": "8f3f46162e9a81a6fac45716d229723be2e4121653a340bf1d5c0f2cbbe988c1",
+      "patched": false
+    },
+    ".claude/skills/agentdb-vector-search/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agentdb-vector-search/SKILL.md",
+      "sha256Source": "4a9292a66d5af0662115a80a915d231b82a0464a90431cb7a36824c157458ea3",
+      "sha256Dest": "4a9292a66d5af0662115a80a915d231b82a0464a90431cb7a36824c157458ea3",
+      "patched": false
+    },
+    ".claude/skills/agentic-jujutsu/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/agentic-jujutsu/SKILL.md",
+      "sha256Source": "a018a382b22d27a9ef297e6a2917dc2281ab9d92eabc4dff1481a63f8887df86",
+      "sha256Dest": "a018a382b22d27a9ef297e6a2917dc2281ab9d92eabc4dff1481a63f8887df86",
+      "patched": false
+    },
+    ".claude/skills/claims/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/claims/SKILL.md",
+      "sha256Source": "a0766315b1a46c51a4a1a0fced2ece2af12d0ce2131c98267ad602ec506ba219",
+      "sha256Dest": "a0766315b1a46c51a4a1a0fced2ece2af12d0ce2131c98267ad602ec506ba219",
+      "patched": false
+    },
+    ".claude/skills/elite-software-engineering/references/agent-orchestration.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/elite-software-engineering/references/agent-orchestration.md",
+      "sha256Source": "8136417e8cf3962385c8ba95d0615f542ae2a5030e3bb4cc85aa6e5845cfc031",
+      "sha256Dest": "8136417e8cf3962385c8ba95d0615f542ae2a5030e3bb4cc85aa6e5845cfc031",
+      "patched": false
+    },
+    ".claude/skills/elite-software-engineering/references/ai-engineering.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/elite-software-engineering/references/ai-engineering.md",
+      "sha256Source": "d88d39d64d7c6c921c8b7795a19f144009bb8f6c87c4f3f7523fbb766b0b67bc",
+      "sha256Dest": "d88d39d64d7c6c921c8b7795a19f144009bb8f6c87c4f3f7523fbb766b0b67bc",
+      "patched": false
+    },
+    ".claude/skills/elite-software-engineering/references/api-data-integrations.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/elite-software-engineering/references/api-data-integrations.md",
+      "sha256Source": "7af4c0e3c22e59573a41ab261f676093ef581f32ead2b483896e7f70e09ee992",
+      "sha256Dest": "7af4c0e3c22e59573a41ab261f676093ef581f32ead2b483896e7f70e09ee992",
+      "patched": false
+    },
+    ".claude/skills/elite-software-engineering/references/architecture-and-planning.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/elite-software-engineering/references/architecture-and-planning.md",
+      "sha256Source": "7cca5228dc756a29f6cab49efcb9f0df0bc73a2ccfad10888aaf02be97436f7d",
+      "sha256Dest": "7cca5228dc756a29f6cab49efcb9f0df0bc73a2ccfad10888aaf02be97436f7d",
+      "patched": false
+    },
+    ".claude/skills/elite-software-engineering/references/observability-reliability.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/elite-software-engineering/references/observability-reliability.md",
+      "sha256Source": "7030549e6b757e83f95f4cbbcf5872229124fafb30e4a9027930e43c53b5221d",
+      "sha256Dest": "7030549e6b757e83f95f4cbbcf5872229124fafb30e4a9027930e43c53b5221d",
+      "patched": false
+    },
+    ".claude/skills/elite-software-engineering/references/security-and-privacy.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/elite-software-engineering/references/security-and-privacy.md",
+      "sha256Source": "c85697753af28bda559b4b7683cb978b55a329565e183205ba400e8e9ee31427",
+      "sha256Dest": "c85697753af28bda559b4b7683cb978b55a329565e183205ba400e8e9ee31427",
+      "patched": false
+    },
+    ".claude/skills/elite-software-engineering/references/testing-and-release.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/elite-software-engineering/references/testing-and-release.md",
+      "sha256Source": "23e4eff19eb9cf363350f2e3ae7d2d3565327765854d77289020619c04ed9f95",
+      "sha256Dest": "23e4eff19eb9cf363350f2e3ae7d2d3565327765854d77289020619c04ed9f95",
+      "patched": false
+    },
+    ".claude/skills/elite-software-engineering/references/web-application-quality.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/elite-software-engineering/references/web-application-quality.md",
+      "sha256Source": "7431d9bdfe4c0672d4ee1808fcdfd5667146512a306942372204616bd9faafbf",
+      "sha256Dest": "7431d9bdfe4c0672d4ee1808fcdfd5667146512a306942372204616bd9faafbf",
+      "patched": false
+    },
+    ".claude/skills/elite-software-engineering/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/elite-software-engineering/SKILL.md",
+      "sha256Source": "6eb46e3982be992b170877bf6d93d4c6f1d0dc3f2d1c3ad2be5afd3d8f9d671d",
+      "sha256Dest": "6eb46e3982be992b170877bf6d93d4c6f1d0dc3f2d1c3ad2be5afd3d8f9d671d",
+      "patched": false
+    },
+    ".claude/skills/embeddings/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/embeddings/SKILL.md",
+      "sha256Source": "1df21242ef1031ed1c16a0312095be6503e4d7d3a2e1b567c45ffd9a61e06efe",
+      "sha256Dest": "1df21242ef1031ed1c16a0312095be6503e4d7d3a2e1b567c45ffd9a61e06efe",
+      "patched": false
+    },
+    ".claude/skills/flow-nexus-neural/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/flow-nexus-neural/SKILL.md",
+      "sha256Source": "1f17172ea1a356908958f47d8cf5efa456596c62bcba4972d99ff4ff34c99ffb",
+      "sha256Dest": "1f17172ea1a356908958f47d8cf5efa456596c62bcba4972d99ff4ff34c99ffb",
+      "patched": false
+    },
+    ".claude/skills/flow-nexus-platform/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/flow-nexus-platform/SKILL.md",
+      "sha256Source": "4f81d20aa289f44161a96134b18cf8087daa1158799c881ffc4730cad4183dea",
+      "sha256Dest": "4f81d20aa289f44161a96134b18cf8087daa1158799c881ffc4730cad4183dea",
+      "patched": false
+    },
+    ".claude/skills/flow-nexus-swarm/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/flow-nexus-swarm/SKILL.md",
+      "sha256Source": "f060e56109c5ea95c426bff7a2653dcb4ad7843e8d11e7aec0b464e68e0017ef",
+      "sha256Dest": "f060e56109c5ea95c426bff7a2653dcb4ad7843e8d11e7aec0b464e68e0017ef",
+      "patched": false
+    },
+    ".claude/skills/github-automation/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/github-automation/SKILL.md",
+      "sha256Source": "5e9ebc25b95b2b145c5fa5443f8876783e87f0cac3895b7cea7552e77533480d",
+      "sha256Dest": "5e9ebc25b95b2b145c5fa5443f8876783e87f0cac3895b7cea7552e77533480d",
+      "patched": false
+    },
+    ".claude/skills/github-code-review/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/github-code-review/SKILL.md",
+      "sha256Source": "7a888e3a30bf7880aa6c98dd0e05128d82893c966b2cded22550c26ac627c6c7",
+      "sha256Dest": "7a888e3a30bf7880aa6c98dd0e05128d82893c966b2cded22550c26ac627c6c7",
+      "patched": false
+    },
+    ".claude/skills/github-multi-repo/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/github-multi-repo/SKILL.md",
+      "sha256Source": "ab86c4e0b303d47886e119371d407afb7f6da0437ce8fd8eec3734a863d7bb78",
+      "sha256Dest": "ab86c4e0b303d47886e119371d407afb7f6da0437ce8fd8eec3734a863d7bb78",
+      "patched": false
+    },
+    ".claude/skills/github-project-management/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/github-project-management/SKILL.md",
+      "sha256Source": "b5a92d1a20b36e1b289e11786ac64de4f376abf84e5b84dddfcf23961cc885ad",
+      "sha256Dest": "b5a92d1a20b36e1b289e11786ac64de4f376abf84e5b84dddfcf23961cc885ad",
+      "patched": false
+    },
+    ".claude/skills/github-release-management/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/github-release-management/SKILL.md",
+      "sha256Source": "689a2bee064ff6c0c99ca32151fef0b2b645e81926b51e59cc2a84d9078fab5d",
+      "sha256Dest": "689a2bee064ff6c0c99ca32151fef0b2b645e81926b51e59cc2a84d9078fab5d",
+      "patched": false
+    },
+    ".claude/skills/github-workflow-automation/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/github-workflow-automation/SKILL.md",
+      "sha256Source": "381acbdad3def2f8a0e93fea2c4b5cf74231981fa95f20b0c4abec5726ef0a7a",
+      "sha256Dest": "381acbdad3def2f8a0e93fea2c4b5cf74231981fa95f20b0c4abec5726ef0a7a",
+      "patched": false
+    },
+    ".claude/skills/hive-mind-advanced/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/hive-mind-advanced/SKILL.md",
+      "sha256Source": "afdb57e9452ec84603e6919f6ea818dc4b7c76f83f4c50b5321537e41f4e8c63",
+      "sha256Dest": "afdb57e9452ec84603e6919f6ea818dc4b7c76f83f4c50b5321537e41f4e8c63",
+      "patched": false
+    },
+    ".claude/skills/hive-mind/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/hive-mind/SKILL.md",
+      "sha256Source": "4edb7cca7df5bd2301c0bfa0c6c369815b8e37743dc0c709ec72e04556ebdd3b",
+      "sha256Dest": "4edb7cca7df5bd2301c0bfa0c6c369815b8e37743dc0c709ec72e04556ebdd3b",
+      "patched": false
+    },
+    ".claude/skills/hooks-automation/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/hooks-automation/SKILL.md",
+      "sha256Source": "ed95598027184275a3faca622270bda9600bfa8760bc8729cdc65a5a798fd32e",
+      "sha256Dest": "ed95598027184275a3faca622270bda9600bfa8760bc8729cdc65a5a798fd32e",
+      "patched": false
+    },
+    ".claude/skills/memory-management/scripts/memory-backup.sh": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/memory-management/scripts/memory-backup.sh",
+      "sha256Source": "7fb389149944c701598b7ecfaf4f0c91bb1892099603335c5c8dc231825d1caa",
+      "sha256Dest": "7fb389149944c701598b7ecfaf4f0c91bb1892099603335c5c8dc231825d1caa",
+      "patched": false
+    },
+    ".claude/skills/memory-management/scripts/memory-consolidate.sh": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/memory-management/scripts/memory-consolidate.sh",
+      "sha256Source": "13e1f3aaef8f808d898a319ec75add827bd620219bb497562dfb17c498b5ef53",
+      "sha256Dest": "13e1f3aaef8f808d898a319ec75add827bd620219bb497562dfb17c498b5ef53",
+      "patched": false
+    },
+    ".claude/skills/memory-management/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/memory-management/SKILL.md",
+      "sha256Source": "57ecdd02b6079194e6ddea24443685fc5cbe5e445f3c8a4b1ec4d4f58eb9298e",
+      "sha256Dest": "57ecdd02b6079194e6ddea24443685fc5cbe5e445f3c8a4b1ec4d4f58eb9298e",
+      "patched": false
+    },
+    ".claude/skills/neural-training/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/neural-training/SKILL.md",
+      "sha256Source": "28aa40972ed82ed01cc04af2402a5f5044004abe3dfcb865de76290c0e69c37d",
+      "sha256Dest": "28aa40972ed82ed01cc04af2402a5f5044004abe3dfcb865de76290c0e69c37d",
+      "patched": false
+    },
+    ".claude/skills/open-federation/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/open-federation/SKILL.md",
+      "sha256Source": "b81d3184ab9c550be60ad73feb1f7cd5e8351b4a12b4751cbb3e31f4e85c9918",
+      "sha256Dest": "b81d3184ab9c550be60ad73feb1f7cd5e8351b4a12b4751cbb3e31f4e85c9918",
+      "patched": false
+    },
+    ".claude/skills/pair-programming/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/pair-programming/SKILL.md",
+      "sha256Source": "9cb477122f860af321c3a6d243941bafee38f2540fd33d7e18a43f34cf249850",
+      "sha256Dest": "9cb477122f860af321c3a6d243941bafee38f2540fd33d7e18a43f34cf249850",
+      "patched": false
+    },
+    ".claude/skills/performance-analysis/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/performance-analysis/SKILL.md",
+      "sha256Source": "1ef80aec71c0c66f72d9e57c1bebc20956d28dd1f3b3e11a7f43e60ef79368d5",
+      "sha256Dest": "1ef80aec71c0c66f72d9e57c1bebc20956d28dd1f3b3e11a7f43e60ef79368d5",
+      "patched": false
+    },
+    ".claude/skills/reasoningbank-agentdb/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/reasoningbank-agentdb/SKILL.md",
+      "sha256Source": "10602b305bd7dbfddad68340654905389f8a6b2d41dde7e15cd06543d55e7639",
+      "sha256Dest": "10602b305bd7dbfddad68340654905389f8a6b2d41dde7e15cd06543d55e7639",
+      "patched": false
+    },
+    ".claude/skills/reasoningbank-intelligence/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/reasoningbank-intelligence/SKILL.md",
+      "sha256Source": "c8403e9ed27602249e6604734c3efa242c789409f778e8671cd5264a10649591",
+      "sha256Dest": "c8403e9ed27602249e6604734c3efa242c789409f778e8671cd5264a10649591",
+      "patched": false
+    },
+    ".claude/skills/security-audit/scripts/cve-remediate.sh": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/security-audit/scripts/cve-remediate.sh",
+      "sha256Source": "b12c793f604dc327cc3563c3034d96f94e428811cfdf404177aed1b005453f80",
+      "sha256Dest": "b12c793f604dc327cc3563c3034d96f94e428811cfdf404177aed1b005453f80",
+      "patched": false
+    },
+    ".claude/skills/security-audit/scripts/security-scan.sh": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/security-audit/scripts/security-scan.sh",
+      "sha256Source": "bc89d3f00f4a414ebdd010875566ba28459cc33e13af6a416af22581c60c26cc",
+      "sha256Dest": "bc89d3f00f4a414ebdd010875566ba28459cc33e13af6a416af22581c60c26cc",
+      "patched": false
+    },
+    ".claude/skills/security-audit/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/security-audit/SKILL.md",
+      "sha256Source": "5337a5c98d88ca7b574d921f91807008cb93fb0a1e1e662dad70e2e58266b878",
+      "sha256Dest": "5337a5c98d88ca7b574d921f91807008cb93fb0a1e1e662dad70e2e58266b878",
+      "patched": false
+    },
+    ".claude/skills/skill-builder/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/skill-builder/SKILL.md",
+      "sha256Source": "eee6e7317a1b2be8856ef87128c2759aabdddaccdbe9dc440e6cf4d9e5d10fb1",
+      "sha256Dest": "eee6e7317a1b2be8856ef87128c2759aabdddaccdbe9dc440e6cf4d9e5d10fb1",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-ultimate/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-ultimate/SKILL.md",
+      "sha256Source": "5f559da49d8b59d19951e16949d16c932f95a5daf061064f2e30e63c4a7dc794",
+      "sha256Dest": "5f559da49d8b59d19951e16949d16c932f95a5daf061064f2e30e63c4a7dc794",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/references/01-cs-fundamentals-algorithm-and-data-structures.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/references/01-cs-fundamentals-algorithm-and-data-structures.md",
+      "sha256Source": "ce994a58c536ed64216c8498da18fe1f3b1909122b97f025611b0f4a7d2fe0df",
+      "sha256Dest": "ce994a58c536ed64216c8498da18fe1f3b1909122b97f025611b0f4a7d2fe0df",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/references/01-cs-fundamentals-computer-science-fundamentals.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/references/01-cs-fundamentals-computer-science-fundamentals.md",
+      "sha256Source": "08a37b028cd2743cfcd0d983c6b49f6483322c1818f7983ec84dd1e99e7d8cb2",
+      "sha256Dest": "08a37b028cd2743cfcd0d983c6b49f6483322c1818f7983ec84dd1e99e7d8cb2",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/references/01-cs-fundamentals-operating-system-guide.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/references/01-cs-fundamentals-operating-system-guide.md",
+      "sha256Source": "08d75147583b599ea580a7812a9bc646994a89c6589e53497b78045081d3ef2e",
+      "sha256Dest": "08d75147583b599ea580a7812a9bc646994a89c6589e53497b78045081d3ef2e",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/references/01-cs-fundamentals-programming-language-fundamentals.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/references/01-cs-fundamentals-programming-language-fundamentals.md",
+      "sha256Source": "ba0cd05e2efc1da65fa8ca0152a3918014aa343844b2b9a446b392a3f21b4a48",
+      "sha256Dest": "ba0cd05e2efc1da65fa8ca0152a3918014aa343844b2b9a446b392a3f21b4a48",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/references/02-programming-async-and-error-handling.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/references/02-programming-async-and-error-handling.md",
+      "sha256Source": "b8d1afd3604fbe923f2bd72f91b8db0d504d981a402cd9e244cd72a71c03753c",
+      "sha256Dest": "b8d1afd3604fbe923f2bd72f91b8db0d504d981a402cd9e244cd72a71c03753c",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/references/02-programming-go-practical-guide.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/references/02-programming-go-practical-guide.md",
+      "sha256Source": "85e09d38f7cfb8a218f279430ac429de5a005793b6563dee2e844fc8208763d4",
+      "sha256Dest": "85e09d38f7cfb8a218f279430ac429de5a005793b6563dee2e844fc8208763d4",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/references/02-programming-object-oriented-programming.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/references/02-programming-object-oriented-programming.md",
+      "sha256Source": "8a4578fb05b4b80f35b791801b43adb676b3aa27e97d2150ef34f5616333ce7d",
+      "sha256Dest": "8a4578fb05b4b80f35b791801b43adb676b3aa27e97d2150ef34f5616333ce7d",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/references/02-programming-python-development.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/references/02-programming-python-development.md",
+      "sha256Source": "ca298d6ccb5c6a275dbf3684101d8f94aa1b99cc90b2e5cd68f4d0db0bffc8ca",
+      "sha256Dest": "ca298d6ccb5c6a275dbf3684101d8f94aa1b99cc90b2e5cd68f4d0db0bffc8ca",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/references/02-programming-regex-and-text-processing.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/references/02-programming-regex-and-text-processing.md",
+      "sha256Source": "a2ac3b99c3639f38a7612ebe2e1fb7b49d95eaa6e1f8501c2b47c34731f9fd07",
+      "sha256Dest": "a2ac3b99c3639f38a7612ebe2e1fb7b49d95eaa6e1f8501c2b47c34731f9fd07",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/references/02-programming-rust-systems-programming.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/references/02-programming-rust-systems-programming.md",
+      "sha256Source": "53f49fc494ec5edf56f7f5aa2e6d74135b1263e46e61f592cb3a5c713f48d7bf",
+      "sha256Dest": "53f49fc494ec5edf56f7f5aa2e6d74135b1263e46e61f592cb3a5c713f48d7bf",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/references/02-programming-typescript-complete-guide.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/references/02-programming-typescript-complete-guide.md",
+      "sha256Source": "e8a45ad752d13bf142809e3933d217cce15453faf6ff9dc522184cebcaa35507",
+      "sha256Dest": "e8a45ad752d13bf142809e3933d217cce15453faf6ff9dc522184cebcaa35507",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/references/03-design-clean-code-principles.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/references/03-design-clean-code-principles.md",
+      "sha256Source": "4dcab480b4e47112f97f43f78707dd5ddc144653fa4542695fcc1b0b789de350",
+      "sha256Dest": "4dcab480b4e47112f97f43f78707dd5ddc144653fa4542695fcc1b0b789de350",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/references/03-design-design-patterns-guide.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/references/03-design-design-patterns-guide.md",
+      "sha256Source": "09d8996dbe65eaff66cf689d4e396e608c6e281ad280eb9f92ad1bd5de25aa9e",
+      "sha256Dest": "09d8996dbe65eaff66cf689d4e396e608c6e281ad280eb9f92ad1bd5de25aa9e",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/references/03-design-system-design-guide.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/references/03-design-system-design-guide.md",
+      "sha256Source": "0b3cbbee04bf210cc2e1b164290157dfce15f29eab299b40cb68a68130a83074",
+      "sha256Dest": "0b3cbbee04bf210cc2e1b164290157dfce15f29eab299b40cb68a68130a83074",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/references/04-web-api-and-library-guide.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/references/04-web-api-and-library-guide.md",
+      "sha256Source": "1bd99c34fdee2523322d076d8bfdd5739fcb921fc426b04ce99c076d424f6d00",
+      "sha256Dest": "1bd99c34fdee2523322d076d8bfdd5739fcb921fc426b04ce99c076d424f6d00",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/references/04-web-backend-development.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/references/04-web-backend-development.md",
+      "sha256Source": "ce4083150e42dcdfbab4ab6ee789a8c46c4d727f4e283df7d33cd0b76b697487",
+      "sha256Dest": "ce4083150e42dcdfbab4ab6ee789a8c46c4d727f4e283df7d33cd0b76b697487",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/references/04-web-browser-and-web-platform.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/references/04-web-browser-and-web-platform.md",
+      "sha256Source": "72a0f952f098dc54b8b74af2096e748b845dee1e502e39530ea523dd547b7726",
+      "sha256Dest": "72a0f952f098dc54b8b74af2096e748b845dee1e502e39530ea523dd547b7726",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/references/04-web-frontend-performance.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/references/04-web-frontend-performance.md",
+      "sha256Source": "06aa99e3d97982d38cab133f1dbc240a05210d91979b572742a658dbf2c25042",
+      "sha256Dest": "06aa99e3d97982d38cab133f1dbc240a05210d91979b572742a658dbf2c25042",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/references/04-web-network-fundamentals.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/references/04-web-network-fundamentals.md",
+      "sha256Source": "185d4a35f87bd99915aff99c0ea59efef5bbbe537b2f0ce06c8ca950fc5f6a01",
+      "sha256Dest": "185d4a35f87bd99915aff99c0ea59efef5bbbe537b2f0ce06c8ca950fc5f6a01",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/references/04-web-nextjs-development.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/references/04-web-nextjs-development.md",
+      "sha256Source": "9e2c49f53198ccfe7c0a6355c6ac9e33be255b131295b97c60725a0fef25d8ad",
+      "sha256Dest": "9e2c49f53198ccfe7c0a6355c6ac9e33be255b131295b97c60725a0fef25d8ad",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/references/04-web-nodejs-development.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/references/04-web-nodejs-development.md",
+      "sha256Source": "cda5a65e6c3a5c1a3c0e32e1fc5ec1a12156d4362710f8b20e125000de2603be",
+      "sha256Dest": "cda5a65e6c3a5c1a3c0e32e1fc5ec1a12156d4362710f8b20e125000de2603be",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/references/04-web-react-development.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/references/04-web-react-development.md",
+      "sha256Source": "a0a9f69d57075a1cb0ee87f90c91289f0f2d325659ddea41382d063c5738023a",
+      "sha256Dest": "a0a9f69d57075a1cb0ee87f90c91289f0f2d325659ddea41382d063c5738023a",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/references/04-web-web-accessibility.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/references/04-web-web-accessibility.md",
+      "sha256Source": "9624642aacfa74c340c3c44ec05be880c6d7edc62a526476675019aa7ec67de8",
+      "sha256Dest": "9624642aacfa74c340c3c44ec05be880c6d7edc62a526476675019aa7ec67de8",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/references/04-web-web-application-development.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/references/04-web-web-application-development.md",
+      "sha256Source": "23c58541e735009133ba0366b2aaf46f1f6094902ecfa7ef267c80952f0a752e",
+      "sha256Dest": "23c58541e735009133ba0366b2aaf46f1f6094902ecfa7ef267c80952f0a752e",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/references/04-web-web-development.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/references/04-web-web-development.md",
+      "sha256Source": "4921ddf912b2c45718453684ea5feb4238506065f48be8a397f51663a49ae729",
+      "sha256Dest": "4921ddf912b2c45718453684ea5feb4238506065f48be8a397f51663a49ae729",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/references/05-infrastructure-skill-guides.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/references/05-infrastructure-skill-guides.md",
+      "sha256Source": "b3ef6c7766c8574a7d9fb3ce42eedc63d339e9682681707335dbef3126d56d2a",
+      "sha256Dest": "b3ef6c7766c8574a7d9fb3ce42eedc63d339e9682681707335dbef3126d56d2a",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/references/06-data-security-skill-guides.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/references/06-data-security-skill-guides.md",
+      "sha256Source": "346b9fae2abb6e457dc7fb653dbb36adbc68e7f24e82730ff92234eef21560d6",
+      "sha256Dest": "346b9fae2abb6e457dc7fb653dbb36adbc68e7f24e82730ff92234eef21560d6",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/references/07-ai-skill-guides.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/references/07-ai-skill-guides.md",
+      "sha256Source": "68cc7c8f8ea4ff3b5338b2544cc1d8c076d597694b31f6cbc8ee1d022cba480d",
+      "sha256Dest": "68cc7c8f8ea4ff3b5338b2544cc1d8c076d597694b31f6cbc8ee1d022cba480d",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe-ultimate/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe-ultimate/SKILL.md",
+      "sha256Source": "1eb13056cff86b81988b611cd0ba7efee568347faa558989217b95f3e0a4baa2",
+      "sha256Dest": "1eb13056cff86b81988b611cd0ba7efee568347faa558989217b95f3e0a4baa2",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe/references/business-growth.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe/references/business-growth.md",
+      "sha256Source": "b326be3a199f1e0f70395298e074b7a049ac7a6e671238a0491f1483c16ef294",
+      "sha256Dest": "b326be3a199f1e0f70395298e074b7a049ac7a6e671238a0491f1483c16ef294",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe/references/business-operations.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe/references/business-operations.md",
+      "sha256Source": "788435e8c303c3ba61db6010667c4858f5d978a19764305015a2b4c857844781",
+      "sha256Dest": "788435e8c303c3ba61db6010667c4858f5d978a19764305015a2b4c857844781",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe/references/c-level-advisor.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe/references/c-level-advisor.md",
+      "sha256Source": "983925bea8267320fcb2c8cd3dd086769d7c81e487c75a61de45b34ab34db656",
+      "sha256Dest": "983925bea8267320fcb2c8cd3dd086769d7c81e487c75a61de45b34ab34db656",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe/references/data-analytics.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe/references/data-analytics.md",
+      "sha256Source": "42bf4410abc9c6883ea114c779a381b958e74e2cebc8f365b4d11efc253673c2",
+      "sha256Dest": "42bf4410abc9c6883ea114c779a381b958e74e2cebc8f365b4d11efc253673c2",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe/references/documents.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe/references/documents.md",
+      "sha256Source": "c7eed7aec2ec5e4b0c14b90d594cfb50a890ee5ab3e37f753db6c3fc91f76bf9",
+      "sha256Dest": "c7eed7aec2ec5e4b0c14b90d594cfb50a890ee5ab3e37f753db6c3fc91f76bf9",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe/references/engineering.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe/references/engineering.md",
+      "sha256Source": "fc221cbb5632251d5cae79dd08b9da86b9cd122bf4a99087ad746a173a44edbf",
+      "sha256Dest": "fc221cbb5632251d5cae79dd08b9da86b9cd122bf4a99087ad746a173a44edbf",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe/references/finance.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe/references/finance.md",
+      "sha256Source": "92e2cc886ab613f013359442c6d0f323344842210fb515982c6c8c6bbbe21614",
+      "sha256Dest": "92e2cc886ab613f013359442c6d0f323344842210fb515982c6c8c6bbbe21614",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe/references/hr-operations.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe/references/hr-operations.md",
+      "sha256Source": "e7dc2480aa2cd1899b72c7b8cd75ee174e842d779ad7c0b8bb452bf0f4e9183c",
+      "sha256Dest": "e7dc2480aa2cd1899b72c7b8cd75ee174e842d779ad7c0b8bb452bf0f4e9183c",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe/references/legal.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe/references/legal.md",
+      "sha256Source": "cc0b2ef577b9e826aaf0fe0c71861c73ec1f915c4d0d72118f21ee600d0a60b4",
+      "sha256Dest": "cc0b2ef577b9e826aaf0fe0c71861c73ec1f915c4d0d72118f21ee600d0a60b4",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe/references/markdown-html.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe/references/markdown-html.md",
+      "sha256Source": "a4916acbcdcb3cfa1c9d4c4ebdaa7eb26bfdc2ea267e349c3ca7207a7c90e1f5",
+      "sha256Dest": "a4916acbcdcb3cfa1c9d4c4ebdaa7eb26bfdc2ea267e349c3ca7207a7c90e1f5",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe/references/marketing.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe/references/marketing.md",
+      "sha256Source": "e3daebb3540d9d1eb047b7c13d27c42c823b0d081dff3f5c74c878e2aaa6bf8b",
+      "sha256Dest": "e3daebb3540d9d1eb047b7c13d27c42c823b0d081dff3f5c74c878e2aaa6bf8b",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe/references/personal-productivity.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe/references/personal-productivity.md",
+      "sha256Source": "2fccb91ebb6489208cea1fd92680c8086e4e9a3e3214794f8233f851bb51ce8e",
+      "sha256Dest": "2fccb91ebb6489208cea1fd92680c8086e4e9a3e3214794f8233f851bb51ce8e",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe/references/product-team.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe/references/product-team.md",
+      "sha256Source": "e835fec588143b21b64c445d57d97d797f7fe1ceddc8affe14f200b5cae66a7d",
+      "sha256Dest": "e835fec588143b21b64c445d57d97d797f7fe1ceddc8affe14f200b5cae66a7d",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe/references/project-management.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe/references/project-management.md",
+      "sha256Source": "72b4082721f5247a6ec6be835ccbdf92437a772b7d2bcf6865100b9eb658835d",
+      "sha256Dest": "72b4082721f5247a6ec6be835ccbdf92437a772b7d2bcf6865100b9eb658835d",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe/references/ra-qm-team.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe/references/ra-qm-team.md",
+      "sha256Source": "1752c053b14ef54000e71d2cb9d92bcfaef52bd685f6c949a73908aa03062273",
+      "sha256Dest": "1752c053b14ef54000e71d2cb9d92bcfaef52bd685f6c949a73908aa03062273",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe/references/research-ops.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe/references/research-ops.md",
+      "sha256Source": "1e78103bafc398def530e70f6f71d26f91da9dafa14a505bc00e5d83a601a046",
+      "sha256Dest": "1e78103bafc398def530e70f6f71d26f91da9dafa14a505bc00e5d83a601a046",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe/references/research.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe/references/research.md",
+      "sha256Source": "d96bd2571868b9bd746c6e965592a6c370e4b8d302e415eda6b9c155eaf8efe2",
+      "sha256Dest": "d96bd2571868b9bd746c6e965592a6c370e4b8d302e415eda6b9c155eaf8efe2",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe/references/sales-success.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe/references/sales-success.md",
+      "sha256Source": "ca14d3a1f893ba4cf894c3c4d50df5e0801d4088b7a3108142328ee2e77704fa",
+      "sha256Dest": "ca14d3a1f893ba4cf894c3c4d50df5e0801d4088b7a3108142328ee2e77704fa",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe/references/vertical-advisors.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe/references/vertical-advisors.md",
+      "sha256Source": "7e09504e7508b224004a152781d766f72d33ea479792df3994440e866a30ba6b",
+      "sha256Dest": "7e09504e7508b224004a152781d766f72d33ea479792df3994440e866a30ba6b",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe/references/workflow.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe/references/workflow.md",
+      "sha256Source": "4801aed89d6fffcef0c7ec0842a9dd1e3781ed936dbb430b01c4cc78dabee8f1",
+      "sha256Dest": "4801aed89d6fffcef0c7ec0842a9dd1e3781ed936dbb430b01c4cc78dabee8f1",
+      "patched": false
+    },
+    ".claude/skills/software-engineering-universe/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/software-engineering-universe/SKILL.md",
+      "sha256Source": "dcd5922309246e10aa5583f1999db4d523462fe8a4f370c93d94e454504c42dd",
+      "sha256Dest": "dcd5922309246e10aa5583f1999db4d523462fe8a4f370c93d94e454504c42dd",
+      "patched": false
+    },
+    ".claude/skills/sparc-methodology/scripts/sparc-init.sh": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/sparc-methodology/scripts/sparc-init.sh",
+      "sha256Source": "40145fe52c2b173ced137da01afa6b214f243ec1328514c3cbd26d6993023d11",
+      "sha256Dest": "40145fe52c2b173ced137da01afa6b214f243ec1328514c3cbd26d6993023d11",
+      "patched": false
+    },
+    ".claude/skills/sparc-methodology/scripts/sparc-review.sh": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/sparc-methodology/scripts/sparc-review.sh",
+      "sha256Source": "af9139154dd3de024f42913ad8afdb5e999ec6b880fe6fdd58879b9f2a24f487",
+      "sha256Dest": "af9139154dd3de024f42913ad8afdb5e999ec6b880fe6fdd58879b9f2a24f487",
+      "patched": false
+    },
+    ".claude/skills/sparc-methodology/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/sparc-methodology/SKILL.md",
+      "sha256Source": "9c861dd4ab150aac277b0aa3fbdaa7e208433fac35c28acefee47fff34e9b865",
+      "sha256Dest": "9c861dd4ab150aac277b0aa3fbdaa7e208433fac35c28acefee47fff34e9b865",
+      "patched": false
+    },
+    ".claude/skills/stream-chain/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/stream-chain/SKILL.md",
+      "sha256Source": "a31c8126310bcd9894b1453442e8ed035fe86c00c34b70cee0a58146de015031",
+      "sha256Dest": "a31c8126310bcd9894b1453442e8ed035fe86c00c34b70cee0a58146de015031",
+      "patched": false
+    },
+    ".claude/skills/swarm-advanced/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/swarm-advanced/SKILL.md",
+      "sha256Source": "c72fd1cae054f5fcda5ac611a31b060bf489e0da1e6a6cd00fc864c9c9837c32",
+      "sha256Dest": "c72fd1cae054f5fcda5ac611a31b060bf489e0da1e6a6cd00fc864c9c9837c32",
+      "patched": false
+    },
+    ".claude/skills/swarm-orchestration/scripts/swarm-monitor.sh": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/swarm-orchestration/scripts/swarm-monitor.sh",
+      "sha256Source": "56d24067c0ebb5beeec2b4649ba54d4bdc0a0d952c1540d09238a4b5d9876d73",
+      "sha256Dest": "56d24067c0ebb5beeec2b4649ba54d4bdc0a0d952c1540d09238a4b5d9876d73",
+      "patched": false
+    },
+    ".claude/skills/swarm-orchestration/scripts/swarm-start.sh": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/swarm-orchestration/scripts/swarm-start.sh",
+      "sha256Source": "fbe427d02102115a95c664133cbdc4aadc2dafd9a6cff89fb25824c92259d9d9",
+      "sha256Dest": "fbe427d02102115a95c664133cbdc4aadc2dafd9a6cff89fb25824c92259d9d9",
+      "patched": false
+    },
+    ".claude/skills/swarm-orchestration/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/swarm-orchestration/SKILL.md",
+      "sha256Source": "6a9ee0ac32c27210b9cb0f4648c0336a817c3a736d86da43b08420aafcd04406",
+      "sha256Dest": "6a9ee0ac32c27210b9cb0f4648c0336a817c3a736d86da43b08420aafcd04406",
+      "patched": false
+    },
+    ".claude/skills/v3-cli-modernization/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/v3-cli-modernization/SKILL.md",
+      "sha256Source": "20e1ef3868f7a9ad91477e79b4d597c2a02a4d753ba2373f36d7abdb77905174",
+      "sha256Dest": "20e1ef3868f7a9ad91477e79b4d597c2a02a4d753ba2373f36d7abdb77905174",
+      "patched": false
+    },
+    ".claude/skills/v3-core-implementation/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/v3-core-implementation/SKILL.md",
+      "sha256Source": "e0b52657d07a67edc0d816e3a9fbb49190ffefd58c8d0c8db254f90b79415611",
+      "sha256Dest": "e0b52657d07a67edc0d816e3a9fbb49190ffefd58c8d0c8db254f90b79415611",
+      "patched": false
+    },
+    ".claude/skills/v3-ddd-architecture/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/v3-ddd-architecture/SKILL.md",
+      "sha256Source": "2cec7a1e2341ed16588fc75ec25c757e7e710f796fd9c02237ad9d04b35dbd44",
+      "sha256Dest": "2cec7a1e2341ed16588fc75ec25c757e7e710f796fd9c02237ad9d04b35dbd44",
+      "patched": false
+    },
+    ".claude/skills/v3-integration-deep/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/v3-integration-deep/SKILL.md",
+      "sha256Source": "498e921ffa715b43edd9042407ff7cf4a81150d01daa3ddce55eb4bb7af5aaa5",
+      "sha256Dest": "498e921ffa715b43edd9042407ff7cf4a81150d01daa3ddce55eb4bb7af5aaa5",
+      "patched": false
+    },
+    ".claude/skills/v3-mcp-optimization/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/v3-mcp-optimization/SKILL.md",
+      "sha256Source": "a0ff9e8f8d26ca0b17ad5f6f146df8f4ee01c04c3d4728a892ebccd78c6d6a02",
+      "sha256Dest": "a0ff9e8f8d26ca0b17ad5f6f146df8f4ee01c04c3d4728a892ebccd78c6d6a02",
+      "patched": false
+    },
+    ".claude/skills/v3-memory-unification/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/v3-memory-unification/SKILL.md",
+      "sha256Source": "4853ec2fec84a07772f804f7eb53599df347d2325fdf0b221392548791ca61f5",
+      "sha256Dest": "4853ec2fec84a07772f804f7eb53599df347d2325fdf0b221392548791ca61f5",
+      "patched": false
+    },
+    ".claude/skills/v3-performance-optimization/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/v3-performance-optimization/SKILL.md",
+      "sha256Source": "25858e4c4325f0d3db1227c657ff81ba62281566301c03ed4b4238e18a3aa177",
+      "sha256Dest": "25858e4c4325f0d3db1227c657ff81ba62281566301c03ed4b4238e18a3aa177",
+      "patched": false
+    },
+    ".claude/skills/v3-security-overhaul/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/v3-security-overhaul/SKILL.md",
+      "sha256Source": "284a8a73bdde05503e23b00edb84e681eec7b8cb8eeafc1a495f4316788b5095",
+      "sha256Dest": "284a8a73bdde05503e23b00edb84e681eec7b8cb8eeafc1a495f4316788b5095",
+      "patched": false
+    },
+    ".claude/skills/v3-swarm-coordination/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/v3-swarm-coordination/SKILL.md",
+      "sha256Source": "5edfd5e1e6755ef437832e0457e166856546146e991a6f411722909a80bb1c60",
+      "sha256Dest": "5edfd5e1e6755ef437832e0457e166856546146e991a6f411722909a80bb1c60",
+      "patched": false
+    },
+    ".claude/skills/verification-quality/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/verification-quality/SKILL.md",
+      "sha256Source": "527604b4c3c440d9cf6d276adf189e68ed8c4d247ab00d7c44083a28ae05ba4a",
+      "sha256Dest": "527604b4c3c440d9cf6d276adf189e68ed8c4d247ab00d7c44083a28ae05ba4a",
+      "patched": false
+    },
+    ".claude/skills/worker-benchmarks/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/worker-benchmarks/SKILL.md",
+      "sha256Source": "f1a8d511da98f702a11edd395d24c2898fe8ec9e002556c9318aa7986fdd8f53",
+      "sha256Dest": "f1a8d511da98f702a11edd395d24c2898fe8ec9e002556c9318aa7986fdd8f53",
+      "patched": false
+    },
+    ".claude/skills/worker-integration/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/worker-integration/SKILL.md",
+      "sha256Source": "7c82f899ca48c99ef8caff750a93b2f53ccec6bfd6270bc940587e03a98fb93a",
+      "sha256Dest": "7c82f899ca48c99ef8caff750a93b2f53ccec6bfd6270bc940587e03a98fb93a",
+      "patched": false
+    },
+    ".claude/skills/workflow-automation/SKILL.md": {
+      "source": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140/workflow-automation/SKILL.md",
+      "sha256Source": "8ead452fce5bf32b6e2cc635ff045545fafc0eb0966629e61b63244bebf67dcc",
+      "sha256Dest": "8ead452fce5bf32b6e2cc635ff045545fafc0eb0966629e61b63244bebf67dcc",
+      "patched": false
+    },
+    "vendor/master/ai-orchestrator/catalog/models.json": {
+      "source": "ai-orchestrator",
+      "from": "AI-ORCHESTRATOR/catalog/models.json",
+      "sha256Source": "1aff71f9de8fe59bd26cdde2ebc85ff17b294891f69e83b2d3ee31a63994da8a",
+      "sha256Dest": "1aff71f9de8fe59bd26cdde2ebc85ff17b294891f69e83b2d3ee31a63994da8a",
+      "patched": false
+    },
+    "vendor/master/ai-orchestrator/classifier/classify.js": {
+      "source": "ai-orchestrator",
+      "from": "AI-ORCHESTRATOR/classifier/classify.js",
+      "sha256Source": "077682704a734e487ac835d8aae6e80e8fe43f98ffd3667d22fa79b49d1057f4",
+      "sha256Dest": "077682704a734e487ac835d8aae6e80e8fe43f98ffd3667d22fa79b49d1057f4",
+      "patched": false
+    },
+    "vendor/master/ai-orchestrator/gateway/providers.js": {
+      "source": "ai-orchestrator",
+      "from": "AI-ORCHESTRATOR/gateway/providers.js",
+      "sha256Source": "c2adbbde2594b32fa71f0995b4c71c30e483f8006e4ac62ce59540b2bb5aa923",
+      "sha256Dest": "c2adbbde2594b32fa71f0995b4c71c30e483f8006e4ac62ce59540b2bb5aa923",
+      "patched": false
+    },
+    "vendor/master/ai-orchestrator/gateway/scoring.js": {
+      "source": "ai-orchestrator",
+      "from": "AI-ORCHESTRATOR/gateway/scoring.js",
+      "sha256Source": "51f9d6ffbde9af8e5af940890504ba31175c1938e41b80edeb51d1f43e475383",
+      "sha256Dest": "51f9d6ffbde9af8e5af940890504ba31175c1938e41b80edeb51d1f43e475383",
+      "patched": false
+    },
+    "vendor/master/ai-orchestrator/gateway/server.js": {
+      "source": "ai-orchestrator",
+      "from": "AI-ORCHESTRATOR/gateway/server.js",
+      "sha256Source": "8642fa809f588ee623655a981adcc4513c3105018c1e7d6e610dc661488f3db7",
+      "sha256Dest": "898a380adf6c8f2b4b09ed98b72410063d2818cf817dfe9f197476b9ef99ce4b",
+      "patched": true
+    },
+    "vendor/master/ai-orchestrator/router/execute.js": {
+      "source": "ai-orchestrator",
+      "from": "AI-ORCHESTRATOR/router/execute.js",
+      "sha256Source": "a543d19995c24c8ccee9c6feb285b64a15b952516e1d5e34631f5aa56319757c",
+      "sha256Dest": "a543d19995c24c8ccee9c6feb285b64a15b952516e1d5e34631f5aa56319757c",
+      "patched": false
+    },
+    "vendor/master/ai-orchestrator/router/route.js": {
+      "source": "ai-orchestrator",
+      "from": "AI-ORCHESTRATOR/router/route.js",
+      "sha256Source": "14d8517985d4aae64454680c94b941913089e20109af2118f060925089ecee93",
+      "sha256Dest": "14d8517985d4aae64454680c94b941913089e20109af2118f060925089ecee93",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/agentes/core/consolidador.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/agentes/core/consolidador.js",
+      "sha256Source": "7f77a57f3b55aaf308d0709a9f7345f7142ac926e9d94c53a2f1d3c8d8250ecb",
+      "sha256Dest": "7f77a57f3b55aaf308d0709a9f7345f7142ac926e9d94c53a2f1d3c8d8250ecb",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/agentes/core/contrato.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/agentes/core/contrato.js",
+      "sha256Source": "e895f47218a75ae4661763bf6ee01b6ef51e40a352a0a31c219c02cdabd8d919",
+      "sha256Dest": "e895f47218a75ae4661763bf6ee01b6ef51e40a352a0a31c219c02cdabd8d919",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/agentes/core/especialista-padrao-por-tipo.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/agentes/core/especialista-padrao-por-tipo.js",
+      "sha256Source": "03508653a1db3496520e1ff1d4ea5902f00a708511691939e8c810414314e715",
+      "sha256Dest": "03508653a1db3496520e1ff1d4ea5902f00a708511691939e8c810414314e715",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/agentes/core/memoria-agentes.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/agentes/core/memoria-agentes.js",
+      "sha256Source": "993fdd63335ac796ef1c48841599acfd94449667c5890fdd26258c62e24de609",
+      "sha256Dest": "993fdd63335ac796ef1c48841599acfd94449667c5890fdd26258c62e24de609",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/agentes/core/registro-especialistas.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/agentes/core/registro-especialistas.js",
+      "sha256Source": "d520746e3f6d16d9737ae94ebe6c1b2d64259e4e2fd8b1641ab429126b9c04bf",
+      "sha256Dest": "74293c581428b7a63ed88bb902c96f139e92fab89008842340fb774e0717cfea",
+      "patched": true
+    },
+    "vendor/master/ia-avancado/autocorrecao/autocorrecao.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/autocorrecao/autocorrecao.js",
+      "sha256Source": "ca5167c7606d6b13173514aeccb680bc200a0cc77537b2799e5ee07d566441f5",
+      "sha256Dest": "ca5167c7606d6b13173514aeccb680bc200a0cc77537b2799e5ee07d566441f5",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/autocorrecao/core/diagnostico.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/autocorrecao/core/diagnostico.js",
+      "sha256Source": "121cab54b43d719d91744a928c2e8780a9e051f809dade67e6e9379a91d9ea9c",
+      "sha256Dest": "121cab54b43d719d91744a928c2e8780a9e051f809dade67e6e9379a91d9ea9c",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/autocorrecao/core/estrategia.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/autocorrecao/core/estrategia.js",
+      "sha256Source": "00651918deec5641217cb2c24cdbe72658d6da4128789db789a7e442e332dc77",
+      "sha256Dest": "00651918deec5641217cb2c24cdbe72658d6da4128789db789a7e442e332dc77",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/autocorrecao/core/loop.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/autocorrecao/core/loop.js",
+      "sha256Source": "819972ff627a2e0c445cea4fadd6807276ea06d03a35a744bbe0f558418c29f1",
+      "sha256Dest": "819972ff627a2e0c445cea4fadd6807276ea06d03a35a744bbe0f558418c29f1",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/autocorrecao/core/memoria-erros.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/autocorrecao/core/memoria-erros.js",
+      "sha256Source": "aa1ab5ebd0367edb426eb008ea0bdcbc515b1a2ba46e4c7fe7b9d19c733b1819",
+      "sha256Dest": "aa1ab5ebd0367edb426eb008ea0bdcbc515b1a2ba46e4c7fe7b9d19c733b1819",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/autocorrecao/core/orcamento.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/autocorrecao/core/orcamento.js",
+      "sha256Source": "bec42282da3577a43479f88249d3e5110511dafe696ed597b7b89c969c0a2d96",
+      "sha256Dest": "bec42282da3577a43479f88249d3e5110511dafe696ed597b7b89c969c0a2d96",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/agents/3d.md": {
+      "source": "agents-canonical-overlay",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/3d.md",
+      "sha256Source": "0eea8e60bce4d02315a105fcff608d61d15720733048bbd518751b4c1cdb7b62",
+      "sha256Dest": "0eea8e60bce4d02315a105fcff608d61d15720733048bbd518751b4c1cdb7b62",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/agents/architecture.md": {
+      "source": "agents-canonical-overlay",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/architecture.md",
+      "sha256Source": "3a43df6cb23810116549566f5dbd4ffdee1f9b04490a840462cc93e282360855",
+      "sha256Dest": "3a43df6cb23810116549566f5dbd4ffdee1f9b04490a840462cc93e282360855",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/agents/backend.md": {
+      "source": "agents-canonical-overlay",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/backend.md",
+      "sha256Source": "8a905c8c83f3085f0074a557a9161070a64d54e9e79f69b327d3c2d158eddc0c",
+      "sha256Dest": "8a905c8c83f3085f0074a557a9161070a64d54e9e79f69b327d3c2d158eddc0c",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/agents/cli.md": {
+      "source": "agents-canonical-overlay",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/cli.md",
+      "sha256Source": "a7fe18e19d73a546bb1a9d28975dcf6af03dbd74508233a04487570c47ba9a22",
+      "sha256Dest": "a7fe18e19d73a546bb1a9d28975dcf6af03dbd74508233a04487570c47ba9a22",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/agents/coding.md": {
+      "source": "agents-canonical-overlay",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/coding.md",
+      "sha256Source": "b078fc05688cc7e7469ea6f8e7d27572c84edce7c2c43fdc03a2b967d0fc9b11",
+      "sha256Dest": "b078fc05688cc7e7469ea6f8e7d27572c84edce7c2c43fdc03a2b967d0fc9b11",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/agents/coordinator.md": {
+      "source": "agents-canonical-overlay",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/coordinator.md",
+      "sha256Source": "28e68c33e6009a989ee1efb34b182d018cce3a99995e325c948873a13dcc63ba",
+      "sha256Dest": "28e68c33e6009a989ee1efb34b182d018cce3a99995e325c948873a13dcc63ba",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/agents/debugger.md": {
+      "source": "agents-canonical-overlay",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/debugger.md",
+      "sha256Source": "1ba1b19488eb19867d022b5f23d23f6e35adebb8210cafa6647c34ebb62b59e5",
+      "sha256Dest": "1ba1b19488eb19867d022b5f23d23f6e35adebb8210cafa6647c34ebb62b59e5",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/agents/devops.md": {
+      "source": "agents-canonical-overlay",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/devops.md",
+      "sha256Source": "3abcf5d57b06c734f2571f720eae5328a51adb269b7c81eef45d7f7e9475c5f6",
+      "sha256Dest": "3abcf5d57b06c734f2571f720eae5328a51adb269b7c81eef45d7f7e9475c5f6",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/agents/docs.md": {
+      "source": "agents-canonical-overlay",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/docs.md",
+      "sha256Source": "b5efb3afd696a83e2a2836803413ff411ddaac76bf93711bed07b1613b7e966e",
+      "sha256Dest": "b5efb3afd696a83e2a2836803413ff411ddaac76bf93711bed07b1613b7e966e",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/agents/frontend.md": {
+      "source": "agents-canonical-overlay",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/frontend.md",
+      "sha256Source": "6867c7b8f367031bda7aedf86c0bd479491229a919cbf1f1ad0d38c0a2cc72d4",
+      "sha256Dest": "6867c7b8f367031bda7aedf86c0bd479491229a919cbf1f1ad0d38c0a2cc72d4",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/agents/hooks.md": {
+      "source": "agents-canonical-overlay",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/hooks.md",
+      "sha256Source": "358345908b340b5f5ec7b46c553922d33ec9793bd10a0da55f5c898b7d2ec4de",
+      "sha256Dest": "358345908b340b5f5ec7b46c553922d33ec9793bd10a0da55f5c898b7d2ec4de",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/agents/integration.md": {
+      "source": "agents-canonical-overlay",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/integration.md",
+      "sha256Source": "87fbb36e47c8e381d8c8231a95af842a1c1972919e1ac2f59222ea43d34d8b59",
+      "sha256Dest": "87fbb36e47c8e381d8c8231a95af842a1c1972919e1ac2f59222ea43d34d8b59",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/agents/mcp.md": {
+      "source": "agents-canonical-overlay",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/mcp.md",
+      "sha256Source": "333c2d01a3b3ae7983674326fb258a4520d399cecd4422de6f17dec73c94464d",
+      "sha256Dest": "333c2d01a3b3ae7983674326fb258a4520d399cecd4422de6f17dec73c94464d",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/agents/memory.md": {
+      "source": "agents-canonical-overlay",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/memory.md",
+      "sha256Source": "51978dfca1ac52c0e39743e83bc4acdcac7e8dfdecd106adc1181fba1f012f9c",
+      "sha256Dest": "51978dfca1ac52c0e39743e83bc4acdcac7e8dfdecd106adc1181fba1f012f9c",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/agents/optimizer.md": {
+      "source": "agents-canonical-overlay",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/optimizer.md",
+      "sha256Source": "2f7e31853687d91d4f2a874a3b5895c5b8ebc90d056e6185298dd069e4f523d6",
+      "sha256Dest": "2f7e31853687d91d4f2a874a3b5895c5b8ebc90d056e6185298dd069e4f523d6",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/agents/performance.md": {
+      "source": "agents-canonical-overlay",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/performance.md",
+      "sha256Source": "d21cad220217d758dd196590521c3e03219bbf992b33c83c006f7ce699bdab57",
+      "sha256Dest": "d21cad220217d758dd196590521c3e03219bbf992b33c83c006f7ce699bdab57",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/agents/queen-coordinator.md": {
+      "source": "agents-canonical-overlay",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/queen-coordinator.md",
+      "sha256Source": "681e81668442827251359ec9164babef74c06411b2db364f56b55216bca1e18b",
+      "sha256Dest": "681e81668442827251359ec9164babef74c06411b2db364f56b55216bca1e18b",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/agents/research.md": {
+      "source": "agents-canonical-overlay",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/research.md",
+      "sha256Source": "f03499b813f85fb15e125c265b0525e7794d08c60306fcb2decf29310ff51254",
+      "sha256Dest": "f03499b813f85fb15e125c265b0525e7794d08c60306fcb2decf29310ff51254",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/agents/reviewer.md": {
+      "source": "agents-canonical-overlay",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/reviewer.md",
+      "sha256Source": "8e1ca62eafc7dd790e1a823144654b1b752c0d504faa645abd25f0f5a49cefed",
+      "sha256Dest": "8e1ca62eafc7dd790e1a823144654b1b752c0d504faa645abd25f0f5a49cefed",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/agents/security-auditor.md": {
+      "source": "agents-canonical-overlay",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/security-auditor.md",
+      "sha256Source": "a6a31234d4b53feead640da02d8b96e4cea23e5f212debe7386b469ac8128466",
+      "sha256Dest": "a6a31234d4b53feead640da02d8b96e4cea23e5f212debe7386b469ac8128466",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/agents/security.md": {
+      "source": "agents-canonical-overlay",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/security.md",
+      "sha256Source": "0284ab100e897e1544f1c7a7fba0168f7a120f063b751fd23712663ac9cbdc7d",
+      "sha256Dest": "0284ab100e897e1544f1c7a7fba0168f7a120f063b751fd23712663ac9cbdc7d",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/agents/seo.md": {
+      "source": "agents-canonical-overlay",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/seo.md",
+      "sha256Source": "86f360a805e2dd0f72fec7cd3ff8017e17421bb2bb832a8c3f61e79f8133b93a",
+      "sha256Dest": "86f360a805e2dd0f72fec7cd3ff8017e17421bb2bb832a8c3f61e79f8133b93a",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/agents/swarm.md": {
+      "source": "agents-canonical-overlay",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/swarm.md",
+      "sha256Source": "2f1af9dfa6626a33d9111bde7bb4e7081cd892ce39ff81ea302df29cd89a625f",
+      "sha256Dest": "2f1af9dfa6626a33d9111bde7bb4e7081cd892ce39ff81ea302df29cd89a625f",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/agents/testing.md": {
+      "source": "agents-canonical-overlay",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/testing.md",
+      "sha256Source": "a1d3d605c8196ba36a1d60aa3c1f02f3f91ae9ace77ed9b9289b6c78967c8893",
+      "sha256Dest": "a1d3d605c8196ba36a1d60aa3c1f02f3f91ae9ace77ed9b9289b6c78967c8893",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/agents/uiux.md": {
+      "source": "agents-canonical-overlay",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents/uiux.md",
+      "sha256Source": "f1efd617aed5a5af720ed519b886c1716deb197c00b567076c5f4a8c86170503",
+      "sha256Dest": "f1efd617aed5a5af720ed519b886c1716deb197c00b567076c5f4a8c86170503",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/CURADORIA.md": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/base-agente/CURADORIA.md",
+      "sha256Source": "6325c5631efe4cee7d2ff74a3c287bc8186a32079c67c1ab50d9800d13d048cb",
+      "sha256Dest": "6325c5631efe4cee7d2ff74a3c287bc8186a32079c67c1ab50d9800d13d048cb",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/ESQUELETO-CAMADAS-FUTURAS.md": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/base-agente/ESQUELETO-CAMADAS-FUTURAS.md",
+      "sha256Source": "4760386c67c255868def8b27b9986edce2626474ea4e33d8cce0346b6fad5a8d",
+      "sha256Dest": "4760386c67c255868def8b27b9986edce2626474ea4e33d8cce0346b6fad5a8d",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/rules/00-escopo.md": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/base-agente/rules/00-escopo.md",
+      "sha256Source": "e71474d4e11ab84ef92bc244284d0b6b7ad0bc49f57f64a6990c7ebde8c21d95",
+      "sha256Dest": "e71474d4e11ab84ef92bc244284d0b6b7ad0bc49f57f64a6990c7ebde8c21d95",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/rules/10-coordenacao.md": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/base-agente/rules/10-coordenacao.md",
+      "sha256Source": "704a8695c73e6bcf8548ce0cb514564e14ac6b9a7d48363c71558c86732de49f",
+      "sha256Dest": "704a8695c73e6bcf8548ce0cb514564e14ac6b9a7d48363c71558c86732de49f",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/rules/20-evidencia.md": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/base-agente/rules/20-evidencia.md",
+      "sha256Source": "06acbd490101f0ecd48933006276e90e7f7f6f3611831bf5a2ee5a068a2d896c",
+      "sha256Dest": "06acbd490101f0ecd48933006276e90e7f7f6f3611831bf5a2ee5a068a2d896c",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/skills/adaptive-execution/SKILL.md": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/base-agente/skills/adaptive-execution/SKILL.md",
+      "sha256Source": "809e314328a4848fc7a4f38244ca2e414be2f35fd9342444206a2ef5015117e8",
+      "sha256Dest": "809e314328a4848fc7a4f38244ca2e414be2f35fd9342444206a2ef5015117e8",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/skills/elite-software-engineering/references/agent-orchestration.md": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/base-agente/skills/elite-software-engineering/references/agent-orchestration.md",
+      "sha256Source": "8136417e8cf3962385c8ba95d0615f542ae2a5030e3bb4cc85aa6e5845cfc031",
+      "sha256Dest": "8136417e8cf3962385c8ba95d0615f542ae2a5030e3bb4cc85aa6e5845cfc031",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/skills/elite-software-engineering/references/ai-engineering.md": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/base-agente/skills/elite-software-engineering/references/ai-engineering.md",
+      "sha256Source": "d88d39d64d7c6c921c8b7795a19f144009bb8f6c87c4f3f7523fbb766b0b67bc",
+      "sha256Dest": "d88d39d64d7c6c921c8b7795a19f144009bb8f6c87c4f3f7523fbb766b0b67bc",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/skills/elite-software-engineering/references/api-data-integrations.md": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/base-agente/skills/elite-software-engineering/references/api-data-integrations.md",
+      "sha256Source": "7af4c0e3c22e59573a41ab261f676093ef581f32ead2b483896e7f70e09ee992",
+      "sha256Dest": "7af4c0e3c22e59573a41ab261f676093ef581f32ead2b483896e7f70e09ee992",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/skills/elite-software-engineering/references/architecture-and-planning.md": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/base-agente/skills/elite-software-engineering/references/architecture-and-planning.md",
+      "sha256Source": "7cca5228dc756a29f6cab49efcb9f0df0bc73a2ccfad10888aaf02be97436f7d",
+      "sha256Dest": "7cca5228dc756a29f6cab49efcb9f0df0bc73a2ccfad10888aaf02be97436f7d",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/skills/elite-software-engineering/references/observability-reliability.md": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/base-agente/skills/elite-software-engineering/references/observability-reliability.md",
+      "sha256Source": "7030549e6b757e83f95f4cbbcf5872229124fafb30e4a9027930e43c53b5221d",
+      "sha256Dest": "7030549e6b757e83f95f4cbbcf5872229124fafb30e4a9027930e43c53b5221d",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/skills/elite-software-engineering/references/security-and-privacy.md": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/base-agente/skills/elite-software-engineering/references/security-and-privacy.md",
+      "sha256Source": "c85697753af28bda559b4b7683cb978b55a329565e183205ba400e8e9ee31427",
+      "sha256Dest": "c85697753af28bda559b4b7683cb978b55a329565e183205ba400e8e9ee31427",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/skills/elite-software-engineering/references/testing-and-release.md": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/base-agente/skills/elite-software-engineering/references/testing-and-release.md",
+      "sha256Source": "23e4eff19eb9cf363350f2e3ae7d2d3565327765854d77289020619c04ed9f95",
+      "sha256Dest": "23e4eff19eb9cf363350f2e3ae7d2d3565327765854d77289020619c04ed9f95",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/skills/elite-software-engineering/references/web-application-quality.md": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/base-agente/skills/elite-software-engineering/references/web-application-quality.md",
+      "sha256Source": "7431d9bdfe4c0672d4ee1808fcdfd5667146512a306942372204616bd9faafbf",
+      "sha256Dest": "7431d9bdfe4c0672d4ee1808fcdfd5667146512a306942372204616bd9faafbf",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/base-agente/skills/elite-software-engineering/SKILL.md": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/base-agente/skills/elite-software-engineering/SKILL.md",
+      "sha256Source": "6eb46e3982be992b170877bf6d93d4c6f1d0dc3f2d1c3ad2be5afd3d8f9d671d",
+      "sha256Dest": "6eb46e3982be992b170877bf6d93d4c6f1d0dc3f2d1c3ad2be5afd3d8f9d671d",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/executor/core/classificador-falha.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/executor/core/classificador-falha.js",
+      "sha256Source": "6a8422e9b9cc9459fbbbce3b447c6c357486a8b98519ba0276193b7b78b60389",
+      "sha256Dest": "75d9eb9a1e48e1a2c562798845fc7a543e66eb97fce20bf4a2432dda71922243",
+      "patched": true
+    },
+    "vendor/master/ia-avancado/executor/core/ferramentas.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/executor/core/ferramentas.js",
+      "sha256Source": "3e60495cf88ade5d9289265806ed09139d8340539a9a437e658ba3c4a9b73dc8",
+      "sha256Dest": "3e60495cf88ade5d9289265806ed09139d8340539a9a437e658ba3c4a9b73dc8",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/executor/core/gerador-codigo.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/executor/core/gerador-codigo.js",
+      "sha256Source": "e0eb57a2bd43618f5e78b19596511096753e80e2e022507b14b43b16d98de09b",
+      "sha256Dest": "e0eb57a2bd43618f5e78b19596511096753e80e2e022507b14b43b16d98de09b",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/executor/core/handlers-tarefa.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/executor/core/handlers-tarefa.js",
+      "sha256Source": "9155846aae98016589993703403b2c1ba2c13b69152b85cca8c85c692343f283",
+      "sha256Dest": "9155846aae98016589993703403b2c1ba2c13b69152b85cca8c85c692343f283",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/executor/core/locks.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/executor/core/locks.js",
+      "sha256Source": "aa859b43a3ef2b8cf6071c5714c8b5a0496fa026d429ad09a4cf9a9fbbfc9d6c",
+      "sha256Dest": "aa859b43a3ef2b8cf6071c5714c8b5a0496fa026d429ad09a4cf9a9fbbfc9d6c",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/executor/core/workspace.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/executor/core/workspace.js",
+      "sha256Source": "59b89502715090959fa564a3f26d2284b193c31ee02d2ae638e15475df3fa399",
+      "sha256Dest": "59b89502715090959fa564a3f26d2284b193c31ee02d2ae638e15475df3fa399",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/executor/executor.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/executor/executor.js",
+      "sha256Source": "80f39117cddca141f923b3bb60455d438442ac327a1bb2e39afd7159c01b57cb",
+      "sha256Dest": "80f39117cddca141f923b3bb60455d438442ac327a1bb2e39afd7159c01b57cb",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/memoria/core/armazenamento.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/memoria/core/armazenamento.js",
+      "sha256Source": "cf43ed0f14db600fb0b056fe8ed2ff5d49c0fd9d578388288af3998b3a7fa400",
+      "sha256Dest": "cf43ed0f14db600fb0b056fe8ed2ff5d49c0fd9d578388288af3998b3a7fa400",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/memoria/core/confianca.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/memoria/core/confianca.js",
+      "sha256Source": "3b5d5453633c9e567514088b19c7aa21692db103e7c0b5e236527744a99f4bac",
+      "sha256Dest": "3b5d5453633c9e567514088b19c7aa21692db103e7c0b5e236527744a99f4bac",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/memoria/core/expiracao.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/memoria/core/expiracao.js",
+      "sha256Source": "ed2731a0d4c9a731a0d9e5abd3b2a33c944e338ea3031aa7a6ca4fc3a29c11fb",
+      "sha256Dest": "ed2731a0d4c9a731a0d9e5abd3b2a33c944e338ea3031aa7a6ca4fc3a29c11fb",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/memoria/core/recall.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/memoria/core/recall.js",
+      "sha256Source": "b743439a53bbe18c475c414c8ad59a5547f53dd36570a026066d91b29556c90c",
+      "sha256Dest": "b743439a53bbe18c475c414c8ad59a5547f53dd36570a026066d91b29556c90c",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/memoria/core/sanitizacao.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/memoria/core/sanitizacao.js",
+      "sha256Source": "f10f8ddc0e5a1fb2f2094ca9f24d36e99887386958a7a1fe3bd4639d59b0117f",
+      "sha256Dest": "f10f8ddc0e5a1fb2f2094ca9f24d36e99887386958a7a1fe3bd4639d59b0117f",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/memoria/core/tipos.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/memoria/core/tipos.js",
+      "sha256Source": "e5fe45be6caee0bba665db8c57022f7a2f59cd3285471a472a68f489256223c9",
+      "sha256Dest": "e5fe45be6caee0bba665db8c57022f7a2f59cd3285471a472a68f489256223c9",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/memoria/memoria.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/memoria/memoria.js",
+      "sha256Source": "d01f53fadbc3f2053f4479d37072399af33dbac343bbd2940839c50561d863e5",
+      "sha256Dest": "d01f53fadbc3f2053f4479d37072399af33dbac343bbd2940839c50561d863e5",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/multimidia/_fixtures_teste/falso.jpg": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/multimidia/_fixtures_teste/falso.jpg",
+      "sha256Source": "1328b2ababb137422051736a09211f68cc9c98810326490e695f88ddf419c67c",
+      "sha256Dest": "1328b2ababb137422051736a09211f68cc9c98810326490e695f88ddf419c67c",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/multimidia/_fixtures_teste/malicioso.png": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/multimidia/_fixtures_teste/malicioso.png",
+      "sha256Source": "2e383fddf78d1acc795830f56b4ec6464e408c418e67add6fa4c017afa618963",
+      "sha256Dest": "2e383fddf78d1acc795830f56b4ec6464e408c418e67add6fa4c017afa618963",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/multimidia/_fixtures_teste/teste.png": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/multimidia/_fixtures_teste/teste.png",
+      "sha256Source": "431ced6916a2a21a156e38701afe55bbd7f88969fbbfc56d7fe099d47f265460",
+      "sha256Dest": "431ced6916a2a21a156e38701afe55bbd7f88969fbbfc56d7fe099d47f265460",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/multimidia/_fixtures_teste/teste.wav": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/multimidia/_fixtures_teste/teste.wav",
+      "sha256Source": "c726d333dd159a31423f3480dbb1c5c4a9dfcd30efe1f7e12ade390dc92e8908",
+      "sha256Dest": "c726d333dd159a31423f3480dbb1c5c4a9dfcd30efe1f7e12ade390dc92e8908",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/multimidia/core/audio.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/multimidia/core/audio.js",
+      "sha256Source": "95ffa917754261aaae8303a79ad5a0fc26ca50de4d31a1437fab435cfe46b3a3",
+      "sha256Dest": "8c2dba3e1ab0a7408478b22a6f53997d1516ad7fbc13dfac2874e4a783a92cc3",
+      "patched": true
+    },
+    "vendor/master/ia-avancado/multimidia/core/deteccao.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/multimidia/core/deteccao.js",
+      "sha256Source": "83c5223f0f9b04c14ff70cf58f7ee2ddc69b299b5f6772c4d3b359558a4a94c8",
+      "sha256Dest": "83c5223f0f9b04c14ff70cf58f7ee2ddc69b299b5f6772c4d3b359558a4a94c8",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/multimidia/core/ffmpeg.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/multimidia/core/ffmpeg.js",
+      "sha256Source": "05fa961541d1c049639785b1c69562518c2132e36eafcea351fdbc62f9270018",
+      "sha256Dest": "05fa961541d1c049639785b1c69562518c2132e36eafcea351fdbc62f9270018",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/multimidia/core/roteamento-multimodal.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/multimidia/core/roteamento-multimodal.js",
+      "sha256Source": "0892c81e0aee4d42050329f87d96dc67bad920fbe894c89d47d43c2961174d2b",
+      "sha256Dest": "0892c81e0aee4d42050329f87d96dc67bad920fbe894c89d47d43c2961174d2b",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/multimidia/core/seguranca-multimidia.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/multimidia/core/seguranca-multimidia.js",
+      "sha256Source": "439da6ba329d9d5cec9dc415da42d2817fe7db23646a193c75a255e11f5eebb2",
+      "sha256Dest": "439da6ba329d9d5cec9dc415da42d2817fe7db23646a193c75a255e11f5eebb2",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/multimidia/core/validacao.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/multimidia/core/validacao.js",
+      "sha256Source": "47fac8842e569014bafaf2706f390f2bad0995f9aa2d473ddff21342b0915e76",
+      "sha256Dest": "47fac8842e569014bafaf2706f390f2bad0995f9aa2d473ddff21342b0915e76",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/multimidia/core/video.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/multimidia/core/video.js",
+      "sha256Source": "471a6870d0eaa4459923edf5386d25b66bc04269a7708191fe06be0523e10328",
+      "sha256Dest": "471a6870d0eaa4459923edf5386d25b66bc04269a7708191fe06be0523e10328",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/multimidia/core/visao.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/multimidia/core/visao.js",
+      "sha256Source": "6f4264711b9138352ba386dc659d1d7426096ae6fa6b50111a7f2bbcba1def9f",
+      "sha256Dest": "6f4264711b9138352ba386dc659d1d7426096ae6fa6b50111a7f2bbcba1def9f",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/multimidia/multimidia.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/multimidia/multimidia.js",
+      "sha256Source": "dda6980b2be8a7d872e53e80cfdc20c8b49186f9b50301165e391adc7e635567",
+      "sha256Dest": "dda6980b2be8a7d872e53e80cfdc20c8b49186f9b50301165e391adc7e635567",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/orquestrador/core/decisor.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/orquestrador/core/decisor.js",
+      "sha256Source": "209ec88f26c82526256fb650c1fd59f63db6c01df0c0ff8aa33392e9f392419d",
+      "sha256Dest": "2478f8795bd2deb35a6cdfee3649b2adfb917cea5b158e1117dc870855ff4534",
+      "patched": true
+    },
+    "vendor/master/ia-avancado/orquestrador/core/gerenciador-agentes.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/orquestrador/core/gerenciador-agentes.js",
+      "sha256Source": "57a0baf984db100f88dddb0c52891d94b21aaf15d3920f9b7fa5a7f04833bc0b",
+      "sha256Dest": "57a0baf984db100f88dddb0c52891d94b21aaf15d3920f9b7fa5a7f04833bc0b",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/orquestrador/core/grafo-tarefas.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/orquestrador/core/grafo-tarefas.js",
+      "sha256Source": "78831eb16e311a96d82462d69aaa89ed2e427c28460e5d60e373cb63901317d9",
+      "sha256Dest": "78831eb16e311a96d82462d69aaa89ed2e427c28460e5d60e373cb63901317d9",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/orquestrador/core/maquina-estados.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/orquestrador/core/maquina-estados.js",
+      "sha256Source": "7fff4b0b1b1c371e9c79b857ea7d8525589e5412a4b75916d68a17688107f6c0",
+      "sha256Dest": "7fff4b0b1b1c371e9c79b857ea7d8525589e5412a4b75916d68a17688107f6c0",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/orquestrador/core/Missao.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/orquestrador/core/Missao.js",
+      "sha256Source": "084fed801b163d28cf533907e3383edd9a5927d4c192ba1757e5f24ba3d24d27",
+      "sha256Dest": "084fed801b163d28cf533907e3383edd9a5927d4c192ba1757e5f24ba3d24d27",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/orquestrador/core/paralelismo.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/orquestrador/core/paralelismo.js",
+      "sha256Source": "ec1e1b4594bd03e22f55cb852c4d901f2314f9abcd187cffb5c86bc110e6788e",
+      "sha256Dest": "ec1e1b4594bd03e22f55cb852c4d901f2314f9abcd187cffb5c86bc110e6788e",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/orquestrador/core/persistencia.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/orquestrador/core/persistencia.js",
+      "sha256Source": "01341e2b8788970abb7ee36bfe471180858c4b76b7800761536c2586d23c15d9",
+      "sha256Dest": "01341e2b8788970abb7ee36bfe471180858c4b76b7800761536c2586d23c15d9",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/orquestrador/core/Tarefa.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/orquestrador/core/Tarefa.js",
+      "sha256Source": "9822be11436779845d871b8cfc35ca5d5c9c866d75146bdd12948f6d4a899f56",
+      "sha256Dest": "9822be11436779845d871b8cfc35ca5d5c9c866d75146bdd12948f6d4a899f56",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/orquestrador/orquestrador.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/orquestrador/orquestrador.js",
+      "sha256Source": "304c1f054cf71d1285bd14715b25a353e149795ccf5712bd2fa31f87fa7e74ae",
+      "sha256Dest": "08a3884441ccd2a9ef2fd7cc2905d1dcd08d840ac539515db5bf1e4a2f030107",
+      "patched": true
+    },
+    "vendor/master/ia-avancado/pesquisa/core/cache-pesquisa.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/pesquisa/core/cache-pesquisa.js",
+      "sha256Source": "91338f8b468bff5700be44da53adc153b496f1d2794f096f3dd77d903893a2fd",
+      "sha256Dest": "91338f8b468bff5700be44da53adc153b496f1d2794f096f3dd77d903893a2fd",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/pesquisa/core/classificador-fonte.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/pesquisa/core/classificador-fonte.js",
+      "sha256Source": "60ccccd71690b573db85c56b8e0eecdfbd5cc512ca265d49085132660ab78fb3",
+      "sha256Dest": "60ccccd71690b573db85c56b8e0eecdfbd5cc512ca265d49085132660ab78fb3",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/pesquisa/core/confianca.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/pesquisa/core/confianca.js",
+      "sha256Source": "007cb8c68d56df11f6a9d421a6fd300d24897be2594649f546d5e76dff861fa1",
+      "sha256Dest": "007cb8c68d56df11f6a9d421a6fd300d24897be2594649f546d5e76dff861fa1",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/pesquisa/core/extrator.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/pesquisa/core/extrator.js",
+      "sha256Source": "a315f8532c90f34b407bc248bd274669799475d08f273e392f37a31743ebc14a",
+      "sha256Dest": "a315f8532c90f34b407bc248bd274669799475d08f273e392f37a31743ebc14a",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/pesquisa/core/pesquisa-adaptativa.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/pesquisa/core/pesquisa-adaptativa.js",
+      "sha256Source": "dd1729ea4d90a016fc85a1999e5267aee460f6c3d66d2ae20f009879192ad1b3",
+      "sha256Dest": "dd1729ea4d90a016fc85a1999e5267aee460f6c3d66d2ae20f009879192ad1b3",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/pesquisa/core/provider-busca.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/pesquisa/core/provider-busca.js",
+      "sha256Source": "f8ab8c1c8a06f0689a7d3ac6d44791f20a5595c5c6fc7b27d097ede6de469062",
+      "sha256Dest": "f8ab8c1c8a06f0689a7d3ac6d44791f20a5595c5c6fc7b27d097ede6de469062",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/pesquisa/core/providers/duckduckgo.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/pesquisa/core/providers/duckduckgo.js",
+      "sha256Source": "2d73ab8f1c2b8f30b888079bbf04279ea729acee38ded538cfa21bc930436d75",
+      "sha256Dest": "2d73ab8f1c2b8f30b888079bbf04279ea729acee38ded538cfa21bc930436d75",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/pesquisa/core/providers/npm.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/pesquisa/core/providers/npm.js",
+      "sha256Source": "b720a49247d009feca13ab6870a606878950fb58ddc38165509e1f277797c0eb",
+      "sha256Dest": "b720a49247d009feca13ab6870a606878950fb58ddc38165509e1f277797c0eb",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/pesquisa/core/providers/wikipedia.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/pesquisa/core/providers/wikipedia.js",
+      "sha256Source": "db17f48c593e39f47d92d7f3d224c8026031357b86da93eb222dfe1a0f54b86a",
+      "sha256Dest": "db17f48c593e39f47d92d7f3d224c8026031357b86da93eb222dfe1a0f54b86a",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/pesquisa/core/triangulacao.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/pesquisa/core/triangulacao.js",
+      "sha256Source": "4cb9187d1903834ddf623155415dfc7bebe085ebd076fde3878e0597d5060813",
+      "sha256Dest": "4cb9187d1903834ddf623155415dfc7bebe085ebd076fde3878e0597d5060813",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/pesquisa/pesquisa.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/pesquisa/pesquisa.js",
+      "sha256Source": "3eb6a437fb1fbb756925f14282c35cb346bb5d5ba16fe0dbefd77335f9b6aca7",
+      "sha256Dest": "3eb6a437fb1fbb756925f14282c35cb346bb5d5ba16fe0dbefd77335f9b6aca7",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/planejador/core/chamar-llm.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/planejador/core/chamar-llm.js",
+      "sha256Source": "e6f5cda31d965d3a6b42708457e6745f051271323cc0990fd7007f8536b3d7ab",
+      "sha256Dest": "f8b2f5ce22fa0b01663613bde1802f00cbdaf5dfaf6239f8120a65df0ab94936",
+      "patched": true
+    },
+    "vendor/master/ia-avancado/planejador/core/classificador-complexidade.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/planejador/core/classificador-complexidade.js",
+      "sha256Source": "fbc74959e97104968594fedc3bd1ee85bd0f45b522e1f9863dc7f2e80cd52061",
+      "sha256Dest": "fbc74959e97104968594fedc3bd1ee85bd0f45b522e1f9863dc7f2e80cd52061",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/planejador/core/construtor-plano.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/planejador/core/construtor-plano.js",
+      "sha256Source": "d6246e43746c04225dc35cdb00b6b876d2c300d173a109e5a79920626db30cc2",
+      "sha256Dest": "d6246e43746c04225dc35cdb00b6b876d2c300d173a109e5a79920626db30cc2",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/planejador/core/criterios.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/planejador/core/criterios.js",
+      "sha256Source": "ccbc324f22250f3cca82093a0cfc30061576f08b156c4c86e081baa1ac4f981d",
+      "sha256Dest": "ccbc324f22250f3cca82093a0cfc30061576f08b156c4c86e081baa1ac4f981d",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/planejador/core/json-robusto.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/planejador/core/json-robusto.js",
+      "sha256Source": "feaa9cc13a014d3c4417acdb0e6374b16b6a83caedcd00394d32b3bbc5ee5983",
+      "sha256Dest": "feaa9cc13a014d3c4417acdb0e6374b16b6a83caedcd00394d32b3bbc5ee5983",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/planejador/core/prompt-decomposicao.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/planejador/core/prompt-decomposicao.js",
+      "sha256Source": "1a23a69d377ff9d58c16e83308343a4f50541c62a4c6b2e147679e83c8917c50",
+      "sha256Dest": "1a23a69d377ff9d58c16e83308343a4f50541c62a4c6b2e147679e83c8917c50",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/planejador/core/replanejador.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/planejador/core/replanejador.js",
+      "sha256Source": "f7a467f9faecffe362eee2558067143cb640d6d9e7f41682e8897def8bda95a1",
+      "sha256Dest": "f7a467f9faecffe362eee2558067143cb640d6d9e7f41682e8897def8bda95a1",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/planejador/core/revisor-plano.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/planejador/core/revisor-plano.js",
+      "sha256Source": "24d315301fb81f72e983b08ccca5c2f54cd184d0a43a8b25cf2867281c213c5c",
+      "sha256Dest": "24d315301fb81f72e983b08ccca5c2f54cd184d0a43a8b25cf2867281c213c5c",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/planejador/planejador.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/planejador/planejador.js",
+      "sha256Source": "85e3b6b3acc9134b4dad6551df37a8c5a2948dd2a4a535ce9c4196fb07207a4f",
+      "sha256Dest": "85e3b6b3acc9134b4dad6551df37a8c5a2948dd2a4a535ce9c4196fb07207a4f",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/projetos/core/armazenamento-projeto.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/projetos/core/armazenamento-projeto.js",
+      "sha256Source": "f660afe9c758ce4810856d87a070eea45a92aebc997400fdc1d18bb0e8bc65a5",
+      "sha256Dest": "f660afe9c758ce4810856d87a070eea45a92aebc997400fdc1d18bb0e8bc65a5",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/projetos/core/artefatos.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/projetos/core/artefatos.js",
+      "sha256Source": "293025c54ca46ab03b7ab5a38903c06ef25b227c4ef6d229f47aee766e8c71ce",
+      "sha256Dest": "293025c54ca46ab03b7ab5a38903c06ef25b227c4ef6d229f47aee766e8c71ce",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/projetos/core/historico.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/projetos/core/historico.js",
+      "sha256Source": "ade94e0a282807eb0d7b7ff59d23a8e785097988e179d7ff2ea2fc4138560577",
+      "sha256Dest": "ade94e0a282807eb0d7b7ff59d23a8e785097988e179d7ff2ea2fc4138560577",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/projetos/core/memoria-projeto.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/projetos/core/memoria-projeto.js",
+      "sha256Source": "92b21872de1506bf49b34d9390c37b56c74a10c83d59d0f3c59db248f5e698b0",
+      "sha256Dest": "92b21872de1506bf49b34d9390c37b56c74a10c83d59d0f3c59db248f5e698b0",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/projetos/core/vinculo-missao.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/projetos/core/vinculo-missao.js",
+      "sha256Source": "c99a488498b42b8c4137d206961f55ea805eb495891e293760d84335b1ad84e1",
+      "sha256Dest": "c99a488498b42b8c4137d206961f55ea805eb495891e293760d84335b1ad84e1",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/projetos/core/workspace-projeto.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/projetos/core/workspace-projeto.js",
+      "sha256Source": "623e3593a0412309c41c030d8c2d8c91a21d96d606f2296ee216972fb8f9ff45",
+      "sha256Dest": "623e3593a0412309c41c030d8c2d8c91a21d96d606f2296ee216972fb8f9ff45",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/projetos/projeto.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/projetos/projeto.js",
+      "sha256Source": "4fdb363720551b529230658378e3c29d3d719869c708842bba2818b44b19867a",
+      "sha256Dest": "4fdb363720551b529230658378e3c29d3d719869c708842bba2818b44b19867a",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/router/core/aprendizado.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/router/core/aprendizado.js",
+      "sha256Source": "be41ed54263fb748ea998d67108857dae4dc00a549f8f9cc2de8253bf3ab5601",
+      "sha256Dest": "be41ed54263fb748ea998d67108857dae4dc00a549f8f9cc2de8253bf3ab5601",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/router/core/classificador-roteamento.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/router/core/classificador-roteamento.js",
+      "sha256Source": "2804172dff17a2d173d4ed180c32d9ba189f1b9623985470f7ba51440b700ae3",
+      "sha256Dest": "7f76be7403496231ac5ec03eb893849af5f0f2740db2b77060c3776a14986fce",
+      "patched": true
+    },
+    "vendor/master/ia-avancado/router/core/composicao-agentes.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/router/core/composicao-agentes.js",
+      "sha256Source": "5eb9ba038542e6df06920ee872122d22134a626bd61549633661afbae748e569",
+      "sha256Dest": "5eb9ba038542e6df06920ee872122d22134a626bd61549633661afbae748e569",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/router/core/estimador-contexto.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/router/core/estimador-contexto.js",
+      "sha256Source": "1ea4cd2fdd3e7390c4d3fca8ec8275687fca66f26ad33730ecff07cbd69e11e0",
+      "sha256Dest": "1ea4cd2fdd3e7390c4d3fca8ec8275687fca66f26ad33730ecff07cbd69e11e0",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/router/router.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/router/router.js",
+      "sha256Source": "2211ecbb0aaad506eee354a1f0e9c34c069935163b786616c9c2b4d27e90ebfe",
+      "sha256Dest": "2211ecbb0aaad506eee354a1f0e9c34c069935163b786616c9c2b4d27e90ebfe",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/testes/suite-regressao-fase0.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/testes/suite-regressao-fase0.js",
+      "sha256Source": "1b05548ae4d1a296fe1c58a04fd3a8df929c1e856059dcd3fd1470ecccc9521e",
+      "sha256Dest": "1fa77eff9b0e5a6c2a084be3e801337d13e26b7cca4eedc93f3905f89d8760ec",
+      "patched": true
+    },
+    "vendor/master/ia-avancado/testes/teste-fase1-orquestrador.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/testes/teste-fase1-orquestrador.js",
+      "sha256Source": "47a8961657c24235ac1db3ceaf150f3546fc5e0297e53dc0b5d1927c95d791df",
+      "sha256Dest": "ff75e01a09baf13cf3cbccf9170075088c581fe6c02703d83b668910729df978",
+      "patched": true
+    },
+    "vendor/master/ia-avancado/testes/teste-fase2-planejador.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/testes/teste-fase2-planejador.js",
+      "sha256Source": "66eaa1ced7a5e47740219983fa3d4986467d302b2e93c7d2879ca53d707eaf40",
+      "sha256Dest": "66eaa1ced7a5e47740219983fa3d4986467d302b2e93c7d2879ca53d707eaf40",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/testes/teste-fase3-executor.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/testes/teste-fase3-executor.js",
+      "sha256Source": "25de1d4bd58e32a033b9c021e4c83751f5b0fe4f18da580482ae51509aff339a",
+      "sha256Dest": "25de1d4bd58e32a033b9c021e4c83751f5b0fe4f18da580482ae51509aff339a",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/testes/teste-fase4-agentes.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/testes/teste-fase4-agentes.js",
+      "sha256Source": "6f37bb0f66a2b344ace27d2bedf1b112321fa49d09aabdf9585fe8bf95c74ca5",
+      "sha256Dest": "6f37bb0f66a2b344ace27d2bedf1b112321fa49d09aabdf9585fe8bf95c74ca5",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/testes/teste-fase5-6-pesquisa-memoria.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/testes/teste-fase5-6-pesquisa-memoria.js",
+      "sha256Source": "49712a664cfb3ffcc23161bdd0820590fbf4aa694d24b455d98e4078376a6842",
+      "sha256Dest": "49712a664cfb3ffcc23161bdd0820590fbf4aa694d24b455d98e4078376a6842",
+      "patched": false
+    },
+    "vendor/master/ia-avancado/testes/teste-fase7-8-router-autocorrecao.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/testes/teste-fase7-8-router-autocorrecao.js",
+      "sha256Source": "3ba14c8fc72506ceca2090bc0dbf1367b43fdfde0b1bb0cd9b537ff9958786cb",
+      "sha256Dest": "b4fb15c1e610adae21f656caffd38fb680343f5ebf71e5796135bc2da5fdd9da",
+      "patched": true
+    },
+    "vendor/master/ia-avancado/testes/teste-fase9-10-multimidia-projetos.js": {
+      "source": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude/testes/teste-fase9-10-multimidia-projetos.js",
+      "sha256Source": "f0d25fe31b6f8b293f7c1f7226aa359d75100e6a9a7cf3fdad0d4b7086619ad4",
+      "sha256Dest": "f0d25fe31b6f8b293f7c1f7226aa359d75100e6a9a7cf3fdad0d4b7086619ad4",
+      "patched": false
+    }
+  }
+}

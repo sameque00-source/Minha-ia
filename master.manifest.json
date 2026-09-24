@@ -1,0 +1,102 @@
+{
+  "_doc": "Declara EXATAMENTE o que a MinhaIA consome do MASTER (somente leitura). `minhaia sync` materializa isto em vendor/ e .claude/ (gitignored) e grava master.lock.json com sha256 de origem e de destino. Nenhum arquivo do MASTER é escrito.",
+  "sources": [
+    {
+      "id": "ai-orchestrator",
+      "from": "AI-ORCHESTRATOR",
+      "to": "vendor/master/ai-orchestrator",
+      "include": ["gateway", "classifier", "router", "catalog"],
+      "excludeDirs": ["logs", "config", "test-agentic", "test-agentic-2", "docs"],
+      "reason": "Roteamento de modelos: classificador de nível, catálogo free-only, scoring/circuit breaker, adapters Groq/Google/OpenRouter/9Router, gateway Anthropic-compatível :20130."
+    },
+    {
+      "id": "ia-avancado",
+      "from": "00-ORIGINAIS-PRESERVADOS/02-IA-AVANCADO-CLAUDE/ia anvancado clalude",
+      "to": "vendor/master/ia-avancado",
+      "include": ["agentes", "autocorrecao", "base-agente", "executor", "memoria", "multimidia", "orquestrador", "pesquisa", "planejador", "projetos", "router", "testes"],
+      "excludeDirs": ["dados", "missions", "logs", "workspace"],
+      "excludeFilePatterns": ["\\.bak$", "\\.tmp$"],
+      "reason": "Motor: orquestrador (DAG), planejador, executor, especialistas com veto, memória 8 tipos, autocorreção, pesquisa web, router com aprendizado, multimídia, projetos. Estado de runtime (dados/missions/logs) NÃO é copiado: começa limpo."
+    },
+    {
+      "id": "agents-canonical-overlay",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents",
+      "to": "vendor/master/ia-avancado/base-agente/agents",
+      "include": ["*.md"],
+      "reason": "base-agente do motor tem 19 agentes (idênticos aos canônicos); sobrepõe os 25 canônicos para o motor carregar também 3d, cli, hooks, integration, mcp, swarm."
+    },
+    {
+      "id": "claude-agents",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/agents",
+      "to": ".claude/agents",
+      "include": ["*.md"],
+      "reason": "Disponibiliza os 25 subagentes para sessões Claude Code abertas no MinhaIA. Cópia (nunca symlink: symlink permitiria escrita no MASTER)."
+    },
+    {
+      "id": "claude-skills",
+      "from": "01-USO-DIRETO-CLAUDE/.claude/skills-flat-140",
+      "to": ".claude/skills",
+      "include": ["*"],
+      "reason": "Disponibiliza as 140 Skills (5 próprias + 135 Ruflo) para sessões Claude Code no MinhaIA. skills-flat-140 escolhida por ser o conjunto completo e deduplicado."
+    }
+  ],
+  "runtimeLinks": {
+    "_doc": "Diretórios onde o código do MASTER grava estado (relativo ao próprio __dirname). Na cópia vendorizada viram symlinks para data/ ou .secrets/ dentro do MinhaIA: re-sync nunca apaga memória, e nada é gravado no MASTER.",
+    "links": [
+      { "at": "vendor/master/ia-avancado/orquestrador/missions", "target": "data/missions" },
+      { "at": "vendor/master/ia-avancado/projetos/dados", "target": "data/projetos" },
+      { "at": "vendor/master/ia-avancado/pesquisa/dados", "target": "data/pesquisa" },
+      { "at": "vendor/master/ia-avancado/memoria/dados", "target": "data/memoria" },
+      { "at": "vendor/master/ia-avancado/agentes/logs", "target": "data/logs/agentes" },
+      { "at": "vendor/master/ai-orchestrator/logs", "target": "data/logs/gateway" },
+      { "at": "vendor/master/ai-orchestrator/config", "target": ".secrets" }
+    ]
+  },
+  "patches": [
+    {
+      "id": "windows-aiorch-path",
+      "source": "ia-avancado",
+      "fileGlob": "**/*.js",
+      "find": "'C:/Users/Administrator/Documents/AI-ORCHESTRATOR",
+      "replaceWith": "require('path').join(__dirname, '{{REL:vendor/master/ai-orchestrator}}') + '",
+      "expectCount": 9,
+      "reason": "O motor referenciava o AI-ORCHESTRATOR por caminho absoluto Windows. Reaponta para a cópia vendorizada, relativo ao próprio arquivo."
+    },
+    {
+      "id": "windows-audio-env-path",
+      "source": "ia-avancado",
+      "file": "multimidia/core/audio.js",
+      "find": "path.join('C:', 'Users', 'Administrator', 'Documents', 'AI-ORCHESTRATOR', 'config', '.env')",
+      "replaceWith": "path.join(__dirname, '{{REL:vendor/master/ai-orchestrator}}', 'config', '.env')",
+      "expectCount": 1,
+      "reason": "Mesmo acoplamento Windows, escrito com path.join em vez de string literal."
+    },
+    {
+      "id": "gateway-bind-loopback",
+      "source": "ai-orchestrator",
+      "file": "gateway/server.js",
+      "find": "server.listen(PORT, () => {",
+      "replaceWith": "server.listen(PORT, process.env.GATEWAY_HOST || '127.0.0.1', () => {",
+      "expectCount": 1,
+      "reason": "Segurança: o original escuta em todas as interfaces e desliga a auth quando GATEWAY_API_KEY não existe. Passa a escutar só em loopback por padrão."
+    },
+    {
+      "id": "gateway-log-redaction",
+      "source": "ai-orchestrator",
+      "file": "gateway/server.js",
+      "find": "fs.appendFileSync(LOG_PATH, JSON.stringify(entry) + '\\n');",
+      "replaceWith": "fs.appendFileSync(LOG_PATH, require(require('path').join(__dirname, '{{REL:src/security/redact.js}}')).redact(JSON.stringify(entry)) + '\\n');",
+      "expectCount": 1,
+      "reason": "Segurança: logs gravam corpo de erro de provedor sem redação. Passa por redact() (padrões de segredo da memória do MASTER + chave Google/query string)."
+    },
+    {
+      "id": "extra-specialists",
+      "source": "ia-avancado",
+      "file": "agentes/core/registro-especialistas.js",
+      "find": "const ESPECIALISTAS = Object.freeze({",
+      "replaceWith": "const ESPECIALISTAS = Object.freeze({\n  ...require(require('path').join(__dirname, '{{REL:src/agents/especialistas-extra.js}}')),",
+      "expectCount": 1,
+      "reason": "Registro do motor mapeava 19 especialistas; acrescenta os 6 canônicos restantes (definidos em src/agents/especialistas-extra.js) sem alterar os 19 originais."
+    }
+  ]
+}

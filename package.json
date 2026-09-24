@@ -1,0 +1,21 @@
+{
+  "name": "minhaia",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MinhaIA — sistema de agentes construído sobre a infraestrutura MASTER (CLAUDE-MESTRE-FINAL-SKILLS-EM-LOTES-COMPLETO), consumida somente leitura.",
+  "license": "UNLICENSED",
+  "type": "commonjs",
+  "bin": {
+    "minhaia": "bin/minhaia.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "sync": "node bin/minhaia.js sync",
+    "verify": "node bin/minhaia.js verify",
+    "doctor": "node bin/minhaia.js doctor",
+    "test": "node --test --test-concurrency=1 \"test/**/*.test.js\"",
+    "test:master": "node bin/minhaia.js test-master"
+  }
+}

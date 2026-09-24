@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "env": {
+    "FREE_ONLY": "true"
+  },
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Bash(node bin/minhaia.js:*)",
+      "Bash(npm test:*)",
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git show:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(wc:*)",
+      "Bash(sha256sum:*)",
+      "Bash(diff:*)",
+      "Bash(curl -s http://127.0.0.1:20130/*)",
+      "Bash(curl -s http://localhost:20130/*)",
+      "mcp__playwright__*"
+    ],
+    "deny": [
+      "Read(**/.ssh/**)",
+      "Read(**/id_rsa*)",
+      "Read(**/id_ed25519*)",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/.secrets/**)",
+      "Read(**/.npmrc)",
+      "Edit(**/.env)",
+      "Edit(**/.env.*)",
+      "Edit(**/.ssh/**)",
+      "Edit(../claude-mestre-final-skills-em-lotes-completo/**)",
+      "Edit(../CLAUDE-MESTRE-FINAL-SKILLS-EM-LOTES-COMPLETO/**)",
+      "Bash(ssh:*)",
+      "Bash(scp:*)",
+      "Bash(sftp:*)",
+      "Bash(rsync:*)",
+      "Bash(rm -rf:*)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.js\"", "timeout": 30 }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit|Bash",
+        "hooks": [
+          { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard.js\"", "timeout": 15 }
+        ]
+      }
+    ]
+  }
+}
