@@ -79,7 +79,8 @@ sobreposição de termos (ponte PT→EN, radical em inglês, "Skip when" penaliz
 
 **No motor autônomo** (patch declarado `skills-context` em `executor/core/handlers-tarefa.js`):
 ao montar o contrato de **cada tarefa**, `src/skills/context.js` escolhe no máximo 2 Skills
-para *descrição da tarefa + tipo + agente*, injeta um trecho (≤ 1800 caracteres cada) junto à
+para *descrição da tarefa + tipo + agente* — e só entra Skill que casa com algum termo da
+**descrição** da tarefa (o nome do agente sozinho não basta; tarefa sem Skill relevante fica sem), injeta um trecho (≤ 1800 caracteres cada) junto à
 persona e grava em `tarefa._skills` e no evento `skills`: Skill, motivo (termos em comum), agente,
 tools (declaradas no frontmatter ou herdadas do agente), dependências mencionadas, linhas
 removidas e, depois, o resultado da tarefa. Skills **sobre** serviço indisponível no executor
@@ -162,10 +163,23 @@ Sessão Claude Code: ferramentas nativas + MCP.
 - **Sandbox do código gerado pelo LLM** (o motor do MASTER executa esse código): o worker
   intercepta `executarComando`/`testarServidor`. Só `node` roda, sempre com o modelo de
   permissões do Node (`--permission`, leitura e escrita **apenas no workspace da missão**, sem
-  criar processos, logo sem ler `.secrets` nem escrever no MASTER). Outros executáveis (python,
-  sh…) não herdariam o confinamento e são recusados com mensagem ao motor; liberar exige
-  `MINHAIA_ALLOW_UNSANDBOXED_COMMANDS=1` (a UI marca "SEM sandbox"). Limite: o modelo de
-  permissões do Node 22 não restringe rede. [CONFIRMADO: 3 cenários adversariais nos testes]
+  criar processos, logo sem ler `.secrets` nem escrever no MASTER). Argumentos do `node` por
+  **lista de permissão**: só `node <script-no-workspace> [args]` (caminho real conferido, sem
+  symlink para fora) ou `node -e <código>`; qualquer opção antes do script (`--run`,
+  `--report-directory`, `-r`, `--import`, `--env-file`…) é recusada — `--run` escapava do
+  confinamento (achado da revisão de segurança, com teste de regressão). Outros executáveis
+  (python, sh…) não herdam o confinamento e são recusados; liberar exige
+  `MINHAIA_ALLOW_UNSANDBOXED_COMMANDS=1` (a UI marca "SEM sandbox").
+- O worker (e tudo que ele executa) recebe **ambiente mínimo** (PATH, HOME, locale, proxy/CA,
+  `NODE_ENV`, `MINHAIA_*`): tokens exportados no shell do usuário não chegam ao código gerado.
+- O worker roda em **grupo de processos próprio**; cancelar, timeout ou fim da missão encerram o
+  grupo inteiro (nenhum servidor gerado fica órfão — testado via `/proc`).
+- **Rede não isolada**: o modelo de permissões do Node 22 não restringe rede. O código gerado
+  consegue abrir conexões (inclusive para a própria API em 127.0.0.1, que não exige `Origin`
+  de clientes não-navegador). Mitigações: leitura confinada ao workspace (não lê chaves), fila
+  limitada (`MINHAIA_MAX_PENDING`, padrão 20 → 429). Isolamento real de rede exige SO
+  (namespace/contêiner) — [RECOMENDAÇÃO].
+[CONFIRMADO: cenários adversariais nos testes — escrita/leitura fora, python3, flags de fuga]
 
 ## 13. Observabilidade
 
@@ -217,10 +231,16 @@ gravados em `data/jobs/<id>/events.jsonl`, transmitidos por SSE.
 | GET | `/api/missions/:id/events` | SSE com replay |
 | GET | `/api/observability`, `/api/stream` | painel agregado + SSE global |
 
-Cada missão roda num **processo worker** (`src/missions/worker.js`) — cancelamento real,
-timeout (padrão 30 min, `MINHAIA_MISSION_TIMEOUT_MS`), no máximo 2 simultâneas
-(`MINHAIA_MAX_CONCURRENT`), fila. Estados: CRIADA, NA_FILA, EXECUTANDO, CANCELANDO, CONCLUIDA,
-FALHA, BLOQUEADA, CANCELADA, TEMPO_ESGOTADO, INTERROMPIDA (servidor reiniciou). O estado das
+Cada missão roda num **processo worker** (`src/missions/worker.js`, grupo de processos
+próprio) — cancelamento real, timeout (padrão 30 min, `MINHAIA_MISSION_TIMEOUT_MS`), no máximo 2
+simultâneas (`MINHAIA_MAX_CONCURRENT`), fila limitada (`MINHAIA_MAX_PENDING`). Estados:
+CRIADA, NA_FILA, EXECUTANDO, CANCELANDO, CONCLUIDA, FALHA, BLOQUEADA, CANCELADA,
+TEMPO_ESGOTADO, INTERROMPIDA (processo dono terminou). Worker que sai sem reportar conclusão é
+sempre FALHA. Cancelar/timeout **não** marcam FALHA no motor: a missão continua retomável
+(`/resume`, só para CANCELADA/TEMPO_ESGOTADO/INTERROMPIDA com estado do motor não terminal); na
+retomada, tarefas persistidas como `em_progresso` voltam a `pendente`. Cada job guarda o
+processo dono; CLI e servidor simultâneos não interrompem as missões um do outro.
+`minhaia serve` encerra de verdade com Ctrl+C (fecha SSE e conexões, interrompe workers). O estado das
 tarefas é o da máquina de estados do motor; a API não tem motor próprio.
 Segurança: só loopback; `Host` de loopback (anti DNS rebinding); escrita exige
 `Content-Type: application/json` e `Origin` igual; corpo ≤ 16 KB; ids validados; arquivos do

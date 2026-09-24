@@ -85,8 +85,8 @@ function execution(id, afterSeq = 0) {
   return store.readEvents(id, { afterSeq, types: EXEC_TYPES });
 }
 
-function logs(id, { afterSeq = 0, types = null } = {}) {
-  return store.readEvents(id, { afterSeq, types });
+function logs(id, { afterSeq = 0, types = null, limit = 5000 } = {}) {
+  return store.readEvents(id, { afterSeq, types, limit });
 }
 
 function workspaceDir(job) {

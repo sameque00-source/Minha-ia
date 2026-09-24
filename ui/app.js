@@ -45,7 +45,7 @@ const STATUS_KIND = {
   FALHA: 'err', BLOQUEADA: 'warn', CANCELADA: 'warn', TEMPO_ESGOTADO: 'err', INTERROMPIDA: 'warn',
 };
 const RUNNING = new Set(['NA_FILA', 'EXECUTANDO', 'CANCELANDO']);
-const RESUMABLE = new Set(['FALHA', 'CANCELADA', 'TEMPO_ESGOTADO', 'INTERROMPIDA']);
+const RESUMABLE = new Set(['CANCELADA', 'TEMPO_ESGOTADO', 'INTERROMPIDA']);
 
 const state = {
   system: null,

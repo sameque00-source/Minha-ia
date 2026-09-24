@@ -126,4 +126,30 @@ test('redact mascara segredos e preserva dados comuns', () => {
   assert.strictEqual(redact('{"input_tokens":12,"ok":true}'), '{"input_tokens":12,"ok":true}');
   assert.ok(containsSecret(`Bearer ${'c'.repeat(30)}`));
   assert.ok(!containsSecret('texto comum sem segredo'));
+  // formatos que escapavam (revisão de segurança)
+  assert.ok(containsSecret(`sk-or-v1-${'ab12'.repeat(12)}`));
+  assert.ok(containsSecret(`NINEROUTER_API_KEY=nr_${'z'.repeat(20)}`));
+  assert.ok(containsSecret('Authorization: Bearer abc.defgh'));
+});
+
+test('eventos são redigidos por valor: JSON nunca é corrompido', () => {
+  const os = require('os');
+  const fs = require('fs');
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'minhaia-jobs-'));
+  const saved = process.env.MINHAIA_JOBS_DIR;
+  process.env.MINHAIA_JOBS_DIR = dir;
+  try {
+    const store = require('../src/missions/store');
+    const job = store.create('teste');
+    for (const text of ['secret: C:\\tmp\\', `x-goog-api-key: AIza${'q'.repeat(30)}`, `quote " e ${FAKE_KEY}`]) {
+      const e = store.appendEvent(job.id, { seq: 1, type: 'log', text });
+      assert.ok(!JSON.stringify(e).includes(FAKE_KEY));
+    }
+    const lines = fs.readFileSync(path.join(dir, job.id, 'events.jsonl'), 'utf8').trim().split('\n');
+    for (const l of lines) assert.doesNotThrow(() => JSON.parse(l));
+    assert.strictEqual(store.readEvents(job.id).length, 3);
+  } finally {
+    if (saved === undefined) delete process.env.MINHAIA_JOBS_DIR; else process.env.MINHAIA_JOBS_DIR = saved;
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
 });

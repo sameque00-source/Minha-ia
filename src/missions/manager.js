@@ -1,29 +1,87 @@
+const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const { fork } = require('child_process');
 const store = require('./store');
+const { paths } = require('../config');
 
 const WORKER = path.join(__dirname, 'worker.js');
 const TERMINAL = new Set(['CONCLUIDA', 'FALHA', 'BLOQUEADA', 'CANCELADA', 'TEMPO_ESGOTADO', 'INTERROMPIDA']);
+const RESUMABLE = new Set(['CANCELADA', 'TEMPO_ESGOTADO', 'INTERROMPIDA']);
+const ACTIVE = new Set(['NA_FILA', 'EXECUTANDO', 'CANCELANDO']);
+
+// O worker (e o código gerado pelo LLM que ele executa) recebe só estas variáveis: nada de
+// tokens ou chaves exportados no shell do usuário. Chaves de provedor vêm de .secrets/.env.
+const ENV_ALLOW = new Set([
+  'PATH', 'HOME', 'USER', 'LANG', 'LC_ALL', 'LC_CTYPE', 'TZ', 'TMPDIR', 'TEMP', 'TMP', 'NODE_ENV',
+  'SystemRoot', 'SYSTEMROOT', 'COMSPEC', 'PATHEXT', 'WINDIR',
+  'HTTP_PROXY', 'HTTPS_PROXY', 'NO_PROXY', 'http_proxy', 'https_proxy', 'no_proxy',
+  'NODE_EXTRA_CA_CERTS', 'SSL_CERT_FILE',
+]);
+
+/** @returns {NodeJS.ProcessEnv} */
+function workerEnv() {
+  /** @type {NodeJS.ProcessEnv} */
+  const env = {};
+  for (const [k, v] of Object.entries(process.env)) if (ENV_ALLOW.has(k) || k.startsWith('MINHAIA_')) env[k] = v;
+  return env;
+}
+
+function alive(pid) {
+  if (!pid) return false;
+  try { process.kill(pid, 0); return true; } catch { return false; }
+}
+
+/** Mata o grupo de processos do worker (worker + tudo que o motor criou: node do LLM, servidores). */
+function killGroup(child, signal) {
+  try {
+    if (process.platform !== 'win32') process.kill(-child.pid, signal);
+    else child.kill(signal);
+  } catch {
+    try { child.kill(signal); } catch { /* já saiu */ }
+  }
+}
+
+function engineMissionState(engineMissionId) {
+  if (!engineMissionId || !/^missao_[A-Za-z0-9_-]+$/.test(engineMissionId)) return null;
+  try {
+    return JSON.parse(fs.readFileSync(path.join(paths.ENGINE_DIR, 'orquestrador', 'missions', engineMissionId, 'MISSION_STATE.json'), 'utf8')).estado;
+  } catch { return null; }
+}
+
+const err = (status, message) => Object.assign(new Error(message), { status });
 
 class MissionManager {
-  constructor({ maxConcurrent = Number(process.env.MINHAIA_MAX_CONCURRENT || 2), timeoutMs = Number(process.env.MINHAIA_MISSION_TIMEOUT_MS || 30 * 60 * 1000) } = {}) {
+  constructor({
+    maxConcurrent = Number(process.env.MINHAIA_MAX_CONCURRENT || 2),
+    maxPending = Number(process.env.MINHAIA_MAX_PENDING || 20),
+    timeoutMs = Number(process.env.MINHAIA_MISSION_TIMEOUT_MS || 30 * 60 * 1000),
+  } = {}) {
     this.maxConcurrent = maxConcurrent;
+    this.maxPending = maxPending;
     this.timeoutMs = timeoutMs;
-    this.running = new Map(); // id -> { child, timer }
+    this.ownerId = crypto.randomBytes(6).toString('hex');
+    this.running = new Map(); // id -> entry
     this.queue = [];
-    this.subscribers = new Set(); // fn(jobId, event)
+    this.subscribers = new Set();
     this.seq = new Map();
     this.recoverInterrupted();
   }
 
-  // Missões marcadas como em execução cujo worker não existe mais (o servidor caiu). Um worker
-  // vivo pertence a outro gerenciador (ex.: CLI e servidor ao mesmo tempo) e é deixado em paz.
+  owner() {
+    return { pid: process.pid, id: this.ownerId };
+  }
+
+  // Jobs ativos de um gerenciador que não existe mais viram INTERROMPIDA (e o grupo de processos
+  // órfão, se sobrou, é encerrado). Jobs de outro gerenciador vivo (ex.: CLI e servidor juntos)
+  // são deixados em paz.
   recoverInterrupted() {
-    const alive = (pid) => { if (!pid) return false; try { process.kill(pid, 0); return true; } catch { return false; } };
     for (const job of store.list()) {
-      if (['EXECUTANDO', 'NA_FILA', 'CANCELANDO'].includes(job.status) && !alive(job.pid)) {
-        store.update(job.id, { status: 'INTERROMPIDA', finishedAt: new Date().toISOString(), reason: 'servidor reiniciado durante a execução', pid: null });
-      }
+      if (!ACTIVE.has(job.status)) continue;
+      const o = job.owner;
+      if (o && o.pid !== process.pid && alive(o.pid)) continue;
+      if (job.pid && alive(job.pid)) { try { process.kill(process.platform === 'win32' ? job.pid : -job.pid, 'SIGKILL'); } catch { /* ignore */ } }
+      store.update(job.id, { status: 'INTERROMPIDA', finishedAt: new Date().toISOString(), reason: 'o processo que executava a missão terminou (servidor reiniciado ou CLI encerrada)', pid: null });
     }
   }
 
@@ -50,10 +108,23 @@ class MissionManager {
     return event;
   }
 
+  /** Versão que nunca lança: usada em handlers de eventos de processo filho. */
+  safeRecord(id, type, data) {
+    try { return this.record(id, type, data); } catch (e) {
+      process.stderr.write(`[minhaia] falha ao registrar evento ${type} da missão ${id}: ${e.message}\n`);
+      return null;
+    }
+  }
+
+  pendingCount() {
+    return this.queue.length + this.running.size;
+  }
+
   create(objective, { start = true } = {}) {
     const text = String(objective || '').trim();
-    if (!text) throw Object.assign(new Error('objetivo vazio'), { status: 400 });
-    if (text.length > 4000) throw Object.assign(new Error('objetivo acima de 4000 caracteres'), { status: 400 });
+    if (!text) throw err(400, 'objetivo vazio');
+    if (text.length > 4000) throw err(400, 'objetivo acima de 4000 caracteres');
+    if (start && this.pendingCount() >= this.maxPending) throw err(429, `limite de ${this.maxPending} missões na fila/em execução atingido`);
     const job = store.create(text);
     this.record(job.id, 'created', { objective: job.objective });
     if (start) this.start(job.id);
@@ -62,15 +133,19 @@ class MissionManager {
 
   start(id, { resume = false } = {}) {
     const job = store.get(id);
-    if (!job) throw Object.assign(new Error('missão não encontrada'), { status: 404 });
-    if (this.running.has(id) || this.queue.some((q) => q.id === id)) throw Object.assign(new Error('missão já está em execução ou na fila'), { status: 409 });
+    if (!job) throw err(404, 'missão não encontrada');
+    if (this.running.has(id) || this.queue.some((q) => q.id === id)) throw err(409, 'missão já está em execução ou na fila');
+    if (ACTIVE.has(job.status)) throw err(409, `missão ${job.status} em outro processo (pid ${job.owner ? job.owner.pid : '?'})`);
     if (resume) {
-      if (!job.engineMissionId) throw Object.assign(new Error('missão ainda não tem estado no motor para retomar'), { status: 409 });
-      if (!['FALHA', 'CANCELADA', 'TEMPO_ESGOTADO', 'INTERROMPIDA'].includes(job.status)) throw Object.assign(new Error(`não é possível retomar missão em ${job.status}`), { status: 409 });
+      if (!RESUMABLE.has(job.status)) throw err(409, `não é possível retomar missão em ${job.status}`);
+      if (!job.engineMissionId) throw err(409, 'missão parou antes de ter estado no motor (antes do plano): crie de novo');
+      const st = engineMissionState(job.engineMissionId);
+      if (!st || ['CONCLUIDA', 'FALHA'].includes(st)) throw err(409, `estado do motor não permite retomar (${st || 'ausente'})`);
     } else if (job.status !== 'CRIADA') {
-      throw Object.assign(new Error(`missão já iniciada (${job.status}); use retomar`), { status: 409 });
+      throw err(409, `missão já iniciada (${job.status}); use retomar`);
     }
-    store.update(id, { status: 'NA_FILA', reason: null });
+    if (this.pendingCount() >= this.maxPending) throw err(429, `limite de ${this.maxPending} missões na fila/em execução atingido`);
+    store.update(id, { status: 'NA_FILA', reason: null, owner: this.owner() });
     this.record(id, 'queued', { resume });
     this.queue.push({ id, resume });
     this.pump();
@@ -86,82 +161,99 @@ class MissionManager {
 
   launch(id, resume) {
     const job = store.get(id);
-    const child = fork(WORKER, [], { stdio: ['ignore', 'pipe', 'pipe', 'ipc'], env: process.env });
+    // processo em grupo próprio: cancelar/timeout encerra também os filhos criados pelo motor
+    const child = fork(WORKER, [], { stdio: ['ignore', 'pipe', 'pipe', 'ipc'], env: workerEnv(), detached: process.platform !== 'win32' });
+    const entry = { child, timer: null, killTimer: null, finalStatus: null, reason: null, done: false };
+    this.running.set(id, entry);
     let finished = false;
     const finish = (status, patch = {}) => {
       if (finished) return;
       finished = true;
       clearTimeout(entry.timer);
       clearTimeout(entry.killTimer);
+      killGroup(child, 'SIGKILL'); // nada do grupo sobrevive ao fim da missão
       this.running.delete(id);
       const finalStatus = entry.finalStatus || status;
-      store.update(id, { status: finalStatus, finishedAt: new Date().toISOString(), pid: null, ...patch });
-      this.record(id, 'finished', { status: finalStatus, ...patch });
+      const reason = entry.reason || patch.reason || null;
+      store.update(id, { status: finalStatus, finishedAt: new Date().toISOString(), pid: null, ...patch, reason });
+      this.safeRecord(id, 'finished', { status: finalStatus, reason });
       this.pump();
     };
-    const entry = { child, timer: null, killTimer: null };
-    this.running.set(id, entry);
-    store.update(id, { status: 'EXECUTANDO', startedAt: job.startedAt || new Date().toISOString(), finishedAt: null, pid: child.pid });
+    store.update(id, { status: 'EXECUTANDO', startedAt: job.startedAt || new Date().toISOString(), finishedAt: null, pid: child.pid, owner: this.owner() });
     this.record(id, 'started', { resume, pid: child.pid });
 
     child.on('message', (/** @type {any} */ msg) => {
       if (!msg || typeof msg !== 'object') return;
-      if (msg.kind === 'event' && msg.event) {
-        const { seq: _workerSeq, ...rest } = msg.event;
-        const e = this.record(id, rest.type, rest);
-        if (e.type === 'state' && e.mission) store.update(id, { engineMissionId: e.mission.id, engineState: e.mission.estado });
-        if (e.type === 'plan' && e.missionId) store.update(id, { engineMissionId: e.missionId });
-      } else if (msg.kind === 'done') {
-        const o = msg.outcome || {};
-        finish(o.status || 'FALHA', { engineMissionId: o.engineMissionId || store.get(id).engineMissionId, engineState: o.engineState || store.get(id).engineState, reason: o.reason || null });
+      try {
+        if (msg.kind === 'event' && msg.event) {
+          const { seq: _workerSeq, ...rest } = msg.event;
+          const e = this.record(id, rest.type, rest);
+          if (e.type === 'state' && e.mission) store.update(id, { engineMissionId: e.mission.id, engineState: e.mission.estado });
+          if (e.type === 'plan' && e.missionId) store.update(id, { engineMissionId: e.missionId });
+        } else if (msg.kind === 'done') {
+          entry.done = true;
+          const o = msg.outcome || {};
+          const cur = store.get(id);
+          finish(o.status || 'FALHA', { engineMissionId: o.engineMissionId || cur.engineMissionId, engineState: o.engineState || engineMissionState(o.engineMissionId || cur.engineMissionId) || cur.engineState, reason: o.reason || null });
+        }
+      } catch (e) {
+        process.stderr.write(`[minhaia] mensagem do worker descartada (${id}): ${e.message}\n`);
       }
     });
     const pipeLog = (stream, level) => stream.on('data', (d) => {
       const text = String(d).trim();
-      if (text) this.record(id, 'log', { level, text: text.slice(0, 4000) });
+      if (text && !finished) this.safeRecord(id, 'log', { level, text: text.slice(0, 4000) });
     });
     pipeLog(child.stdout, 'stdout');
     pipeLog(child.stderr, 'stderr');
-    child.on('exit', (code, signal) => finish(code === 0 ? 'CONCLUIDA' : 'FALHA', { reason: `worker saiu (code=${code}, signal=${signal})` }));
+    // saída sem mensagem "done" nunca é sucesso
+    child.on('exit', (code, signal) => finish('FALHA', { reason: `worker saiu sem concluir (code=${code}, signal=${signal})` }));
     child.on('error', (e) => finish('FALHA', { reason: e.message }));
 
     entry.timer = setTimeout(() => {
-      store.update(id, { status: 'CANCELANDO' });
-      this.record(id, 'timeout', { afterMs: this.timeoutMs });
-      this.terminate(id, 'TEMPO_ESGOTADO');
+      this.safeRecord(id, 'timeout', { afterMs: this.timeoutMs });
+      this.terminate(id, 'TEMPO_ESGOTADO', `tempo limite de ${Math.round(this.timeoutMs / 1000)} s esgotado`);
     }, this.timeoutMs);
 
     child.send({ kind: 'start', objective: job.objective, resumeEngineMissionId: resume ? job.engineMissionId : null });
   }
 
-  terminate(id, finalStatus) {
+  terminate(id, finalStatus, reason) {
     const entry = this.running.get(id);
-    if (!entry) return;
+    if (!entry || entry.finalStatus) return;
     entry.finalStatus = finalStatus;
-    entry.child.kill('SIGTERM');
-    entry.killTimer = setTimeout(() => { if (!entry.child.killed || entry.child.exitCode === null) entry.child.kill('SIGKILL'); }, 5000);
+    entry.reason = reason;
+    store.update(id, { status: 'CANCELANDO', reason });
+    try { entry.child.send({ kind: 'stop', reason }); } catch { /* canal fechado */ }
+    killGroup(entry.child, 'SIGTERM');
+    entry.killTimer = setTimeout(() => killGroup(entry.child, 'SIGKILL'), 5000);
   }
 
   cancel(id) {
     const job = store.get(id);
-    if (!job) throw Object.assign(new Error('missão não encontrada'), { status: 404 });
+    if (!job) throw err(404, 'missão não encontrada');
     const qi = this.queue.findIndex((q) => q.id === id);
     if (qi >= 0) {
       this.queue.splice(qi, 1);
       store.update(id, { status: 'CANCELADA', finishedAt: new Date().toISOString(), reason: 'cancelada na fila' });
-      this.record(id, 'finished', { status: 'CANCELADA' });
+      this.record(id, 'finished', { status: 'CANCELADA', reason: 'cancelada na fila' });
       return store.get(id);
     }
-    if (!this.running.has(id)) throw Object.assign(new Error(`missão não está em execução (${job.status})`), { status: 409 });
-    store.update(id, { status: 'CANCELANDO', reason: 'cancelada pelo usuário' });
+    if (!this.running.has(id)) {
+      if (ACTIVE.has(job.status)) throw err(409, `missão em execução por outro processo (pid ${job.owner ? job.owner.pid : '?'}): cancele por lá`);
+      throw err(409, `missão não está em execução (${job.status})`);
+    }
     this.record(id, 'cancel_requested', {});
-    this.terminate(id, 'CANCELADA');
+    this.terminate(id, 'CANCELADA', 'cancelada pelo usuário');
     return store.get(id);
   }
 
   shutdown() {
-    for (const id of this.running.keys()) this.terminate(id, 'INTERROMPIDA');
+    for (const q of this.queue.splice(0)) {
+      store.update(q.id, { status: 'INTERROMPIDA', finishedAt: new Date().toISOString(), reason: 'servidor encerrado com a missão na fila' });
+    }
+    for (const id of [...this.running.keys()]) this.terminate(id, 'INTERROMPIDA', 'servidor encerrado durante a execução');
   }
 }
 
-module.exports = { MissionManager, TERMINAL };
+module.exports = { MissionManager, TERMINAL, RESUMABLE, workerEnv };

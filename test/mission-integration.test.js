@@ -30,8 +30,10 @@ test('missão ponta a ponta via API: plano, agentes, Skills injetadas, ferrament
 
   const skills = (await req(api.base, 'GET', `/api/missions/${id}/skills`)).json;
   assert.strictEqual(skills.perTask.length, 2);
+  const review = skills.perTask.find((p) => p.agente === 'reviewer');
+  assert.ok(review && review.skills.length >= 1, 'tarefa de revisão recebe Skill de revisão');
   for (const p of skills.perTask) {
-    assert.ok(p.skills.length >= 1 && p.skills.length <= 2, 'poucas Skills por tarefa');
+    assert.ok(p.skills.length <= 2, 'no máximo 2 Skills por tarefa');
     for (const s of p.skills) {
       assert.match(s.motivo, /termos em comum/);
       assert.ok(s.tools);
@@ -42,7 +44,7 @@ test('missão ponta a ponta via API: plano, agentes, Skills injetadas, ferrament
   const prompts = fs.readFileSync(api.promptLog, 'utf8').trim().split('\n').map(JSON.parse);
   const agentPrompts = prompts.filter((p) => /CONTRATO DESTA TAREFA/.test(p.prompt));
   assert.ok(agentPrompts.length >= 2);
-  for (const p of agentPrompts) assert.match(p.prompt, /### Skill: /, 'prompt do agente precisa conter as Skills carregadas');
+  assert.ok(agentPrompts.some((p) => /Revisar criticamente/.test(p.prompt) && /### Skill: agent-/.test(p.prompt)), 'prompt do revisor contém as Skills carregadas');
   assert.ok(!prompts.some((p) => /módulo Planejador/.test(p.prompt) && /### Skill:/.test(p.prompt)), 'Planejador não recebe Skills de agente');
 
   const exec = (await req(api.base, 'GET', `/api/missions/${id}/execution`)).json;
@@ -131,3 +133,77 @@ for (const [scenario, check] of [
     assert.ok(sandboxed.every((e) => e.sandboxed), 'todo comando permitido roda confinado');
   });
 }
+
+test('retomar depois de cancelar reabre a tarefa interrompida e conclui a missão', { skip: SKIP_NO_MASTER }, async (t) => {
+  const api = await startApi({ stub: true, env: { MINHAIA_TEST_STUB_DELAY_MS: '6000', MINHAIA_TEST_STUB_DELAY_ON: 'implementacao' } });
+  t.after(() => api.close());
+  const id = (await req(api.base, 'POST', '/api/missions', { body: { objective: 'Crie um script que soma dois números' } })).json.id;
+  const plan = await waitEvent(api.manager, id, 'plan');
+  await waitEvent(api.manager, id, 'llm.start', 30000, plan.seq); // geração de código em andamento (atrasada)
+  await new Promise((r) => setTimeout(r, 300));
+  const finished = waitFinished(api.manager, id, 20000);
+  assert.strictEqual((await req(api.base, 'POST', `/api/missions/${id}/cancel`, { body: {} })).status, 200);
+  assert.strictEqual((await finished).status, 'CANCELADA');
+  const d = (await req(api.base, 'GET', `/api/missions/${id}`)).json;
+  assert.notStrictEqual(d.mission.estado, 'FALHA', 'cancelar não pode marcar FALHA no motor');
+
+  process.env.MINHAIA_TEST_STUB_DELAY_MS = '0';
+  const again = waitFinished.bind(null, api.manager, id, 60000);
+  const r = await req(api.base, 'POST', `/api/missions/${id}/resume`, { body: {} });
+  assert.strictEqual(r.status, 200, r.text);
+  const reopened = await waitEvent(api.manager, id, 'resume');
+  // o motor não persiste "em_progresso" antes de executar; se tivesse persistido, voltaria a pendente
+  assert.ok(Array.isArray(reopened.tarefasReabertas));
+  assert.strictEqual(reopened.estado, 'EXECUTANDO');
+  const fin = await again();
+  assert.strictEqual(fin.status, 'CONCLUIDA');
+  const tasks = (await req(api.base, 'GET', `/api/missions/${id}/tasks`)).json;
+  assert.ok(tasks.every((x) => x.status === 'concluida'));
+});
+
+test('cancelar não deixa processo órfão do código gerado', { skip: SKIP_NO_MASTER || (process.platform !== 'linux' && 'usa /proc') }, async (t) => {
+  const api = await startApi({ stub: true, env: { MINHAIA_TEST_STUB_SCENARIO: 'hang' } });
+  t.after(() => api.close());
+  const id = (await req(api.base, 'POST', '/api/missions', { body: { objective: 'Crie um script que soma dois números' } })).json.id;
+  const sb = await waitEvent(api.manager, id, 'sandbox', 30000);
+  assert.ok(sb.allowed && sb.workspace);
+  await new Promise((r) => setTimeout(r, 500)); // o script travado já está rodando
+  const running = () => fs.readdirSync('/proc').filter((p) => /^\d+$/.test(p)).filter((p) => {
+    try { return fs.readFileSync(`/proc/${p}/cmdline`, 'utf8').includes(`${sb.workspace}/soma.js`); } catch { return false; }
+  });
+  assert.ok(running().length >= 1, 'o processo do código gerado deveria estar vivo antes do cancelamento');
+  const finished = waitFinished(api.manager, id, 20000);
+  await req(api.base, 'POST', `/api/missions/${id}/cancel`, { body: {} });
+  assert.strictEqual((await finished).status, 'CANCELADA');
+  await new Promise((r) => setTimeout(r, 300));
+  assert.deepStrictEqual(running(), [], 'nenhum processo do código gerado pode sobreviver ao cancelamento');
+});
+
+test('worker morto sem concluir vira FALHA (nunca sucesso)', { skip: SKIP_NO_MASTER }, async (t) => {
+  const api = await startApi({ stub: true, env: { MINHAIA_TEST_STUB_DELAY_MS: '5000' } });
+  t.after(() => api.close());
+  const id = (await req(api.base, 'POST', '/api/missions', { body: { objective: 'Crie um script que soma dois números' } })).json.id;
+  const started = await waitEvent(api.manager, id, 'started');
+  const finished = waitFinished(api.manager, id, 20000);
+  process.kill(started.pid, 'SIGKILL');
+  const fin = await finished;
+  assert.strictEqual(fin.status, 'FALHA');
+  assert.match(fin.reason, /saiu sem concluir/);
+});
+
+test('fila tem limite (429) para não ser inundada', { skip: SKIP_NO_MASTER }, async (t) => {
+  const api = await startApi({ stub: true, env: { MINHAIA_TEST_STUB_DELAY_MS: '5000' } });
+  t.after(() => api.close());
+  api.manager.maxPending = 1;
+  assert.strictEqual((await req(api.base, 'POST', '/api/missions', { body: { objective: 'Crie um script que soma dois números' } })).status, 201);
+  const r = await req(api.base, 'POST', '/api/missions', { body: { objective: 'Outra missão' } });
+  assert.strictEqual(r.status, 429);
+});
+
+test('retomada reabre tarefa persistida como em_progresso', { skip: SKIP_NO_MASTER }, () => {
+  const { prepareResume } = require('../src/missions/worker');
+  const saved = { m: { id: 'missao_x', estado: 'EXECUTANDO', subtarefas: [{ id: 'a', status: 'concluida' }, { id: 'b', status: 'em_progresso' }] } };
+  const persist = { carregar: () => JSON.parse(JSON.stringify(saved.m)), salvar: (m) => { saved.m = m; } };
+  prepareResume(persist, 'missao_x');
+  assert.deepStrictEqual(saved.m.subtarefas.map((t) => t.status), ['concluida', 'pendente']);
+});

@@ -146,7 +146,7 @@ function instrument({ testAdapters = null } = {}) {
     return r;
   };
 
-  return { Executor: engineModule('executor/executor.js').Executor };
+  return { Executor: engineModule('executor/executor.js').Executor, persistencia };
 }
 
 // ------------------------------------------------------------------ sandbox
@@ -156,13 +156,35 @@ function instrument({ testAdapters = null } = {}) {
 // (python, sh…) não herdam esse confinamento e são recusados, salvo opt-in explícito.
 const PERMISSION_FLAG = process.allowedNodeEnvironmentFlags.has('--permission') ? '--permission' : '--experimental-permission';
 
+/**
+ * Argumentos do `node` por LISTA DE PERMISSÃO: só `-e/--eval <código> [args]` ou
+ * `<script dentro do workspace> [args]`. Qualquer opção do node antes do script é recusada —
+ * várias delas (`--run`, `--report-directory`, `-r`, `--import`, `--env-file`…) escapariam
+ * do confinamento ou gravariam fora do workspace.
+ */
+function sanitizeNodeArgs(args, ws) {
+  const a = (args || []).map(String);
+  if (a.length === 0) return { denied: 'node sem script: nada a executar' };
+  if (a[0] === '-e' || a[0] === '--eval') {
+    if (a.length < 2) return { denied: 'node -e sem código' };
+    return { args: ['-e', a[1], ...a.slice(2)] };
+  }
+  if (a[0].startsWith('-')) return { denied: `opção do node "${a[0]}" não permitida pela sandbox (só "node <script-no-workspace>" ou "node -e <código>")` };
+  let real;
+  try { real = fs.realpathSync(path.resolve(ws, a[0])); } catch { return { denied: `script "${a[0]}" não existe no workspace da missão` }; }
+  const rel = path.relative(ws, real);
+  if (rel.startsWith('..') || path.isAbsolute(rel) || !fs.statSync(real).isFile()) return { denied: `script "${a[0]}" fica fora do workspace da missão` };
+  return { args: [real, ...a.slice(1)] };
+}
+
 function sandboxCommand(missaoId, comando, args) {
   const base = path.basename(String(comando || '')).replace(/\.exe$/i, '');
   if (base === 'node' || comando === process.execPath) {
     const { garantirWorkspace } = engineModule('executor/core/workspace.js');
     const ws = fs.realpathSync(garantirWorkspace(missaoId));
-    const userArgs = (args || []).filter((a) => !/^--(permission|experimental-permission|allow-)/.test(String(a)));
-    return { comando: process.execPath, args: [PERMISSION_FLAG, `--allow-fs-read=${ws}`, `--allow-fs-write=${ws}`, ...userArgs], sandboxed: true, workspace: ws };
+    const s = sanitizeNodeArgs(args, ws);
+    if (s.denied) return { denied: s.denied };
+    return { comando: process.execPath, args: [PERMISSION_FLAG, `--allow-fs-read=${ws}`, `--allow-fs-write=${ws}`, ...s.args], sandboxed: true, workspace: ws };
   }
   if (process.env.MINHAIA_ALLOW_UNSANDBOXED_COMMANDS === '1') return { comando, args, sandboxed: false };
   return { denied: `executável "${base}" bloqueado pela política de sandbox da MinhaIA: só código Node.js roda, confinado ao workspace da missão. Gere a solução em Node.js puro (built-ins).` };
@@ -198,4 +220,4 @@ function summarizeArgs(name, args) {
   }
 }
 
-module.exports = { instrument, snapshot };
+module.exports = { instrument, snapshot, sanitizeNodeArgs };

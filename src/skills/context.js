@@ -1,5 +1,5 @@
 const registry = require('../registry');
-const { rankSkills } = require('../selection/selector');
+const { rankSkills, tokens } = require('../selection/selector');
 const { parseFrontmatter } = require('../registry/frontmatter');
 const fs = require('fs');
 const path = require('path');
@@ -60,7 +60,9 @@ function skillMeta(id) {
 function contextoDeSkills(tarefa, missao, especialista) {
   const agente = especialista ? especialista.chave || especialista.arquivo : null;
   const query = [tarefa.descricao, tarefa.tipo, agente, especialista && especialista.especialidade].filter(Boolean).join(' ');
-  const ranked = rankSkills(query, skills(), MAX_SKILLS + 6);
+  // a Skill precisa casar com a DESCRIÇÃO da tarefa, não só com o nome do agente
+  const descTokens = tokens(tarefa.descricao || '');
+  const ranked = rankSkills(query, skills(), MAX_SKILLS + 6).filter((r) => r.matched.some((w) => descTokens.has(w)));
   const usadas = [];
   const descartadas = [];
   for (const r of ranked) {

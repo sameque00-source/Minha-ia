@@ -1696,7 +1696,7 @@
       "source": "ai-orchestrator",
       "from": "AI-ORCHESTRATOR/gateway/server.js",
       "sha256Source": "8642fa809f588ee623655a981adcc4513c3105018c1e7d6e610dc661488f3db7",
-      "sha256Dest": "da48f80709d550975e779c427fd4a44fa2942a695d9a542d5245b09e65768262",
+      "sha256Dest": "4497b20354152296f981ba7a8ac8bae9dc57020f5340b0f20b15e60fda55dc4c",
       "patched": true
     },
     "vendor/master/ai-orchestrator/router/execute.js": {

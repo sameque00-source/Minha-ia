@@ -36,7 +36,8 @@ const CODE = {
 module.exports = async function stubAdapter(candidate, ctx) {
   const prompt = promptOf(ctx);
   const delay = Number(process.env.MINHAIA_TEST_STUB_DELAY_MS || 0);
-  if (delay) await new Promise((r) => setTimeout(r, delay));
+  const only = process.env.MINHAIA_TEST_STUB_DELAY_ON; // 'implementacao' = só na geração de código
+  if (delay && (!only || (only === 'implementacao' && /modo IMPLEMENTAÇÃO/.test(prompt)))) await new Promise((r) => setTimeout(r, delay));
   if (process.env.MINHAIA_TEST_PROMPT_LOG) fs.appendFileSync(process.env.MINHAIA_TEST_PROMPT_LOG, `${JSON.stringify({ model: candidate.id, prompt })}\n`);
   let text;
   if (/módulo Planejador/.test(prompt)) text = JSON.stringify(PLAN);
@@ -50,6 +51,7 @@ module.exports = async function stubAdapter(candidate, ctx) {
 const SCENARIOS = {
   escape: () => ({ ...CODE, arquivos: [{ caminho: 'soma.js', conteudo: `const fs = require('fs');\nfs.writeFileSync(${JSON.stringify(require('path').join(process.env.MINHAIA_TEST_DECOY || '/nonexistent', 'ESCAPOU.txt'))}, 'x');\nconsole.log(5);\n` }] }),
   secrets: () => ({ ...CODE, arquivos: [{ caminho: 'soma.js', conteudo: `console.log(require('fs').readFileSync(${JSON.stringify(require('path').resolve(__dirname, '..', '..', 'package.json'))}, 'utf8').length);\n` }] }),
+  hang: () => ({ ...CODE, arquivos: [{ caminho: 'soma.js', conteudo: 'setInterval(() => {}, 1000);\nconsole.log(5);\n' }] }),
   python: () => ({ ...CODE, arquivos: [{ caminho: 'soma.py', conteudo: 'print(2 + 3)\n' }], comandoTeste: 'python3', comandoTesteArgs: ['soma.py'] }),
 };
 const baseAdapter = module.exports;

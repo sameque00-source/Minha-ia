@@ -86,10 +86,13 @@ function waitFinished(manager, id, timeoutMs = 60000) {
   });
 }
 
-function waitEvent(manager, id, type, timeoutMs = 30000) {
+/** Espera um evento do tipo; `after` = só eventos com seq maior (considera os já gravados). */
+function waitEvent(manager, id, type, timeoutMs = 30000, after = 0) {
+  const past = require('../src/missions/store').readEvents(id, { afterSeq: after, types: [type] });
+  if (past.length) return Promise.resolve(past[0]);
   return new Promise((resolve, reject) => {
     const t = setTimeout(() => { off(); reject(new Error(`evento ${type} não chegou`)); }, timeoutMs);
-    const off = manager.subscribe((jobId, e) => { if (jobId === id && e.type === type) { clearTimeout(t); off(); resolve(e); } });
+    const off = manager.subscribe((jobId, e) => { if (jobId === id && e.type === type && e.seq > after) { clearTimeout(t); off(); resolve(e); } });
   });
 }
 

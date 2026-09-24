@@ -155,9 +155,16 @@ const commands = {
 
   async serve() {
     const port = Number(flagValue('--port', process.env.MINHAIA_PORT || '4317'));
-    const { server, port: actual, host } = await require('../src/server').start({ port });
+    const { shutdown, port: actual, host } = await require('../src/server').start({ port });
     console.log(`MinhaIA em http://${host}:${actual} (somente esta máquina)`);
-    const stop = () => server.close(() => process.exit(0));
+    let stopping = false;
+    const stop = async () => {
+      if (stopping) process.exit(130); // segundo Ctrl+C: sai já
+      stopping = true;
+      console.log('encerrando: interrompendo missões e fechando conexões…');
+      await shutdown();
+      process.exit(0);
+    };
     process.on('SIGINT', stop);
     process.on('SIGTERM', stop);
   },

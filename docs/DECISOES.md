@@ -135,6 +135,18 @@ Evita toolchain de build para uma UI de painel; tipagem via `checkJs` e testes n
 sai rotulado `TEST-STUB(...)` e a UI mostra um aviso. Serve para validar o pipeline real do
 motor (plano → grafo → ferramentas → revisão) sem provedor; nunca como resultado de produto.
 
+## ADR-14 — Segunda rodada de revisão da camada de produto
+
+`reviewer` e `security` **vetaram** a primeira versão. Corrigido: `node --run` e outras flags
+escapavam da sandbox → lista de permissão de argumentos; redação sobre JSON serializado
+corrompia eventos e podia derrubar a API → redação por valor + handlers à prova de exceção;
+padrões de segredo ampliados + valores literais de `.secrets/.env`; retomada após cancelar não
+funcionava (cancelamento marcava FALHA no motor); processos órfãos após cancelar → grupo de
+processos; `serve` não encerrava com SSE aberto; job preso quando outro processo era dono;
+worker morto sem `done` virava sucesso; fila sem limite; ambiente completo herdado pelo código
+gerado; releitura integral de eventos a cada atualização → cache incremental; Skill escolhida
+só pelo nome do agente.
+
 ## Conflitos encontrados no MASTER (registrados, não alterados)
 
 | # | Onde | Conflito | Impacto | Tratamento na MinhaIA |

@@ -141,7 +141,7 @@ function createServer({ manager = new MissionManager() } = {}) {
     ['GET', /^\/api\/missions\/([^/]+)\/agents$/, (_, __, ___, [id]) => views.agents(id)],
     ['GET', /^\/api\/missions\/([^/]+)\/skills$/, (_, __, ___, [id]) => views.skills(id)],
     ['GET', /^\/api\/missions\/([^/]+)\/execution$/, (_, url, ___, [id]) => views.execution(id, Number(url.searchParams.get('after') || 0))],
-    ['GET', /^\/api\/missions\/([^/]+)\/logs$/, (_, url, ___, [id]) => views.logs(id, { afterSeq: Number(url.searchParams.get('after') || 0), types: url.searchParams.get('types') ? url.searchParams.get('types').split(',') : null })],
+    ['GET', /^\/api\/missions\/([^/]+)\/logs$/, (_, url, ___, [id]) => views.logs(id, { afterSeq: Number(url.searchParams.get('after') || 0), types: url.searchParams.get('types') ? url.searchParams.get('types').split(',') : null, limit: Math.min(Number(url.searchParams.get('limit') || 5000), 20000) })],
     ['GET', /^\/api\/missions\/([^/]+)\/result$/, (_, __, ___, [id]) => views.result(id)],
     ['GET', /^\/api\/missions\/([^/]+)\/files$/, (_, url, ___, [id]) => {
       const p = url.searchParams.get('path');
@@ -189,14 +189,27 @@ function createServer({ manager = new MissionManager() } = {}) {
     }
   });
 
+  /** Encerra de verdade: workers, streams SSE abertos e conexões keep-alive, com prazo. */
+  async function shutdown({ deadlineMs = 6000 } = {}) {
+    manager.shutdown();
+    for (const c of sseClients) { try { c.res.end(); } catch { /* já fechado */ } }
+    sseClients.clear();
+    const closed = new Promise((r) => server.close(() => r()));
+    server.closeAllConnections();
+    const until = Date.now() + deadlineMs;
+    while (manager.running.size && Date.now() < until) await new Promise((r) => setTimeout(r, 100));
+    await Promise.race([closed, new Promise((r) => setTimeout(r, 500))]);
+    unsubscribe();
+  }
+
   server.on('close', () => { unsubscribe(); manager.shutdown(); });
-  return { server, manager };
+  return { server, manager, shutdown };
 }
 
 async function start({ port = Number(process.env.MINHAIA_PORT || 4317), host = process.env.MINHAIA_HOST || '127.0.0.1' } = {}) {
   if (!['127.0.0.1', 'localhost', '::1'].includes(host)) throw new Error('a API da MinhaIA só escuta em loopback (MINHAIA_HOST deve ser 127.0.0.1/localhost/::1)');
-  const { server, manager } = createServer();
-  return new Promise((resolve) => server.listen(port, host, () => resolve({ server, manager, port: /** @type {import('net').AddressInfo} */ (server.address()).port, host })));
+  const { server, manager, shutdown } = createServer();
+  return new Promise((resolve) => server.listen(port, host, () => resolve({ server, manager, shutdown, port: /** @type {import('net').AddressInfo} */ (server.address()).port, host })));
 }
 
 module.exports = { createServer, start };

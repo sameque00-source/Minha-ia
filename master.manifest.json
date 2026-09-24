@@ -94,9 +94,9 @@
       "source": "ai-orchestrator",
       "file": "gateway/server.js",
       "find": "fs.appendFileSync(LOG_PATH, JSON.stringify(entry) + '\\n');",
-      "replaceWith": "fs.appendFileSync(LOG_PATH, require(require('path').join(__dirname, '{{REL:src/security/redact.js}}')).redact(JSON.stringify(entry)) + '\\n');",
+      "replaceWith": "fs.appendFileSync(LOG_PATH, JSON.stringify(require(require('path').join(__dirname, '{{REL:src/security/redact.js}}')).redactDeep(entry)) + '\\n');",
       "expectCount": 1,
-      "reason": "Segurança: logs gravam corpo de erro de provedor sem redação. Passa por redact() (padrões de segredo da memória do MASTER + chave Google/query string)."
+      "reason": "Segurança: logs gravam corpo de erro de provedor sem redação. Cada valor passa por redactDeep() antes de serializar (padrões de segredo da memória do MASTER + formatos extras + valores literais de .secrets/.env)."
     },
     {
       "id": "skills-context",

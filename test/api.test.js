@@ -90,6 +90,17 @@ test('API de missões: rotas, bloqueio honesto sem provedor e segurança', { ski
     assert.strictEqual((await req(base, 'GET', '/app.js')).status, 200);
   });
 
+  await t.test('shutdown encerra mesmo com stream SSE aberto', async () => {
+    const { start } = require('../src/server');
+    const s = await start({ port: 0 });
+    const port = s.server.address().port;
+    await new Promise((resolve, reject) => { http.get(`http://127.0.0.1:${port}/api/stream`, (res) => { res.once('data', resolve); }).on('error', reject); });
+    const t0 = Date.now();
+    await s.shutdown({ deadlineMs: 2000 });
+    assert.ok(Date.now() - t0 < 3000, 'shutdown precisa terminar mesmo com SSE aberto');
+    assert.strictEqual(s.server.listening, false);
+  });
+
   await t.test('API só aceita escutar em loopback', async () => {
     const { start } = require('../src/server');
     await assert.rejects(() => start({ port: 0, host: '0.0.0.0' }), /loopback/);
